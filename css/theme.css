@@ -11,3 +11,21 @@ h1{
     text-align: center;
     padding: 15px;
 }
+h3 {
+    text-align: center;
+}
+/** Overall styling of buttons **/
+.button-container {
+    display: flex;          
+    justify-content: center; 
+    align-items: center;    
+    height: 15vh;          
+}
+
+/* Style the buttons */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;  
+    cursor: pointer;
+}
