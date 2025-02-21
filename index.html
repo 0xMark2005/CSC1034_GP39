@@ -6,14 +6,29 @@
     </head>
     <body>
         <h1>ReignFall</h1>
-        <h3>This is the sub title for our game</h3>
+        <h3>This is the sub title for ReignFall</h3>
 
         <!-- Buttons To allow the user to login or Sign Up -->
         <div class="button-container">
-        <button id="login">Login</button>
-        <script src="js/login.js"></script>
-        
-        <button id="signUp">Sign Up</button>
+            <button id="login">Login</button>
+            <button id="signUp">Sign Up</button>
         </div>
+
+        <!-- Text-Based Menu (Appears when Login is clicked) -->
+        <div id="menu" style="display: none;">
+            <h2>Welcome!</h2>
+            <p>Select an option:</p>
+            <ol>
+                <li><a href="#">Start Game</a></li>
+                <li><a href="#">Load Game</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Logout</a></li>
+            </ol>
+        </div>
+
+        <!-- JS Files -->
+        <script src="js/login.js"></script>
+        <script src="js/signUp.js"></script>
+
     </body>
 </html>
