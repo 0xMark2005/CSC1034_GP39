@@ -1,13 +1,19 @@
+* {
+    box-sizing: border-box;
+  }
+
 /** General Body Styling **/
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(144, 127, 127, 0.808));
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(144, 127, 127, 0.808));
     height: 100vh; 
-    margin: 0;
+    margin: 0%;
+    padding: 10%;
     display: flex;
     justify-content: center;
-    align-items: center;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 /** Style Header One's content **/
@@ -25,16 +31,26 @@ h3 {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 15vh;
+    padding: 10px 0;
+    flex-wrap: wrap; 
 }
 
 /* Style the buttons */
 button {
-    padding: 10px 20px;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 10px 25px;
+    min-width: 145px;
+    min-height: 45px;
+    border-radius: 8px;
+    background-color: #171717;
+    color: white;
+    border: 0;
     font-size: 16px;
     margin: 10px;
-    text-align: center;
     cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
 }
 
 /** CSS for the menu which appears after the user has logged in **/
@@ -45,3 +61,93 @@ button {
     margin: 10px;
 }
 
+
+/** First terminal design **/
+.terminal-one {
+    background-color: #2A2A2A;
+    border-radius: 8px;
+    width: 50%;
+    max-width: 600px;
+    color: white;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+    body {
+      padding: 5%;
+    }
+    .terminal-one {
+      width: 90%;
+      padding: 20px;
+    }
+    button {
+      min-width: 100px;
+      width: 100%;
+      margin: 5px 0;
+    }
+    .button-container {
+      flex-direction: column;
+    }
+  }
+
+  button:hover,
+button:focus-visible {
+  background-color: #000000;  
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* accessibility  */
+button:focus {
+  outline: 3px solid #FFD700;  /* High contrast focus  */
+  outline-offset: 2px;
+}
+
+/** hover effect disabled for accessible screens **/
+@media (prefers-reduced-motion: reduce) {
+    button {
+      transition: none;
+    }
+
+    .standardtextfield {
+        transition: none;
+      }
+  }
+
+/** non terminal inputs **/
+  .standardtextfield {
+    display: block;
+    width: 100%;
+    height: 45px; 
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 2px solid #171717;
+    border-radius: 8px;
+    background-color: white;
+    color: #171717;
+    margin-bottom: 1em;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+   }
+
+  .standardtextfield:hover,
+.standardtextfield:focus-visible {
+  border-color: #282828;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.standardtextfield:focus {
+  outline: 3px solid #FFD700;
+  outline-offset: 2px;
+}
+
+/** centering login**/
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    width: 300px; 
+    margin: 0 auto;
+  }
