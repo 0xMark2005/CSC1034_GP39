@@ -1,12 +1,13 @@
-/** I have assumed for this to be the overall stylesheet for the project **/
-
 /** General Body Styling **/
-body{
+body {
     font-family: Arial, Helvetica, sans-serif;
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(144, 127, 127, 0.808));
+    margin: 0;
+    padding: 0;
 }
+
 /** Style Header One's content **/
-h1{
+h1 {
     font-size: 2.5em;
     text-align: center;
     padding: 15px;
@@ -14,38 +15,28 @@ h1{
 h3 {
     text-align: center;
 }
+
 /** Overall styling of buttons **/
 .button-container {
-    display: flex;          
-    justify-content: center; 
-    align-items: center;    
-    height: 15vh;          
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 15vh;
 }
 
 /* Style the buttons */
 button {
     padding: 10px 20px;
     font-size: 16px;
-    margin: 10px;  
+    margin: 10px;
     text-align: center;
     cursor: pointer;
 }
+
 /** CSS for the menu which appears after the user has logged in **/
 #menu {
     text-align: center;
     padding: 15px;
-    display: flex;
-    justify-content: center;
+    display: block; /* Block display to stack items vertically */
 }
 
-#menu ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-#menu ol a {
-    text-decoration: none;
-    font-weight: bold;
-    color: black;
-}
