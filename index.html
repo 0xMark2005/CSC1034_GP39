@@ -5,6 +5,8 @@
         <link rel="stylesheet" href="css/theme.css">
     </head>
     <body>
+        <div class="terminal-one">
+
         <h1>ReignFall</h1>
         <h3>This is the sub title for ReignFall</h3>
 
@@ -13,18 +15,15 @@
             <button id="login">Login</button>
             <button id="signUp">Sign Up</button>
         </div>
-
         <!-- Login Form -->
         <div id="loginForm" style="display: none;">
             <h2>Login</h2>
-            <label for="username">Username:</label>
-            <input type="text" id="username" placeholder="Enter username" value="admin" style="margin-bottom: 10px;" />
-             <br />
-            <label for="password">Password:</label>
-            <input type="password" id="password" placeholder="Enter password" value="admin" />
-            <br />
-            <button id="submitLogin">Login</button>
-        </div>
+            <input type="text" id="username" class="standardtextfield" placeholder="Username" value="admin" />
+            <input type="password" id="password" class="standardtextfield" placeholder="Password" value="admin" />
+            <div class="button-container">
+                  <button id="submitLogin" style="width: 100%;">Login</button>
+            </div>
+             </div>
 
         <!-- Text-Based Menu (Appears when Login is clicked) -->
         <div id="menu" style="display: none;">
@@ -38,6 +37,7 @@
             <!-- Get Users input From the Menu -->
             <input type="text" id="userInput" placeholder="Type here...">
         </div>
+    </div>
 
         <!-- JS Files -->
         <script src="js/login.js"></script>
