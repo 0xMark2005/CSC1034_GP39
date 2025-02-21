@@ -2,8 +2,12 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(144, 127, 127, 0.808));
+    height: 100vh; 
     margin: 0;
-    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 /** Style Header One's content **/
@@ -38,5 +42,6 @@ button {
     text-align: center;
     padding: 15px;
     display: block; /* Block display to stack items vertically */
+    margin: 10px;
 }
 
