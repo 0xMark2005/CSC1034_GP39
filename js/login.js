@@ -9,7 +9,7 @@ document.getElementById("submitLogin").onclick = function () {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
 
-    // Check if the username and password match "admin"
+    // Check if the username and password match default admin:admin
     if (username === "admin" && password === "admin") {
         document.getElementById("loginForm").style.display = "none";
         document.getElementById("menu").style.display = "block";
