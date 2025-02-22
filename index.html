@@ -5,11 +5,12 @@
         <link rel="stylesheet" href="css/theme.css">
     </head>
     <body>
-        <div class="terminal-one">
-
-        <h1>ReignFall</h1>
-        <h3>This is the sub title for ReignFall</h3>
-
+        <div class="terminal-one"> 
+         <!-- Title of the terminal -->   
+        <div id="title">
+             <h1>ReignFall</h1>
+             <h3>This is the sub title for ReignFall</h3>
+        </div>
         <!-- Buttons To allow the user to login or Sign Up -->
         <div class="button-container">
             <button id="login">Login</button>
@@ -40,7 +41,8 @@
 
         <!-- User selects to play the game from menu, so menu is hidden and the story introduction begins -->
          <div id="gameBegins" style="display: none;">
-            <h1>A long time ago...</h1>
+            <h1 id="gameBeginsTitle"></h1>
+            <p>In a small</p>
          </div>
 
     </div>
@@ -49,5 +51,6 @@
         <script src="js/login.js"></script>
         <script src="js/signUp.js"></script>
         <script src="js/menu.js"></script>
+        <script src ="js/game.js"></script>
     </body>
 </html>
