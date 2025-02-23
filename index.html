@@ -28,17 +28,24 @@
 
         <!-- Text-Based Menu (Appears when Login is clicked) -->
         <div id="menu" style="display: none;">
-            <h2>Main Menu</h2>
+            <div class="terminal-two">
+                <h2>Main Menu</h2>
             <ol>
                 <li>  Start Game</li>
                 <li>  Load Game</li>
                 <li>  Settings</li>
                 <li>  Logout</li>
             </ol>
-            <!-- Get Users input From the Menu -->
-            <input type="text" id="userInput" placeholder="Type here...">
         </div>
 
+
+            <!-- Get Users input From the Menu -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="userInput" placeholder="Type here...">
+                </div>
+            </div>
+    </div>
         <!-- User selects to play the game from menu, so menu is hidden and the story introduction begins -->
          <div id="gameBegins" style="display: none;">
             <h1 id="gameBeginsTitle"></h1>
