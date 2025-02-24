@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Show the login form when the "Login" button is clicked
+    // Show the sign-up form when the "sign up" button is clicked
     document.getElementById("signUp").onclick = function () {
-        document.getElementById("signUp").style.display = "block";
-        document.querySelector(".button-container").style.display = "none"; 
+        // Hide the button-container and sign-up button
+        document.querySelector(".button-container").style.display = "none";
+        
+        // Show the sign-up form
+        document.getElementById("signUpForm").style.display = "block"; // Ensure the correct ID here
     };
 });
