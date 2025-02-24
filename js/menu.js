@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.getElementById("gameBegins").style.display = "block";
                         document.getElementById("menu").style.display = "none";
                         document.getElementById("title").style.display = "none";
+                        document.getElementById("settings").style.display = "none";
 
                         // Method which is exposed in js/game.js
                         if (typeof window.typeWriter === "function") {
@@ -35,7 +36,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         addSystemMessage("Loading Game...");
                         break;
                     case "3":
-                        addSystemMessage("Opening Settings...");
+                        document.getElementById("gameBegins").style.display = "none";
+                        document.getElementById("menu").style.display = "none";
+                        document.getElementById("title").style.display = "none";
+                        document.getElementById("settings").style.display = "block";
                         break;
                     case "4":
                         addSystemMessage("Logging Out...");
@@ -46,11 +50,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 1000); // 1 sec delay
         }
     });
+
     // Function to add system messages after user input
     function addSystemMessage(message) {
         const systemMessage = document.createElement("li");
         systemMessage.textContent = message;
-        systemMessage.style.color = "#FFD700"; 
+        systemMessage.style.color = "#FF8181"; 
         terminalOutputContainer.appendChild(systemMessage);
 
         while (terminalOutputContainer.children.length > 4) {
