@@ -273,7 +273,11 @@ button:focus {
   padding: 5px 0;
   white-space: pre-wrap;
 }
-*{box-sizing: border-box}
+
+
+
+.signUpForm{
+  *{box-sizing: border-box}
 input[type=text], input[type = password]{
   width: 100%;
   padding: 15px;
@@ -330,4 +334,5 @@ button:hover {
   .cancelbtn, .signupbtn {
     width: 100%;
   }
+}
 }
