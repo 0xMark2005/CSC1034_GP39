@@ -8,7 +8,8 @@
         <script src="js/signUp.js"></script>
         <script src="js/menu.js"></script>
         <script src ="js/game.js"></script>
-        
+        <script src="js/settings.js"></script>
+
     </head>
     <body>
         <div class="terminal-one"> 
@@ -17,11 +18,14 @@
              <h1>ReignFall</h1>
              <h3>This is the sub title for ReignFall</h3>
         </div>
+
+        
         <!-- Buttons To allow the user to login or Sign Up -->
         <div class="button-container">
             <button id="login">Login</button>
             <button id="signUp">Sign Up</button>
         </div>
+        
         <!-- Login Form -->
         <div id="loginForm" style="display: none;">
             <h2>Login</h2>
@@ -44,6 +48,8 @@
             </ol>
         </div>
 
+   
+
 
             <!-- Get Users input From the Menu -->
             <div class="input-container">
@@ -62,6 +68,42 @@
             </p>
          </div>
 
+
+         
+     <!-- Accessibility Settings page :eye: -->
+     <div id="settings" style="display: none;">
+        <div class="terminal-two">
+            <h2>Settings</h2>
+        <ol>
+            <li>  Text Size</li>
+            <li>  High Contrast</li>
+            <li>  Screen Colour Calibration</li>
+        </ol>
+    </div>
+       <!-- Get Users input  -->
+       <div class="input-container">
+        <div class="input-wrapper">
+            <input type="text" id="userInput" placeholder="Type here...">
+        </div>
+    </div>
+
+    <div id="settings" style="display: none;">
+        <div class="terminal-two">
+            <h2>Settings</h2>
+            <ol>
+                <li>  Text Size</li>
+                <li>  High Contrast</li>
+                <li>  Screen Colour Calibration</li>
+            </ol>
+        </div>
+        <div class="input-container">
+            <div class="input-wrapper">
+                <input type="text" id="userInput" placeholder="Type here...">
+            </div>
+        </div>
+    </div>
+    
+         
     </div>
     </body>
 </html>
