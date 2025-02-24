@@ -1,34 +1,30 @@
-// Show the login form when the "Login" button is clicked
-document.getElementById("login").onclick = function () {
-    document.getElementById("loginForm").style.display = "block";
-    document.querySelector(".button-container").style.display = "none"; 
-};
+document.addEventListener("DOMContentLoaded", function () {
+    // Show the login form when the "Login" button is clicked
+    document.getElementById("login").onclick = function () {
+        document.getElementById("loginForm").style.display = "block";
+        document.querySelector(".button-container").style.display = "none"; 
+    };
 
-// Validate login credentials
-document.getElementById("submitLogin").onclick = function () {
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
+    // Validate login credentials
+    document.getElementById("submitLogin").onclick = function () {
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
 
-    // Validate username input first BEFORE user reaches backend so that SQL injection is practically impossible.
-    
-    if (!validateUsernameInput(username)) {
-        return; 
-    }
+        // Validate username and password
+        if (!validateUsernameInput(username) || !validatePasswordInput(password)) {
+            return; 
+        }
 
-    // Validate password input as well 
-    if (!validatePasswordInput(password)) {
-        return; 
-    }
+        // Now, both username and password are valid. Check credentials
+        if (username === "admin" && password === "Admin!1234") {
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("menu").style.display = "block";
+        } else {
+            alert("Invalid credentials. Please try again.");
+        }
+    };
+});
 
-    // Now, both username and password are valid. Check if they match the default admin credentials
-    if (username === "admin" && password === "admin!1234") {
-        document.getElementById("loginForm").style.display = "none";
-        document.getElementById("menu").style.display = "block";
-    } else {
-        // Invalid credentials, show the alert
-        alert("Invalid credentials. Please try again.");
-    }
-};
 
 // Password validation function
 function validatePasswordInput(password) {
