@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
     terminalOutputContainer.classList.add("terminal-output"); 
     document.querySelector(".terminal-two").appendChild(terminalOutputContainer); 
 
+
+    
+
     userInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
             const choice = userInput.value.trim();
@@ -49,5 +52,11 @@ document.addEventListener("DOMContentLoaded", function () {
         systemMessage.textContent = message;
         systemMessage.style.color = "#FFD700"; 
         terminalOutputContainer.appendChild(systemMessage);
+
+        while (terminalOutputContainer.children.length > 4) {
+            terminalOutputContainer.removeChild(terminalOutputContainer.firstChild);
+        }
     }
+
+    
 });
