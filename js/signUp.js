@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Show the login form when the "Login" button is clicked
+    // Show the sign form when the "sign up" button is clicked
     document.getElementById("signUp").onclick = function () {
-        document.getElementById("signUp").style.display = "block";
+        document.getElementById("signUpForm").style.display = "block";
         document.querySelector(".button-container").style.display = "none"; 
     };
 });
