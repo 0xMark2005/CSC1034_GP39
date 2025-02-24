@@ -2,13 +2,17 @@
 <html>
     <head>
         <title>ReignFall</title>
+
+        <!-- CSS stylesheets -->
         <link rel="stylesheet" href="css/theme.css">
+
         <!-- JS Files -->
+         <script src="js/validation.js"></script>
         <script src="js/login.js"></script>
         <script src="js/signUp.js"></script>
         <script src="js/menu.js"></script>
         <script src ="js/game.js"></script>
-        
+
     </head>
     <body>
         <div class="terminal-one"> 
@@ -26,11 +30,21 @@
         <div id="loginForm" style="display: none;">
             <h2>Login</h2>
             <input type="text" id="username" class="standardtextfield" placeholder="Username" value="Admin" />
-            <input type="text" id="password" class="standardtextfield" placeholder="Password" value="Admin!1234" />
+            <input type="password" id="password" class="standardtextfield" placeholder="Password" value="Admin!1234" />
+
+            <!-- An element to toggle between password visibility -->
+            <div class="checkbox-wrapper-3">
+                <input type="checkbox" id="cbx-3" onclick="changePasswordToClear()"/>
+                <label for="cbx-3" class="toggle">
+                    <span></span>
+                </label>
+                <span class="toggle-text">Show Password</span>
+            </div>
+
             <div class="button-container">
                   <button id="submitLogin" style="width: 100%;">Login</button>
             </div>
-             </div>
+            </div>
 
         <!-- Text-Based Menu (Appears when Login is clicked) -->
         <div id="menu" style="display: none;">
