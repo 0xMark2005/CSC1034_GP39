@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Now, both username and password are valid. Check credentials
-        if (username === "admin" && password === "Admin!1234") {
+        if (username === "Admin" && password === "Admin!1234") {
             document.getElementById("loginForm").style.display = "none";
             document.getElementById("menu").style.display = "block";
         } else {
