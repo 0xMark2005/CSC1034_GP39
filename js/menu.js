@@ -1,5 +1,5 @@
+// Stack overflow code...
 document.addEventListener("DOMContentLoaded", function () {
-    // Get the user input
     const userInput = document.getElementById("userInput");
     const terminalOutputContainer = document.createElement("ul"); 
     terminalOutputContainer.classList.add("terminal-output"); 
@@ -38,7 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     case "3":
                         document.getElementById("gameBegins").style.display = "none";
                         document.getElementById("menu").style.display = "none";
-                        document.getElementById("userSettings").style.display = "block";
+                        document.getElementById("title").style.display = "none";
+                        document.getElementById("settings").style.display = "block";
                         break;
                     case "4":
                         addSystemMessage("Logging Out...");
