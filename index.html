@@ -7,141 +7,127 @@
         <link rel="stylesheet" href="css/theme.css">
 
         <!-- JS Files -->
-         <script src="js/validation.js"></script>
+        <script src="js/validation.js"></script>
         <script src="js/login.js"></script>
         <script src="js/signUp.js"></script>
         <script src="js/menu.js"></script>
-        <script src ="js/game.js"></script>
-        <script src ="js/settings.js"></script>
-
+        <script src="js/game.js"></script>
+        <script src="js/settings.js"></script>
     </head>
     <body>
+
+        <!-- Terminal One Div -->
+
         <div class="terminal-one"> 
-         <!-- Title of the terminal -->   
-        <div id="title">
-             <h1>ReignFall</h1>
-             <h3>This is the sub title for ReignFall</h3>
-        </div>
-
-        
-        <!-- Buttons To allow the user to login or Sign Up -->
-        <div class="button-container">
-            <button id="login">Login</button>
-            <button id="signUp">Sign Up</button>
-        </div>
-        
-        <!-- Login Form -->
-        <div id="loginForm" style="display: none;">
-            <h2>Login</h2>
-            <input type="text" id="username" class="standardtextfield" placeholder="Username" value="Admin" />
-            <input type="password" id="password" class="standardtextfield" placeholder="Password" value="Admin!1234" />
-
-            <!-- An element to toggle between password visibility -->
-            <div class="checkbox-wrapper-3">
-                <input type="checkbox" id="cbx-3" onclick="changePasswordToClear()"/>
-                <label for="cbx-3" class="toggle">
-                    <span></span>
-                </label>
-                <span class="toggle-text">Show Password</span>
+            <!-- Title of the terminal -->   
+            <div id="title">
+                <h1>ReignFall</h1>
+                <h3>This is the sub title for ReignFall</h3>
             </div>
 
+            <!-- Buttons To allow the user to login or Sign Up -->
             <div class="button-container">
-                  <button id="submitLogin" style="width: 100%;">Login</button>
+                <button id="login">Login</button>
+                <button id="signUp">Sign Up</button>
             </div>
-            </div>
 
-        <!-- Text-Based Menu (Appears when Login is clicked) -->
-        <div id="menu" style="display: none;">
-            <div class="terminal-two">
-                <h2>Main Menu</h2>
-            <ol>
-                <li>  Start Game</li>
-                <li>  Load Game</li>
-                <li>  Settings</li>
-                <li>  Logout</li>
-            </ol>
-        </div>
-        <div id="signUp" style="display: none;">
-            <h2>Sign up</h2>
-            <p>Please sign up to access the game!</p>
-            
-            <label for="username"><b>Username</b></label>
-            <input type = "text" placeholder="Enter username" name="username" required>
-            
-            <label for="psw"><b>Password</b></label>
-            <input type ="password" placeholder="Enter Password" name = "psw" required>
+            <!-- Sign up -->
+            <div id="signUpForm" style="display: none;">
+                <h2>Sign up</h2>
+                <p>Please sign up to access the game!</p>
 
-            <label for="psw-repeat"><b>Repeat Password</b></label>
-            <input type ="password" placeholder="Repeat Password" name = "psw-repeat" required>
+                <label for="username"><b>Username</b></label>
+                <input type="text" placeholder="Enter username" name="username" required>
 
-            <label>
-                <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px">Remember me
-            </label>
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
 
-            <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a></p>
+                <label for="psw-repeat"><b>Repeat Password</b></label>
+                <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
 
-            <div class = "cleafix">
-                <button type="button" class="cancelbtn">Cancel</button>
-                <button type="submit" class="signupbtn">Sign Up</button>
-            </div>
-        </div>
+                <label>
+                    <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px">Remember me
+                </label>
 
-   
+                <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a></p>
 
-
-            <!-- Get Users input From the Menu -->
-            <div class="input-container">
-                <div class="input-wrapper">
-                    <input type="text" id="userInput" placeholder="Type here...">
+                <div class="clearfix">
+                    <button type="button" class="cancelbtn">Cancel</button>
+                    <button type="submit" class="signupbtn">Sign Up</button>
                 </div>
             </div>
-    </div>
-        <!-- User selects to play the game from menu, so menu is hidden and the story introduction begins -->
-         <div id="gameBegins" style="display: none;">
-            <h1 id="gameBeginsTitle"></h1>
-            <p>A long time ago in a galaxy far, far away....
-                <br>
-                A vast sea of stars serves as the backdrop for the main title, followed by
-                a roll up, which crawls up into infinity.
-            </p>
-         </div>
+            <!-- End of Terminal One div -->
 
+            <!-- Login Form -->
+            <div id="loginForm" style="display: none;">
+                <h2>Login</h2>
+                <input type="text" id="username" class="standardtextfield" placeholder="Username" value="Admin" />
+                <input type="password" id="password" class="standardtextfield" placeholder="Password" value="Admin!1234" />
 
-         
-     <!-- Accessibility Settings page :eye: -->
-     <div id="settings" style="display: none;">
-        <div class="terminal-two">
-            <h2>Settings</h2>
-        <ol>
-            <li>  Text Size</li>
-            <li>  High Contrast</li>
-            <li>  Screen Colour Calibration</li>
-        </ol>
-    </div>
-       <!-- Get Users input  -->
-       <div class="input-container">
-        <div class="input-wrapper">
-            <input type="text" id="userInput" placeholder="Type here...">
-        </div>
-    </div>
+                <!-- An element to toggle between password visibility -->
+                <div class="checkbox-wrapper-3">
+                    <input type="checkbox" id="cbx-3" onclick="changePasswordToClear()"/>
+                    <label for="cbx-3" class="toggle">
+                        <span></span>
+                    </label>
+                    <span class="toggle-text">Show Password</span>
+                </div>
 
-    <div id="settings" style="display: none;">
-        <div class="terminal-two">
-            <h2>Settings</h2>
-            <ol>
-                <li>  Text Size</li>
-                <li>  High Contrast</li>
-                <li>  Screen Colour Calibration</li>
-            </ol>
-        </div>
-        <div class="input-container">
-            <div class="input-wrapper">
-                <input type="text" id="userInput" placeholder="Type here...">
+                <div class="button-container">
+                    <button id="submitLogin" style="width: 100%;">Login</button>
+                </div>
+            </div>
+            <!-- End of Login Div -->
+
+            <!-- Text-Based Menu (Appears when Login is clicked) -->
+            <div id="menu" style="display: none;">
+                <div class="terminal-two">
+                    <h2>Main Menu</h2>
+                    <ol>
+                        <li>Start Game</li>
+                        <li>Load Game</li>
+                        <li>Settings</li>
+                        <li>Logout</li>
+                    </ol>
+                </div>
+
+                <!-- Get Users input From the Menu -->
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <input type="text" id="userInput" placeholder="Type here...">
+                    </div>
+                </div>
+            </div>
+            <!-- End of Menu div -->
+
+            <!-- User selects to play the game from menu, so menu is hidden and the story introduction begins -->
+            <div id="gameBegins" style="display: none;">
+                <h1 id="gameBeginsTitle"></h1>
+                <p>A long time ago in a galaxy far, far away....
+                    <br>
+                    A vast sea of stars serves as the backdrop for the main title, followed by
+                    a roll up, which crawls up into infinity.
+                </p>
+            </div>
+
+            <!-- Accessibility Settings page -->
+            <div id="userSettings" style="display: none;">
+                <div class="terminal-two">
+                    <h2>User Settings</h2>
+                    <ol>
+                        <li>Text Size</li>
+                        <li>High Contrast</li>
+                        <li>Screen Colour Calibration</li>
+                    </ol>
+                </div>
+
+                <!-- Get Users input for Settings -->
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <input type="text" id="userSettingsInput" placeholder="Type here...">
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-         
-    </div>
     </body>
 </html>
