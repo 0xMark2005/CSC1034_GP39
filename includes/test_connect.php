@@ -1,1 +1,2 @@
 <?php echo (new mysqli("localhost","jdonnelly73","CHZHy02qM20fcLVt","CSC1034_CW_39"))->connect_error ? "Failed" : "Connected"; ?>
+// Output: Failed -no permissions so we wait for the proper connector to be posted
