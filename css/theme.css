@@ -458,6 +458,7 @@ transition: all 0.4s ease;
 
   .inventory-item-container:hover {
     transform: scale(1.1);
+    cursor: pointer;
   }
 
   .inventory-item-container img {
