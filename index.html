@@ -5,14 +5,6 @@
 
         <!-- CSS stylesheets -->
         <link rel="stylesheet" href="css/theme.css">
-
-        <!-- JS Files -->
-        <script src="js/validation.js"></script>
-        <script src="js/login.js"></script>
-        <script src="js/signUp.js"></script>
-        <script src="js/menu.js"></script>
-        <script src="js/game.js"></script>
-        <script src="js/settings.js"></script>
     </head>
     <body>
 
@@ -103,11 +95,15 @@
             <!-- User selects to play the game from menu, so menu is hidden and the story introduction begins -->
             <div id="gameBegins" style="display: none;">
                 <h1 id="gameBeginsTitle"></h1>
-                <p>A long time ago in a galaxy far, far away....
-                    <br>
-                    A vast sea of stars serves as the backdrop for the main title, followed by
-                    a roll up, which crawls up into infinity.
+                <p id="gameOutputParagraph">
+
                 </p>
+                <!-- User should be able to enter text into the game -->
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <input type="text" id="gameUserInput" placeholder="Type here...">
+                    </div>
+                </div>
             </div>
 
             <!-- Accessibility Settings page -->
@@ -129,5 +125,13 @@
                 </div>
             </div>
         </div>
+        <!-- JS Files -->
+        <script src="js/validation.js"></script>
+        <script src="js/login.js"></script>
+        <script src="js/signUp.js"></script>
+        <script src="js/menu.js"></script>
+        <script src="js/game.js"></script>
+        <script src="js/settings.js"></script>
+
     </body>
 </html>

@@ -25,12 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.getElementById("gameBegins").style.display = "block";
                         document.getElementById("menu").style.display = "none";
                         document.getElementById("title").style.display = "none";
-                        document.getElementById("settings").style.display = "none";
+                        document.getElementById("userSettings").style.display = "none";
 
-                        // Method which is exposed in js/game.js
-                        if (typeof window.typeWriter === "function") {
-                            window.typeWriter();
-                        }
+                        window.typeWriter();
                         break;
                     case "2":
                         addSystemMessage("Loading Game...");
