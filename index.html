@@ -5,6 +5,8 @@
 
         <!-- CSS stylesheets -->
         <link rel="stylesheet" href="css/theme.css">
+        <!-- Change the below with the updated favicon, whoevers edition we are using -->
+        <link rel="icon" type="image/x-icon" href="assets/images/reignfall-logo.png">
     </head>
     <body>
 
@@ -14,7 +16,6 @@
             <!-- Title of the terminal -->   
             <div id="title">
                 <h1><img src="assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall"width="60%" ></h1>
-                <h3>This is the sub title for ReignFall</h3>
             </div>
 
             <!-- Buttons To allow the user to login or Sign Up -->
@@ -118,9 +119,11 @@
             <!-- User selects to play the game from menu, so menu is hidden and the story introduction begins -->
             <div id="gameBegins" style="display: none;">
                 <h1 id="gameBeginsTitle"></h1>
-                <p id="gameOutputParagraph">
+                    <div class="terminal-two">
+                    <p id="gameOutputParagraph">
 
-                </p>
+                    </p>
+                </div>
                 <!-- User should be able to enter text into the game -->
                 <div class="input-container">
                     <div class="input-wrapper">
@@ -148,6 +151,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- JS Files -->
         <script src="js/validation.js"></script>
         <script src="js/login.js"></script>

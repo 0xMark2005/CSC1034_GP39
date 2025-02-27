@@ -24,10 +24,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     case "1":
                         document.getElementById("gameBegins").style.display = "block";
                         document.getElementById("menu").style.display = "none";
-                        document.getElementById("title").style.display = "none";
+                        document.getElementById("title").style.display = "block";
                         document.getElementById("userSettings").style.display = "none";
 
-                        window.typeWriter();
+                        // Method which is exposed in js/game.js
+                        window.typeWriter()
                         break;
                     case "2":
                         addSystemMessage("Loading Game...");
@@ -39,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         break;
                     case "4":
                         addSystemMessage("Logging Out...");
+                        document.getElementById("button-container").style.display = "none";
                         break;
                     default:
                         addSystemMessage("Invalid choice! Please enter 1, 2, 3, or 4.");
