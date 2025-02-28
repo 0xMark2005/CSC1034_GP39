@@ -21,6 +21,4 @@ if ($conn->connect_error) {
     die("Database Connection failed: " . $conn->connect_error);
 }
 
-// Optionally, you can uncomment the next line to confirm connection
-echo "Successfully connected to the database.";
 ?>

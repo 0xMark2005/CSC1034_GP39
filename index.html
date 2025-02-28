@@ -77,24 +77,8 @@
             
             <div id="menu" style="display: none;">
 
-                <div class="inventory-outer-container">
-                    <div class="inventory-item-container">
-                        <img src="assets/images/icons/icon-sword.png" alt="Sword" title="Sword" >
-                    </div>
-                    <div class="inventory-item-container">
-                        <img src="assets/images/icons/icon-potion.png" alt="Potion" title="Potion" >
-                    </div>
-                    <div class="inventory-item-container">
-                        <img src="assets/images/icons/icon-shield.png" alt="Shield" title="Shield" >
-                    </div>
-                    <div class="inventory-item-container">
-                        <img src="assets/images/icons/icon-sword.png" alt="Sword" title="Sword" >
-                    </div>
-                    <div class="inventory-item-container">
-                        <img src="assets/images/icons/icon-sword.png" alt="Sword" title="Sword" >
-                    </div>
-                    <div class="inventory-item-container">
-                    </div>
+                <div id="inventory" class="inventory-outer-container">
+                   <!-- intentionally left blank  - this is no longer hardcoded. see database table (tools) to add/delete VIEW ON SERVER!-->
                 </div>
                 <div class="terminal-two">
                     <h2>Main Menu</h2>
@@ -159,6 +143,42 @@
         <script src="js/menu.js"></script>
         <script src="js/game.js"></script>
         <script src="js/settings.js"></script>
+
+        <script>
+            // fetching tools data
+            document.addEventListener('DOMContentLoaded', () => {
+                fetch('includes/get_tools.php')                     
+                .then(response => response.json())
+                    .then(data => {
+                        const container = document.getElementById('inventory');
+                        if (!container) return;   // Just in case
+        
+                        // Clear any existing inventory items
+                        container.innerHTML = "";
+        
+                        if (!data || data.length === 0) {
+                            container.textContent = "No tools found in the inventory.";
+                        } else {
+                            // For each tool, create a div and an img
+                            data.forEach(tool => {
+                                const toolDiv = document.createElement('div');
+                                toolDiv.classList.add('inventory-item-container');
+        
+                                const img = document.createElement('img');
+                                img.src   = tool.itemImgThumbnail;
+                                img.alt   = tool.itemName;
+                                img.title = tool.itemName;
+        
+                                toolDiv.appendChild(img);
+                                container.appendChild(toolDiv);
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching tools:", err);
+                    });
+            });
+            </script>
 
     </body>
 </html>

@@ -1,4 +1,5 @@
-<?php
+
+<?php/*
 	//Sample Database Connection Syntax for PHP and MySQL.
 	
 	//Connect To Database
@@ -25,4 +26,6 @@
 			echo "Name: ".$name."<br/>";
 		}
 	}
+		*/
 ?>
+
