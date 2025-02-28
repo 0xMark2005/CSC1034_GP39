@@ -26,6 +26,127 @@ h1 {
 h3 {
   text-align: center;
 }
+#background-container{
+  background-image: url('assets/images/background.jpg');
+  background-size: cover;  /* Ensures the image covers the whole page */
+  background-position: center;  /* Centers the image */
+  background-repeat: no-repeat;  /* Prevents the image from repeating */
+  height: 100vh;  /* Makes the background cover the full viewport height */
+}
+
+
+
+#loading-screen {
+  font-family: clans OT 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  margin: 0;
+  height: 100vh; 
+  margin: 10px;
+  margin-top: 5%;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  zoom:80%;
+  
+  border-radius: 8px;
+  width: 50%;
+  max-width: 600px;
+  
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+.loading-text {
+  font-family: clans OT 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-size: 3rem;
+  text-emphasis-color: green;
+  text-transform: uppercase;
+  animation: flicker 1.5s infinite alternate;
+}
+div.transbox{
+  margin:40px;
+  margin-left:350px ;
+  background-color:rgba(63,98,106,255);
+  border:1px solid rgba(63,98,106,255);
+  opacity:0;
+  font-family: clans OT 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  
+  justify-content: center;
+  font-size: 40px;
+  animation: fadeBlink 1s infinite alternate;
+  text-align: center;
+  align-self: center;
+  padding: 70px 0;
+  display:block;
+  width: 1500px;
+  -moz-box-align: center;
+  text-align: center;
+}
+div.transbox p{
+  margin:5%;
+  font-weight:bold;
+  color:#000000;
+  font-family: clans OT 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  color: rgba(153,145,105,255);
+  justify-content: center;
+  opacity: 1.0;
+  font-size: 40px;
+  animation: fadeBlink 1s infinite alternate;
+  text-align: center;
+  margin-left:200px;
+}
+.start-message {
+  font-family: clans OT 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  color: rgba(153,145,105,255);
+  justify-content: center;
+  opacity: 1.0;
+  font-size: 40px;
+  animation: fadeBlink 1s infinite alternate;
+  text-align: center;
+}
+div.box{
+  margin:40px;
+  margin-left:350px ;
+  background-color:rgba(63,98,106,255);
+  border:1px solid rgba(63,98,106,255);
+  opacity:0;
+  font-family: clans OT 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  
+  justify-content: center;
+  font-size: 40px;
+  animation: fadeBlink 1s infinite alternate;
+  text-align: center;
+  align-self: center;
+  padding: 70px 0;
+  display:block;
+  width: 1500px;
+  -moz-box-align: center;
+  text-align: center;
+}
+div.box p{
+  font-size: 40px;
+  font-weight:bold;
+  color: rgba(153,145,105,255);
+  margin-left:200px;
+  text-align: center;
+  justify-content: center;
+  -moz-box-align: center;
+}
+@keyframes flicker {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+@keyframes fadeBlink {
+  0% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
 
 /** Overall styling of buttons **/
 .button-container {
