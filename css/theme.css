@@ -171,6 +171,7 @@ outline-offset: 2px;
   justify-content: left;
   text-align: left;
   box-shadow: 0 0 10px #92929240;
+  overflow-y: auto;
 }
 
 .terminal-two:hover { 

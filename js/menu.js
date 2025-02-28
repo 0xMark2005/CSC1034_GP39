@@ -1,12 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+    
     // Get the user input
     const userInput = document.getElementById("userInput");
     const terminalOutputContainer = document.createElement("ul"); 
     terminalOutputContainer.classList.add("terminal-output"); 
     document.querySelector(".terminal-two").appendChild(terminalOutputContainer); 
-
-
-    
 
     userInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {

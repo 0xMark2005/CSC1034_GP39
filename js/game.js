@@ -1,14 +1,10 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
   // Menu for the terminal in the game.js screen 
-  
+
   const gameUserInput = document.getElementById("gameUserInput");
   const gameDiv = document.getElementById("gameBegins");
-  //gameDiv.style.display = "block";
+  gameDiv.style.display = "block";
 
-  // Create the list for the terminal
-
-  const newLine = document.createElement("li");
-  
   if (!gameUserInput || !gameDiv) {
       console.error("Error: gameUserInput or gameDiv not found!");
       return; // Exit if elements don't exist
@@ -24,51 +20,90 @@ document.addEventListener('DOMContentLoaded', function () {
       terminalContainer.appendChild(terminalOutputContainer);
   }
 
+  let currentState = 'introduction'; // Track the current game state
+
   // Detect when the user presses Enter
-  gameUserInput.addEventListener("keypress", function (event) {
+  gameUserInput.addEventListener("keypress", function(event) {
       if (event.key === "Enter") {
           const choice = gameUserInput.value.trim();
 
+          // Create the list for the terminal
+          const newLine = document.createElement("li");
           newLine.textContent = `> ${choice}`;
           terminalOutputContainer.appendChild(newLine);
-          
+
 
           gameUserInput.value = ""; // Clear input field
 
           // Process the input after 1 second
           setTimeout(() => {
-              switch (choice) {
-                  case "1":
-                      addSystemMessage("Option 1 selected: Text Size", "#FFFFFF");
+              // Show inventory if the user types 'Show Inventory'
+              if (choice == "Show Inventory") {
+                  outputUser(); // Assuming outputUser function is defined elsewhere
+                  scrollToBottom(); // Assuming scrollToBottom function is defined elsewhere
+                  return;
+              }
+
+              // Determine what state the user is in and handle input accordingly
+              switch (currentState) {
+                  case 'introduction':
+                      handleIntroduction(choice);
                       break;
-                  case "2":
-                      addSystemMessage("Option 2 selected: High Contrast", "#FFFFFF");
+                  case 'verbSelection':
+                      handleVerbSelection(choice);
                       break;
-                  case "3":
-                      ScreenCalibration();
-                      break;
-                  case "4":
-                      addSystemMessage("Option 4 selected: Exit Settings", "#FFFFFF");
-                      break;
+                      // Add more states as needed
                   default:
-                      addSystemMessage("Invalid choice! Please enter 1, 2, 3, or 4.");
+                      addSystemMessage("Invalid state. Try again!");
+                      break;
               }
           }, 1000);
       }
   });
-  
 
-  // Function to add system messages
+  // Function to handle user choice during the introduction stage
+  function handleIntroduction(choice) {
+      if (choice === "1" || choice === "2") {
+          // User chose an option (1 or 2)
+          currentState = 'verbSelection'; // Move to verb selection stage
+          inputIntroduction(choice); // Handle option choice
+      } else {
+          addSystemMessage("Invalid choice! Please choose '1' or '2'.");
+      }
+  }
+
+  // Function to handle the verb selection after the introduction stage
+  function handleVerbSelection(choice) {
+      inputIntroductionVerb(choice); // Assuming inputIntroductionVerb is properly defined elsewhere
+  }
+
+
+  // Function to add system messages and game messages. 
+  // (System message will be the user input)
   function addSystemMessage(message, color = "#FFFFFF") {
       const systemMessage = document.createElement("li");
       systemMessage.textContent = message;
       systemMessage.style.color = color;
       terminalOutputContainer.appendChild(systemMessage);
+      scrollToBottom();
+  }
+  // GameMessage is the game output
+  function addGameMessage(message, color = "#00FF00") {
+      const systemMessage = document.createElement("li");
+      systemMessage.textContent = message;
+      systemMessage.style.color = color;
+      systemMessage.style.fontSize = '12px';
+      terminalOutputContainer.appendChild(systemMessage);
+      scrollToBottom();
+  }
 
-      // Keep only the last 4 messages
-      while (terminalOutputContainer.children.length > 4) {
-          terminalOutputContainer.removeChild(terminalOutputContainer.firstChild);
-      }
+  // Code to ensure terminal stays at bottom and scrolls
+
+  function scrollToBottom() {
+      let terminal = document.getElementById("gameOutputContainer");
+      setTimeout(() => {
+          terminal.scrollTop = terminal.scrollHeight;
+      }, 10); // Small delay to ensure content is rendered before scrolling
   }
 
 
@@ -112,95 +147,108 @@ document.addEventListener('DOMContentLoaded', function () {
   // The user's characters array, with multiple discussions done this can be changed at anytime
   // This should be saved to the database as well I think
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  
+
   var userCharacter = new Array();
-  userCharacter = [
-    {
+  userCharacter = [{
       name: "User character",
       hunger: 0.4, // Should this be random each time the game starts
       reputation: 0.6, // Should this be random each time the game starts
-      inventory: [
-        {item1: "Null", durability: "1.0", strength: 0.75},
-        {item2: "Null", durability: "1.0", strength: 0.75},
-        {item3: "Null", durability: "1.0", strength: 0.75},
-        {item4: "Null", durability: "1.0", strength: 0.75},
-        {item5: "Null", durability: "1.0", strength: 0.75},
+      inventory: [{
+              item1: "Null",
+              durability: "1.0",
+              strength: 0.75
+          },
+          {
+              item2: "Null",
+              durability: "1.0",
+              strength: 0.75
+          },
+          {
+              item3: "Null",
+              durability: "1.0",
+              strength: 0.75
+          },
+          {
+              item4: "Null",
+              durability: "1.0",
+              strength: 0.75
+          },
+          {
+              item5: "Null",
+              durability: "1.0",
+              strength: 0.75
+          },
       ],
       gainedAllies: [ // Allies gained by the user through the game 
-        {userAllyIndex: 1, friendshipLevel: 0.5 }
+          {
+              userAllyIndex: 1,
+              friendshipLevel: 0.5
+          }
       ]
-    }
-  ]
+  }]
 
   // Function to output user details to the terminal
-  function outputUser(){
-    // Create an instance of a usercharacter (THIS WILL BE DONE ON CREATION OF GAME)
-    let userIndex = 0; // Pick a random ally
-    let user = userCharacter[userIndex];
-    let name = user.name; // Access the user name
-    let hunger = user.hunger;
-    let reputation = user.reputation;
+  function outputUser() {
+      // Create an instance of a usercharacter (THIS WILL BE DONE ON CREATION OF GAME)
+      let userIndex = 0; // Pick a random ally
+      let user = userCharacter[userIndex];
+      let name = user.name; // Access the user name
+      let hunger = user.hunger;
+      let reputation = user.reputation;
 
-    // Create a new line element for each output
-    let newLine = document.createElement('p');
-    
-    // Output name
-    newLine.textContent = `> Name: ${name}`;
-    terminalOutputContainer.appendChild(newLine);
-    
-    // Output hunger
-    newLine = document.createElement('p');  // Reset newLine for each output
-    newLine.textContent = `> Hunger: ${hunger}`;
-    terminalOutputContainer.appendChild(newLine);
+      // Create a new line element for each output
+      let newLine = document.createElement('p');
 
-    // Output Reputation
-    newLine = document.createElement('p');  // Reset newLine for each output
-    newLine.textContent = `> Reputation: ${reputation}`;
-    terminalOutputContainer.appendChild(newLine);
+      // Output name
+      nameText = `> Name: ${name}`;
+      addGameMessage(nameText);
+
+      // Output hunger
+      hungerText = `> Hunger: ${hunger}`;
+      addGameMessage(hungerText);
+
+      // Output Reputation
+      reputationText = `> Reputation: ${reputation}`;
+      addGameMessage(reputationText);
 
 
-    // Will not output inventory as conflicts with Josephs designs
+      // Will not output inventory as conflicts with Josephs designs
 
-    // Output the gained allies
+      // Output the gained allies
 
-    newLine = document.createElement('p');  // Reset newLine for each output
-    newLine.textContent = `> Gained Allies`;
-    terminalOutputContainer.appendChild(newLine);
-    user.gainedAllies.forEach(ally => {
-      // Display each ally's name and friendship level
-      let allyName = allies[ally.userAllyIndex].name;
+      addGameMessage(`> Gained Allies`);
+      user.gainedAllies.forEach(ally => {
+          // Display each ally's name and friendship level
+          let allyName = allies[ally.userAllyIndex].name;
 
-      newLine = document.createElement('p');  // Reset newLine for each output
-      newLine.textContent = `> Ally Name: ${allyName} | Friendship Level: ${ally.friendshipLevel.toFixed(2)}`;
-      terminalOutputContainer.appendChild(newLine);
-  });
+          addGameMessage(`> Ally Name: ${allyName} | Friendship Level: ${ally.friendshipLevel.toFixed(2)}`);
+      });
   }
 
 
   // First create possible list of allies && Have key words the ally may say?
   // E.G Kings bastard may describe someone as 'peasant', 'fool', etc
   // FORMAT: "ALLY NAME", [DESCRIPTIONS OF MAIN CHARACTER], "LOCATION", "Description of task to save ally"
-  
+
   var allies = new Array();
-  allies = [
-    {
-      name: "Kings Bastard",
-      descriptions: ["Peasant", "Fool", "Weakling"],
-      location: "A War Prison",
-      task: "Infiltrate and break him out."
-    },
-    {
-      name: "The Exiled General",
-      descriptions: ["Noble", "Warrior", "Brave"],
-      location: "The Slums",
-      task: "Prove yourself in a high-stakes deception game."
-    },
-    {
-      name: "The Underground Rebel Leader",
-      descriptions: ["Intelligent", "Charming", "Sketchy"],
-      location: "A Hidden Rebel Camp",
-      task: "Survive a test of loyalty and commitment."
-    }
+  allies = [{
+          name: "Kings Bastard",
+          descriptions: ["Peasant", "Fool", "Weakling"],
+          location: "A War Prison",
+          task: "Infiltrate and break him out."
+      },
+      {
+          name: "The Exiled General",
+          descriptions: ["Noble", "Warrior", "Brave"],
+          location: "The Slums",
+          task: "Prove yourself in a high-stakes deception game."
+      },
+      {
+          name: "The Underground Rebel Leader",
+          descriptions: ["Intelligent", "Charming", "Sketchy"],
+          location: "A Hidden Rebel Camp",
+          task: "Survive a test of loyalty and commitment."
+      }
   ];
 
   // Get the paragraph in index.html which will be changed to facilitate the meeting of an ally
@@ -208,51 +256,143 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Function to get a random phrase/description for a specific ally
   function getRandomPhrase(allyIndex) {
-    let ally = allies[allyIndex]; // Access the ally object directly
-    let phrases = ally.descriptions; // Get the descriptions array for the ally
-    let randomPhraseIndex = Math.floor(Math.random() * phrases.length); // Pick a random phrase
-    return phrases[randomPhraseIndex]; // Return the phrase
+      let ally = allies[allyIndex]; // Access the ally object directly
+      let phrases = ally.descriptions; // Get the descriptions array for the ally
+      let randomPhraseIndex = Math.floor(Math.random() * phrases.length); // Pick a random phrase
+      return phrases[randomPhraseIndex]; // Return the phrase
   }
 
   // This function will randomly select an ally and a phrase, then update the HTML paragraph found above
   function meetAlly() {
-    let allyIndex = Math.floor(Math.random() * allies.length); // Pick a random ally
-    let ally = allies[allyIndex]; // Access the ally object
-    let allyName = ally.name; // Get the ally's name
-    let randomPhrase = getRandomPhrase(allyIndex); // Get a random phrase for this ally
+      let allyIndex = Math.floor(Math.random() * allies.length); // Pick a random ally
+      let ally = allies[allyIndex]; // Access the ally object
+      let allyName = ally.name; // Get the ally's name
+      let randomPhrase = getRandomPhrase(allyIndex); // Get a random phrase for this ally
 
-    // Set the paragraph text to show the ally's name and phrase
-    gameOutputParagraph.innerHTML = `You encounter ${allyName}. They call you: ${randomPhrase}.`;
+      // Set the paragraph text to show the ally's name and phrase
+      gameOutputParagraph.innerHTML = `You encounter ${allyName}. They call you: ${randomPhrase}.`;
   }
 
   // Call the function to output a random ally and phrase (This is techinically called as soon as the user loads the website because of how we
   // loaded in the <Scripts>
 
-  meetAlly();
+  // meetAlly();
+
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   // Introductions which will be used when the user first spawns in.
   // This will be the very start of the game (techinically speaking)
   // The array for now will appear like in chronological order (the bigger it is the more declines the user can do)
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  
-  var introductions = new Array();
-  introductions = [
-    {
-      // As outlined in our spec, User will attempt a deception test 
-      location: "Hobo Camp",
-      intro: "After another long nap you wake up to a rumbling belly",
-      action: "A mysterious well dressed man offers you some food in return for your participation in a deception game",
-      options: 
-      [
-      { choice: "1. Accept the offer", outcome: "You take the food. The man seems trustworthy."},
-      { choice: "2. Refuse the offer", outcome: "You refuse. The man shrugs and walks away." },
-      { choice: "3. Ask the man more questions", outcome: "The man gives you a sly grin, 'Curiosity is dangerous.'" }
-      ]
-    
-    },]
 
-  
+  const gameData = {
+      location: "Hobo Camp",
+      intro: "After another long nap you wake up to a rumbling belly.",
+      action: "A mysterious well-dressed man offers you some food in return for your participation in a deception game.",
+      options: [{
+              choice: "1. Accept the offer",
+              outcome: "You take the food. The man seems trustworthy.",
+              continuation: [{
+                  action: "The man asks you to lie convincingly about your past.",
+                  verbs: {
+                      "lie": "You spin a convincing story about being lost royalty. The man nods approvingly.",
+                      "truth": "You admit you have nothing to offer. The man frowns and walks away.",
+                      "joke": "You tell a ridiculous lie for fun. The man laughs but loses interest in you."
+                  }
+              }]
+          },
+          {
+              choice: "2. Refuse the offer",
+              outcome: "You refuse. The man shrugs and walks away.",
+              continuation: [{
+                  action: "You stay hungry and start searching for another opportunity.",
+                  verbs: {
+                      "search": "You look around and find a half-eaten loaf of bread.",
+                      "beg": "You ask for help, but people ignore you.",
+                      "steal": "You attempt to steal from a vendor, but get caught."
+                  }
+              }]
+          }
+      ]
+  };
+
+  // User must be displayed the introduction to the game
+  function outputIntroduction() {
+      addGameMessage(`Location: ${gameData.location}`);
+      addGameMessage(gameData.intro);
+      addGameMessage(gameData.action);
+      gameData.options.forEach(option => addGameMessage(option.choice));
+  }
+
+  // Function to handle input for the introduction stage (1 or 2)
+  function inputIntroduction(input) {
+      input = parseInt(input) - 1; // Convert the input to an index
+      let valid = false;
+
+      // loop to get the user's choice
+      while (!valid) {
+          // Check if input is valid
+          if (input >= 0 && input < gameData.options.length) {
+              addGameMessage(`${gameData.options[input].choice} selected`);
+
+              // Store the user's choice in gameState
+              gameState.chosenOption = input;
+
+              // Output the next action after selecting an option
+              let selectedOption = gameData.options[input];
+              addGameMessage(selectedOption.outcome);
+
+              // Move to the next stage (verb selection)
+              gameState.currentStage = 1;
+
+              // Show the verbs based on the selected option
+              selectedOption.continuation.forEach(step => {
+                  addGameMessage(step.action);
+                  addGameMessage("What will you do next? Choose a verb: lie, truth, joke, etc.");
+              });
+
+              valid = true; // Exit loop
+          } else {
+              addSystemMessage("Invalid choice! Please select '1' or '2'.");
+          }
+      }
+  }
+
+  // Function to handle verb selection
+  function inputIntroductionVerb(input) {
+      let valid = false;
+
+      // Get the selected option using gameState.chosenOption
+      let selectedOption = gameData.options[gameState.chosenOption];
+
+      // Loop through the continuation to check for valid verb
+      while (!valid) {
+          selectedOption.continuation.forEach(step => {
+              if (step.verbs[input]) {
+                  addGameMessage(step.verbs[input]); // Output the result of the verb
+                  valid = true; // Verb is valid, exit loop
+              }
+          });
+
+          if (!valid) {
+              addSystemMessage("Invalid verb! Please choose a valid verb.");
+              input = prompt("Enter a valid verb (lie, truth, joke, etc.):");
+          }
+      }
+  }
+
+  // To track game state (which option the user chose)
+  let gameState = {
+      currentStage: 0, // Track the user's current stage (0 = introduction, 1 = verb selection)
+      chosenOption: null // Track which option the user chose (1 or 2)
+  };
+
+  // Example usage (if the user selects '1' for the offer):
+  outputIntroduction();
+
+
+
+
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   // Handling the logic once the user selects a choice.
   // From here should it be random? 
@@ -265,18 +405,16 @@ document.addEventListener('DOMContentLoaded', function () {
   // We could add sounds, personalised responses etc
   // Failure function (Could be extended in literally a thousand ways)
 
-  function failure(){
-    gameOutputParagraph.innerHTML = "You failed to recruit the Ally. The Ally is not impressed with your efforts"
+  function failure() {
+      gameOutputParagraph.innerHTML = "You failed to recruit the Ally. The Ally is not impressed with your efforts"
   }
   // Successful function
-  function successful(){
-    gameOutputParagraph.innerHTML = "You successfully recruited the Ally. The Ally is very happy with you !"
+  function successful() {
+      gameOutputParagraph.innerHTML = "You successfully recruited the Ally. The Ally is very happy with you !"
   }
   // Abandon function (user quits the recruitment)
-  function abandon(){
-    gameOutputParagraph.innerHTML = "You decided to leave the Ally."
+  function abandon() {
+      gameOutputParagraph.innerHTML = "You decided to leave the Ally."
   }
-  outputUser();
-
 
 });
