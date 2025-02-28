@@ -145,53 +145,70 @@
         <script src="js/settings.js"></script>
 
         <script>
-            // fetching tools data
-            document.addEventListener('DOMContentLoaded', () => {
-                fetch('includes/get_tools.php')                     
-                .then(response => response.json())
-                    .then(data => {
-                        const container = document.getElementById('inventory');
-                        if (!container) return;   // Just in case
-        
-                        // Clear any existing inventory items
-                        container.innerHTML = "";
-        
-                        if (!data || data.length === 0) {
-                            container.textContent = "No tools found in the inventory.";
-                        } else {
-                            // For each tool, create a div and an img
-                            data.forEach(tool => {
-                                const toolDiv = document.createElement('div');
-                                toolDiv.classList.add('inventory-item-container');
-        
-                                const img = document.createElement('img');
-                                img.src   = tool.itemImgThumbnail;
-                                img.alt   = tool.itemName;
-                                img.title = tool.itemName;
-        
-                                 // Create the details div (hidden by default)
-                                const detailsDiv = document.createElement('div');
-                                detailsDiv.classList.add('inventory-item-details');
-                                detailsDiv.innerHTML = `
-                                <p><strong>${tool.itemName}</strong></p>
-                                <p>${tool.itemDescription || 'No description available'}</p>
-                                <p><strong>Durability:</strong> ${tool.itemDurability}</p>
-                    `;
+          document.addEventListener('DOMContentLoaded', () => {
+    fetch('includes/get_tools.php')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('inventory');
+            if (!container) return;
 
+            container.innerHTML = "";
 
-                                toolDiv.appendChild(img);
-                                toolDiv.appendChild(detailsDiv);
-                                container.appendChild(toolDiv);
+            if (!data || data.length === 0) {
+                container.textContent = "No tools found in the inventory.";
+            } else {
+                data.forEach(tool => {
+                    const toolDiv = document.createElement('div');
+                    toolDiv.classList.add('inventory-item-container');
 
-                                toolDiv.addEventListener('click', () => {
-                             
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        console.error("Error fetching tools:", err);
+                    const img = document.createElement('img');
+                    img.src = tool.itemImgThumbnail;
+                    img.alt = tool.itemName;
+                    img.title = tool.itemName;
+
+                    // Create the details div
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.classList.add('inventory-item-details');
+
+                    const nameElement = document.createElement('strong');
+                    nameElement.textContent = tool.itemName;
+
+                    const descriptionElement = document.createElement('p');
+                    descriptionElement.classList.add('inventory-description');
+                    descriptionElement.textContent = tool.itemDescription || 'No description available';
+
+                    detailsDiv.appendChild(nameElement);
+                    detailsDiv.appendChild(descriptionElement);
+
+                    toolDiv.appendChild(img);
+                    toolDiv.appendChild(detailsDiv);
+                    container.appendChild(toolDiv);
+
+                    toolDiv.addEventListener('click', () => {
+                        document.querySelectorAll('.inventory-item-container').forEach(item => {
+                            if (item !== toolDiv) {
+                                item.classList.remove('expanded');
+                                item.querySelector('.inventory-description').classList.remove('show');
+                            }
+                        });
+
+                        toolDiv.classList.toggle('expanded');
+
+                        // Delay showing the description (0.5s)
+                        setTimeout(() => {
+                            if (toolDiv.classList.contains('expanded')) {
+                                descriptionElement.classList.add('show');
+                            }
+                        }, 500);
                     });
-            });
+                });
+            }
+        })
+        .catch(err => {
+            console.error("Error fetching tools:", err);
+        });
+});
+
             </script>
 
     </body>

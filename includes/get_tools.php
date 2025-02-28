@@ -5,7 +5,7 @@ require_once 'db_connect.php';
 header('Content-Type: application/json; charset=utf-8');
 
 //Query the 'tools' table
-$sql = "SELECT itemID, itemName, itemImgThumbnail FROM tools";
+$sql = "SELECT itemID, itemName, itemDescription, itemImgThumbnail FROM tools";
 $result = $conn->query($sql);
 
 //Build an array of tools
@@ -16,6 +16,7 @@ if ($result && $result->num_rows > 0) {
         $tools[] = [
             'itemID'           => $row['itemID'],
             'itemName'         => $row['itemName'],
+            'itemDescription'         => $row['itemDescription'],
             'itemImgThumbnail' => $row['itemImgThumbnail']
         ];
     }
