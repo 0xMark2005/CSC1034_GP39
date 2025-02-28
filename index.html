@@ -169,8 +169,22 @@
                                 img.alt   = tool.itemName;
                                 img.title = tool.itemName;
         
+                                 // Create the details div (hidden by default)
+                                const detailsDiv = document.createElement('div');
+                                detailsDiv.classList.add('inventory-item-details');
+                                detailsDiv.innerHTML = `
+                                <p><strong>${tool.itemName}</strong></p>
+                                <p>${tool.itemDescription || 'No description available'}</p>
+                                <p><strong>Durability:</strong> ${tool.itemDurability}</p>
+                    `;
+
+
                                 toolDiv.appendChild(img);
+                                toolDiv.appendChild(detailsDiv);
                                 container.appendChild(toolDiv);
+
+                                toolDiv.addEventListener('click', () => {
+                             
                             });
                         }
                     })
