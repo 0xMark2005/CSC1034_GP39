@@ -1,8 +1,12 @@
+// Add events after page has loaded
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("login-button").onclick = openPage("../html/login.html");
-    document.getElementById("signup-button").onclick = openPage("../html/signup.html");
-});
 
-function openPage(htmlFileLocation){
-    window.location.href = htmlFileLocation;
-}
+    // Button click events to open corresponding pages
+    document.getElementById("login-button").onclick = function () {
+        window.location.href = "../html/login.html";
+    }
+
+    document.getElementById("signup-button").onclick = function () {
+        window.location.href = "../html/signup.html";
+    }
+});

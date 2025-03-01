@@ -1,0 +1,109 @@
+#output-terminal {
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #171717;
+    border-radius: 8px 8px 0px 0px;
+    width: 100%; /* Ensure it takes up the full width of its container */
+    color: white;
+    padding-left: 25px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    text-align: left;
+    box-shadow: 0 0 10px #92929240;
+    overflow-y: auto;
+}
+  
+#output-terminal:hover { 
+    /* transform: scale(1.02); */ 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px #FFD700;
+}
+
+
+#output-terminal h2 {
+    text-align: left;
+}
+
+
+#output-terminal ol {
+    list-style-position: inside;
+    padding: 0;
+    margin: 0;
+}
+
+#output-terminal li {
+    padding: 5px 0;
+    white-space: pre-wrap;
+}
+
+#output-terminal li::before {
+    color: white;
+}
+
+.input-container {
+    background-color: #1D1D1D;
+    color: white;
+    padding: 10px;
+    width: 100%; /* Ensure it takes up the full width of its container */
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 0px 0px 8px 8px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    box-shadow: 0 0 10px #92929240;
+}
+
+
+.input-wrapper {
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-radius: 4px;
+    padding: 5px 10px;
+    background-color: #292929;
+}
+
+.input-wrapper::before {
+    content: "> ";
+    color: white;
+    font-family: monospace;
+    font-size: 16px;
+    white-space: nowrap; 
+}
+
+.input-wrapper input {
+    flex-grow: 1; 
+    border: none;
+    outline: none;
+    padding: 5px;
+    font-size: 16px;
+    background-color: transparent;
+    color: white;
+    font-family: monospace;
+    min-width: 50px; 
+}
+
+.input-container:hover { 
+    /* transform: scale(1.02); */ 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px #FFD700;
+}
+
+.input-container:hover .input-wrapper {
+    width: 105%;
+}
+
+.terminal-output-text {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.terminal-output-text li {
+    padding: 5px 0;
+    white-space: pre-wrap;
+}

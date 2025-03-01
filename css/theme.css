@@ -61,6 +61,7 @@ h3 {
   justify-content: space-between;
   position: relative;
 }
+
 .loading-text {
   font-family: clans OT 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-size: 3rem;
@@ -68,6 +69,7 @@ h3 {
   text-transform: uppercase;
   animation: flicker 1.5s infinite alternate;
 }
+
 div.transbox{
   margin:40px;
   margin-left:350px ;
@@ -87,6 +89,7 @@ div.transbox{
   -moz-box-align: center;
   text-align: center;
 }
+
 div.transbox p{
   margin:5%;
   font-weight:bold;
@@ -100,6 +103,7 @@ div.transbox p{
   text-align: center;
   margin-left:200px;
 }
+
 .start-message {
   font-family: clans OT 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   color: rgba(153,145,105,255);
@@ -109,6 +113,7 @@ div.transbox p{
   animation: fadeBlink 1s infinite alternate;
   text-align: center;
 }
+
 div.box{
   margin:40px;
   margin-left:350px ;
@@ -128,6 +133,7 @@ div.box{
   -moz-box-align: center;
   text-align: center;
 }
+
 div.box p{
   font-size: 40px;
   font-weight:bold;
@@ -175,15 +181,8 @@ button {
   display: inline-block;
 }
 
-/** CSS for the menu which appears after the user has logged in **/
-#menu {
-  text-align: center;
-  padding: 15px;
-  display: block; /* Block display to stack items vertically */
-  margin: 10px;
-}
 
-/** First terminal design - Slightly greyer card to which the .terminal-two will appear on **/
+/** Main container design - Slightly greyer card to which the output-terminal will appear on **/
 #main-container {
   background-color: #2A2A2A;
   border-radius: 8px;
@@ -201,7 +200,7 @@ button {
   body {
     padding: 5%;
   }
-  .terminal-one {
+  #main-container {
     width: 100%;
   }
   button {
@@ -237,7 +236,7 @@ outline-offset: 2px;
       transition: none;
     }
 
-  .terminal-two {
+  #output-terminal {
       transition: none;
     }
 }
@@ -268,202 +267,17 @@ outline: 3px solid #FFD700;
 outline-offset: 2px;
 }
 
-/** centering login**/
-#loginForm {
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  width: 300px; 
-  margin: 0 auto;
-}
-
-#output-terminal {
-  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  background-color: #171717;
-  border-radius: 8px 8px 0px 0px;
-  width: 100%; /* Enire it takes up the full width of its container */
-  color: white;
-  padding-left: 25px;
-  padding-right: 15px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: left;
-  text-align: left;
-  box-shadow: 0 0 10px #92929240;
-  overflow-y: auto;
-}
-
-#output-terminal:hover { 
-  /* transform: scale(1.02); */ 
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 10px #FFD700;
-
-  }
-
-
-#output-terminal h2 {
-    text-align: left;
-}
-
-
-#output-terminal ol {
-    list-style-position: inside;
-    padding: 0;
-    margin: 0;
-}
-
-#output-terminal li {
-    padding: 5px 0;
-    white-space: pre-wrap;
-}
-
-#output-terminal li::before {
-    color: white;
-}
-
-.input-container {
-  background-color: #1D1D1D;
-  color: white;
-  padding: 10px;
-  width: 100%; /* Ensure it takes up the full width of its container */
-  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 0px 0px 8px 8px;
-  display: flex;
-  align-items: center;
-  text-align: left;
-  box-shadow: 0 0 10px #92929240;
-}
-
-
-.input-wrapper {
-  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  border-radius: 4px;
-  padding: 5px 10px;
-  background-color: #292929;
-  
-}
-
-.input-wrapper::before {
-  content: "> ";
-  color: white;
-  font-family: monospace;
-  font-size: 16px;
-  white-space: nowrap; 
-}
-
-.input-wrapper input {
-  flex-grow: 1; 
-  border: none;
-  outline: none;
-  padding: 5px;
-  font-size: 16px;
-  background-color: transparent;
-  color: white;
-  font-family: monospace;
-  min-width: 50px; 
-}
-
-.input-container:hover { 
-/* transform: scale(1.02); */ 
-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-box-shadow: 0 0 10px #FFD700;
-
-}
-
-.input-container:hover .input-wrapper {
-  width: 105%;
-}
-
-.terminal-output {
-list-style-type: none;
-padding: 0;
-margin-top: 10px;
-}
-
-.terminal-output li {
-padding: 5px 0;
-white-space: pre-wrap;
-}
-
-
-
-.signUpForm{
-*{box-sizing: border-box}
-input[type=text], input[type = password]{
-width: 100%;
-padding: 15px;
-margin: 5px 0 22px 0;
-display: inline-block;
-border: none;
-background: #f1f1f1;
-}
-input[type = text]:focus, input[type=password]:focus{
-background-color: #ddd;
-outline: none;
-}
-button {
-background-color: #04AA6D;
-color: white;
-padding: 14px 20px;
-margin: 8px 0;
-border: none;
-cursor: pointer;
-width: 100%;
-opacity: 0.9;
-}
-
-button:hover {
-opacity:1;
-}
-
-/* Extra styles for the cancel button */
-.cancelbtn {
-padding: 14px 20px;
-background-color: #f44336;
-}
-
-/* Float cancel and signup buttons and add an equal width */
-.cancelbtn, .signupbtn {
-float: left;
-width: 50%;
-}
-
-/* Add padding to container elements */
-.container {
-padding: 16px;
-}
-
-/* Clear floats */
-.clearfix::after {
-content: "";
-clear: both;
-display: table;
-}
-
-/* Change styles for cancel button and signup button on extra small screens */
-@media screen and (max-width: 300px) {
-.cancelbtn, .signupbtn {
-  width: 100%;
-}
-}
-}
-
 
 /** CSS for checkbox ( Located in the login form ) **/
-
 .checkbox-wrapper-3 input[type="checkbox"] {
-visibility: hidden;
-display: none;
+  visibility: hidden;
+  display: none;
 }
+
 .checkbox-wrapper-3 {
-display: flex; /* Ensures checkbox and text are aligned */
-align-items: center; /* Aligns them vertically */
-gap: 10px; /* Adds spacing between the toggle and text */
+  display: flex; /* Ensures checkbox and text are aligned */
+  align-items: center; /* Aligns them vertically */
+  gap: 10px; /* Adds spacing between the toggle and text */
 }
 
 .toggle-text {
@@ -473,126 +287,69 @@ gap: 10px; /* Adds spacing between the toggle and text */
 }
 
 .checkbox-wrapper-3 .toggle {
-position: relative;
-display: block;
-width: 40px;
-height: 20px;
-cursor: pointer;
--webkit-tap-highlight-color: transparent;
-transform: translate3d(0, 0, 0);
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 20px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transform: translate3d(0, 0, 0);
 }
+
 .checkbox-wrapper-3 .toggle:before {
-content: "";
-position: relative;
-top: 3px;
-left: 3px;
-width: 34px;
-height: 14px;
-display: block;
-background: #9A9999;
-border-radius: 8px;
-transition: background 0.2s ease;
+  content: "";
+  position: relative;
+  top: 3px;
+  left: 3px;
+  width: 34px;
+  height: 14px;
+  display: block;
+  background: #9A9999;
+  border-radius: 8px;
+  transition: background 0.2s ease;
 }
+
 .checkbox-wrapper-3 .toggle span {
-position: absolute;
-top: 0;
-left: 0;
-width: 20px;
-height: 20px;
-display: block;
-background: white;
-border-radius: 10px;
-box-shadow: 0 3px 8px rgba(154, 153, 153, 0.5);
-transition: all 0.2s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  display: block;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(154, 153, 153, 0.5);
+  transition: all 0.2s ease;
 }
+
 .checkbox-wrapper-3 .toggle span:before {
-content: "";
-position: absolute;
-display: block;
-margin: -18px;
-width: 56px;
-height: 56px;
-background: #FFD700;
-border-radius: 50%;
-transform: scale(0);
-opacity: 1;
-pointer-events: none;
+  content: "";
+  position: absolute;
+  display: block;
+  margin: -18px;
+  width: 56px;
+  height: 56px;
+  background: #FFD700;
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 1;
+  pointer-events: none;
 }
 
 .checkbox-wrapper-3 #cbx-3:checked + .toggle:before {
-background: #e7d572;
+  background: #e7d572;
 }
+
 .checkbox-wrapper-3 #cbx-3:checked + .toggle span {
-background: #FFD700;
-transform: translateX(20px);
-transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease;
-box-shadow: 0 3px 8px rgba(79, 46, 220, 0.2);
+  background: #FFD700;
+  transform: translateX(20px);
+  transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease;
+  box-shadow: 0 3px 8px rgba(79, 46, 220, 0.2);
 }
+
 .checkbox-wrapper-3 #cbx-3:checked + .toggle span:before {
-transform: scale(1);
-opacity: 0;
-transition: all 0.4s ease;
+  transform: scale(1);
+  opacity: 0;
+  transition: all 0.4s ease;
 }
-
-.inventory-outer-container {
-  background-color: #374130;
-  color: white;
-  padding: 10px;
-  width: 100%;
-  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 8px 8px 0px 0px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: left;
-  box-shadow: 0 0 10px #92929240;
-  height: 20%;
-  overflow: hidden;
-}
-
-.inventory-outer-container ~ .terminal-two {
-  border-radius: 0 0 0 0;
-}
-
-.inventory-outer-container:hover { 
-  /* transform: scale(1.02); */ 
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 10px #FFD700;
-  }
-
-  .inventory-item-container {
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 12%;
-    aspect-ratio: 1 / 1;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.206), rgba(241, 220, 63, 0.128));
-    color: black;
-    border: 2px solid #6C6016;
-    border-radius: 8px;
-    display: block;
-    margin: 15px;
-    overflow: hidden;
-  }
-
-
-  .inventory-item-container:hover {
-    transform: scale(1.1);
-    cursor: pointer;
-  }
-
-  .inventory-item-container:active {
-    transform: scale(0.95);
-    cursor: pointer;
-  }
-
-
-  .inventory-item-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    }
-
-
     

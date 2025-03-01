@@ -1,0 +1,7 @@
+/** CSS for the menu which appears after the user has logged in **/
+#main-menu {
+    text-align: center;
+    padding: 15px;
+    display: block; /* Block display to stack items vertically */
+    margin: 10px;
+}
