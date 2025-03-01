@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!--Set the meta tags-->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!--Title-->
+        <title>ReignFall Signup</title>
+        <link rel="icon" type="image/x-icon" href="../assets/images/reignfall-logo.png">
+
+        <!--CSS Import-->
+        <link rel="stylesheet" href="../css/theme.css">
+
+    </head>
+    <body>
+        <div id="main-container">
+            <!-- Game Title -->
+            <div id="title">
+                <h1><img src="../assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall"width="60%" ></h1>
+            </div>
+
+            <!-- Sign up -->
+            <div id="signUpForm" style="display: none;">
+                <h2>Sign up</h2>
+                <p>Please sign up to access the game!</p>
+
+                <label for="username"><b>Username</b></label>
+                <input type="text" placeholder="Enter username" name="username" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
+
+                <label for="psw-repeat"><b>Repeat Password</b></label>
+                <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
+
+                <label>
+                    <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px">Remember me
+                </label>
+
+                <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a></p>
+
+                <div class="clearfix">
+                    <button type="button" class="cancelbtn">Cancel</button>
+                    <button type="submit" class="signupbtn">Sign Up</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript Import -->
+        <script src="../js/validation.js"></script>
+        <script src="../js/signup.js"></script>
+
+    </body>
+</html>

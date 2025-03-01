@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Show the login form when the "Login" button is clicked
-    document.getElementById("login").onclick = function () {
-        document.getElementById("loginForm").style.display = "block";
-        document.querySelector(".button-container").style.display = "none"; 
-    };
-
     // Validate login credentials
     document.getElementById("submitLogin").onclick = function () {
         var username = document.getElementById("username").value;

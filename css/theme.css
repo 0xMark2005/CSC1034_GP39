@@ -184,7 +184,7 @@ button {
 }
 
 /** First terminal design - Slightly greyer card to which the .terminal-two will appear on **/
-.terminal-one {
+#main-container {
   background-color: #2A2A2A;
   border-radius: 8px;
   width: 50%;
@@ -277,11 +277,11 @@ outline-offset: 2px;
   margin: 0 auto;
 }
 
-.terminal-two {
+#output-terminal {
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   background-color: #171717;
   border-radius: 8px 8px 0px 0px;
-  width: 100%; /* Ensure it takes up the full width of its container */
+  width: 100%; /* Enire it takes up the full width of its container */
   color: white;
   padding-left: 25px;
   padding-right: 15px;
@@ -295,7 +295,7 @@ outline-offset: 2px;
   overflow-y: auto;
 }
 
-.terminal-two:hover { 
+#output-terminal:hover { 
   /* transform: scale(1.02); */ 
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 10px #FFD700;
@@ -303,23 +303,23 @@ outline-offset: 2px;
   }
 
 
-  .terminal-two h2 {
+#output-terminal h2 {
     text-align: left;
 }
 
 
-  .terminal-two ol {
+#output-terminal ol {
     list-style-position: inside;
     padding: 0;
     margin: 0;
 }
 
-.terminal-two li {
+#output-terminal li {
     padding: 5px 0;
     white-space: pre-wrap;
 }
 
-.terminal-two li::before {
+#output-terminal li::before {
     color: white;
 }
 

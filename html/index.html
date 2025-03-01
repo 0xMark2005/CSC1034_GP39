@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!--Set the meta tags-->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!--Title & Logo-->
+        <title>ReignFall</title>
+        <link rel="icon" type="image/x-icon" href="../assets/images/reignfall-logo.png">
+
+        <!-- CSS Import -->
+        <link rel="stylesheet" href="../css/theme.css">
+
+    </head>
+    <body>
+        <!-- Main Container Div -->      
+        <div id="main-container"> 
+
+            <!-- Game Title -->   
+            <div id="title">
+                <h1><img src="../assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall"width="60%" ></h1>
+            </div>
+
+            <!-- Buttons To allow the user to login or Sign Up -->
+            <div class="button-container">
+                <button id="login-button">Login</button>
+                <button id="signup-button">Sign Up</button>
+            </div>
+
+        </div>
+        
+        <!-- JS Files -->
+        <script src="../js/menu.js"></script>
+        <script src="../js/settings.js"></script>
+
+        <script>
+            // fetching tools data
+            document.addEventListener('DOMContentLoaded', () => {
+                fetch('includes/get_tools.php')                     
+                .then(response => response.json())
+                    .then(data => {
+                        const container = document.getElementById('inventory');
+                        if (!container) return;   // Just in case
+        
+                        // Clear any existing inventory items
+                        container.innerHTML = "";
+        
+                        if (!data || data.length === 0) {
+                            container.textContent = "No tools found in the inventory.";
+                        } else {
+                            // For each tool, create a div and an img
+                            data.forEach(tool => {
+                                const toolDiv = document.createElement('div');
+                                toolDiv.classList.add('inventory-item-container');
+        
+                                const img = document.createElement('img');
+                                img.src   = tool.itemImgThumbnail;
+                                img.alt   = tool.itemName;
+                                img.title = tool.itemName;
+        
+                                 // Create the details div (hidden by default)
+                                const detailsDiv = document.createElement('div');
+                                detailsDiv.classList.add('inventory-item-details');
+                                detailsDiv.innerHTML = `
+                                <p><strong>${tool.itemName}</strong></p>
+                                <p>${tool.itemDescription || 'No description available'}</p>
+                                <p><strong>Durability:</strong> ${tool.itemDurability}</p>`;
+
+                                toolDiv.appendChild(img);
+                                toolDiv.appendChild(detailsDiv);
+                                container.appendChild(toolDiv);
+
+                                toolDiv.addEventListener('click', () => {
+                             
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching tools:", err);
+                    });
+            });
+            </script>
+
+    </body>
+</html>
