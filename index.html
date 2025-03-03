@@ -5,56 +5,37 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!--Title-->
-        <title>ReignFall Main Menu</title>
-        <link rel="icon" type="image/x-icon" href="../assets/images/reignfall-logo.png">
+        <!--Title & Logo-->
+        <title>ReignFall</title>
+        <link rel="icon" type="image/x-icon" href="css/assets/images/reignfall-logo.png">
 
-        <!--CSS Import-->
-        <link rel="stylesheet" href="../css/theme.css">
-        <link rel="stylesheet" href="../css/inventory.css">
-        <link rel="stylesheet" href="../css/terminal.css">
-        <link rel="stylesheet" href="../css/main_menu.css">
-        
+        <!-- CSS Import -->
+        <link rel="stylesheet" href="css/theme.css">
+        <link rel="stylesheet" href="css/index.css">
+
     </head>
     <body>
-        <!-- Main Container Div -->
-        <div id="main-container">
+        <!-- Main Container Div -->      
+        <div id="main-container"> 
 
-            <!-- Game Title -->
+            <!-- Game Title -->   
             <div id="title">
-                <h1><img src="../css/assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall" width="60%" ></h1>
+                <h1><img src="css/assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall"width="60%" ></h1>
             </div>
 
-            <!-- Text-Based Menu -->     
-            <div id="main-menu">
-
-                <!-- Inventory Section (Now Corrected) -->
-                <div id="inventory" class="inventory-outer-container">
-                   <!-- Tools will load dynamically here -->
-                </div>
-
-                <div id="output-terminal">
-                    <h2>Main Menu</h2>
-                    <ol>
-                        <li>Start Game</li>
-                        <li>Load Game</li>
-                        <li>Settings</li>
-                        <li>Logout</li>
-                    </ol>
-                </div>
-
-                <!-- Get Users input From the Menu -->
-                <div class="input-container">
-                    <div class="input-wrapper">
-                        <input type="text" id="userInput" placeholder="Type here...">
-                    </div>
-                </div>
+            <!-- Buttons To allow the user to login or Sign Up -->
+            <div class="button-container">
+                <button id="login-button">Login</button>
+                <button id="signup-button">Sign Up</button>
             </div>
+
         </div>
+        
    
         <!-- JavaScript Import -->
-        <script src="../js/menu.js"></script>
-        <script src="../js/settings.js"></script>
+        <script src="js/menu.js"></script>
+        <script src="js/settings.js"></script>
+        <script src="js/index.js"></script>
         <script>
         document.addEventListener('DOMContentLoaded', () => {
             fetch('../includes/get_tools.php') // Ensure correct path to PHP file

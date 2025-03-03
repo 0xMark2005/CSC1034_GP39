@@ -7,11 +7,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!gameUserInput || !gameDiv) {
         console.error("Error: gameUserInput or gameDiv not found!");
-        return; // Exit if elements don't exist
+        return; 
     }
 
     // Get or create the terminal output container
-    const outputTerminal = document.getElementById("gameOutputContainer"); 
+    const outputTerminal = document.getElementById("output-terminal"); 
     let terminalOutputContainer = outputTerminal.querySelector(".terminal-output-text");
 
     if (!terminalOutputContainer) { // If there is no output container
@@ -33,14 +33,12 @@ document.addEventListener('DOMContentLoaded', function() {
             newLine.textContent = `> ${choice}`;
             terminalOutputContainer.appendChild(newLine);
 
-            gameUserInput.value = ""; // Clear input field
+            gameUserInput.value = ""; 
 
-            // Process the input after 1 second
             setTimeout(() => {
-                // Show inventory if the user types 'Show Inventory'
                 if (choice == "Show Inventory") {
-                    outputUser(); // Assuming outputUser function is defined elsewhere
-                    scrollToBottom(); // Assuming scrollToBottom function is defined elsewhere
+                    outputUser(); 
+                    scrollToBottom(); 
                     return;
                 }
 
@@ -61,12 +59,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    
+
     // Function to handle user choice during the introduction stage
     function handleIntroduction(choice) {
         if (choice === "1" || choice === "2") {
             // User chose an option (1 or 2)
-            currentState = 'verbSelection'; // Move to verb selection stage
-            inputIntroduction(choice); // Handle option choice
+            currentState = 'verbSelection'; 
+            inputIntroduction(choice); 
         } else {
             addSystemMessage("Invalid choice! Please choose '1' or '2'.");
         }
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Code to ensure terminal stays at bottom and scrolls
     function scrollToBottom() {
-        let terminal = document.getElementById("gameOutputContainer");
+        let terminal = document.getElementById("output-terminal");
         setTimeout(() => {
             terminal.scrollTop = terminal.scrollHeight;
         }, 10); // Small delay to ensure content is rendered before scrolling
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 strength: 0.75
             },
         ],
-        gainedAllies: [ // Allies gained by the user through the game 
+        gainedAllies: [ 
             {
                 userAllyIndex: 1,
                 friendshipLevel: 0.5
@@ -183,14 +183,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to output user details to the terminal
     function outputUser() {
         // Create an instance of a usercharacter (THIS WILL BE DONE ON CREATION OF GAME)
-        let userIndex = 0; // Pick a random ally
+        let userIndex = 0; 
         let user = userCharacter[userIndex];
-        let name = user.name; // Access the user name
+        let name = user.name;
         let hunger = user.hunger;
         let reputation = user.reputation;
-
-        // Create a new line element for each output
-        let newLine = document.createElement('p');
 
         // Output name
         nameText = `> Name: ${name}`;
@@ -266,148 +263,265 @@ document.addEventListener('DOMContentLoaded', function() {
         gameOutputParagraph.innerHTML = `You encounter ${allyName}. They call you: ${randomPhrase}.`;
     }
 
-    // Call the function to output a random ally and phrase (This is techinically called as soon as the user loads the website because of how we
-    // loaded in the <Scripts>
-
-    // meetAlly();
-
-
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
     // Introductions which will be used when the user first spawns in.
-    // This will be the very start of the game (techinically speaking)
-    // The array for now will appear like in chronological order (the bigger it is the more declines the user can do)
+    // This a dictionary we could have loads of different dictionaries for each of the introductions. In my head this 
+    // allows the user to increase reputation for now, we will need different ones for different instances
+    // 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-    const gameData = {
-        location: "Hobo Camp",
-        intro: "After another long nap you wake up to a rumbling belly.",
-        action: "A mysterious well-dressed man offers you some food in return for your participation in a deception game.",
-        options: [{
-                choice: "1. Accept the offer",
-                outcome: "You take the food. The man seems trustworthy.",
-                continuation: [{
-                    action: "The man asks you to lie convincingly about your past.",
-                    verbs: {
-                        "lie": "You spin a convincing story about being lost royalty. The man nods approvingly.",
-                        "truth": "You admit you have nothing to offer. The man frowns and walks away.",
-                        "joke": "You tell a ridiculous lie for fun. The man laughs but loses interest in you."
-                    }
-                }]
-            },
-            {
-                choice: "2. Refuse the offer",
-                outcome: "You refuse. The man shrugs and walks away.",
-                continuation: [{
-                    action: "You stay hungry and start searching for another opportunity.",
-                    verbs: {
-                        "search": "You look around and find a half-eaten loaf of bread.",
-                        "beg": "You ask for help, but people ignore you.",
-                        "steal": "You attempt to steal from a vendor, but get caught."
-                    }
-                }]
-            }
-        ]
+    const gameDataArray = [
+        {
+            location: "War Prison",
+            importanceLevel: 0.1,
+            intro: "After days of travel, you arrive at the heavily guarded war prison, the place where the Exiled General is kept.",
+            action: "A grizzled, battle-hardened figure in chains watches you approach. He gives you a nod, recognizing your intent.",
+            options: [{
+                    choice: "1. Attempt to infiltrate the prison and break the General out",
+                    outcome: "You sneak past the guards and find the Exiled General in a solitary cell. He looks at you with a calculating gaze.",
+                    continuation: [{
+                        action: "He demands a promise of loyalty before he helps you escape.",
+                        verbs: {
+                            "swear": {
+                                description: "You swear your loyalty to him, and he nods, agreeing to join your cause.",
+                                reputationImpact: 5
+                            },
+                            "negotiate": {
+                                description: "You offer him something in return, like an army or resources, and he considers your offer carefully.",
+                                reputationImpact: 3
+                            },
+                            "reject": {
+                                description: "You refuse to swear loyalty, and the General eyes you warily before he declines your offer.",
+                                reputationImpact: -3
+                            }
+                        }
+                    }]
+                },
+                {
+                    choice: "2. Bribe a guard to free the General",
+                    outcome: "You bribe the guard, but it's a risky move. They let the General go, but the escape is noticed.",
+                    continuation: [{
+                        action: "Now that the General is free, you both must flee the area quickly.",
+                        verbs: {
+                            "escape": {
+                                description: "You make a run for it, dodging guards and escaping into the night.",
+                                reputationImpact: 2
+                            },
+                            "fight": {
+                                description: "You engage in a bloody battle with the guards to ensure your escape.",
+                                reputationImpact: -1
+                            },
+                            "negotiate": {
+                                description: "You try to convince the guards you were mistaken, but it fails, leading to combat.",
+                                reputationImpact: -2
+                            }
+                        }
+                    }]
+                }
+            ]
+        },
+        {
+            location: "The Slums",
+            importanceLevel: 0.1,
+            intro: "You wander through the slums, the stench of filth and poverty thick in the air. In the darkest corner of the alley, a figure watches you carefully.",
+            action: "The King's Disowned Bastard, a rogue with a sharp tongue and a sharper mind, offers you a chance at a high-stakes deception game.",
+            options: [{
+                    choice: "1. Accept the challenge to play the deception game",
+                    outcome: "You sit across from the rogue, who eyes you with amusement as the game begins.",
+                    continuation: [{
+                        action: "The game is rigged with subtle psychological tricks. The rogue presents you with an impossible choice.",
+                        verbs: {
+                            "lie": {
+                                description: "You deceive the rogue with a clever, twisted story, and they laugh, impressed by your wit.",
+                                reputationImpact: 4
+                            },
+                            "bluff": {
+                                description: "You bluff your way through, but the rogue sees through it and calls you out, offering only a grudging respect.",
+                                reputationImpact: -1
+                            },
+                            "reveal": {
+                                description: "You tell the truth, surprising the rogue, who respects your honesty but does not trust you fully.",
+                                reputationImpact: 2
+                            }
+                        }
+                    }]
+                },
+                {
+                    choice: "2. Refuse to play the game and leave",
+                    outcome: "You walk away, leaving the rogue to ponder your refusal. They eye you with curiosity but do not follow.",
+                    continuation: [{
+                        action: "You feel the weight of the rogue's gaze as you walk away, but you can't shake the feeling you may have missed an opportunity.",
+                        verbs: {
+                            "return": {
+                                description: "You return to confront the rogue and ask if they still want to play the game.",
+                                reputationImpact: 1
+                            },
+                            "ignore": {
+                                description: "You choose to ignore them and head towards your next goal, the rogue's challenge still lingering in your mind.",
+                                reputationImpact: -2
+                            }
+                        }
+                    }]
+                }
+            ]
+        },
+        {
+            location: "Hidden Rebel Camp",
+            intro: "You travel through dense forests, finally stumbling upon the hidden rebel camp. The camp is alive with activity, but there's an air of distrust among the rebels.",
+            action: "The Underground Rebel Leader, a fiery and passionate figure, eyes you cautiously. They'll test your loyalty and commitment before accepting you as an ally.",
+            options: [{
+                    choice: "1. Agree to the test of loyalty",
+                    outcome: "The leader hands you a dangerous task to prove your dedication: sabotage a royal convoy.",
+                    continuation: [{
+                        action: "You successfully complete the sabotage, but it costs you dearly. The leader is pleased, but wary of the toll it took on you.",
+                        verbs: {
+                            "convince": {
+                                description: "You convince the leader that you can handle even more dangerous missions.",
+                                reputationImpact: 3
+                            },
+                            "regret": {
+                                description: "You regret the task, and the leader senses your doubt, questioning your resolve.",
+                                reputationImpact: -2
+                            },
+                            "celebrate": {
+                                description: "You celebrate your success, hoping to win the leader's trust, but it feels hollow.",
+                                reputationImpact: 1
+                            }
+                        }
+                    }]
+                },
+                {
+                    choice: "2. Refuse the test and leave",
+                    outcome: "You decide not to risk your life for a cause you barely know, turning your back on the rebels.",
+                    continuation: [{
+                        action: "The leader lets you go, but there's a glint of disappointment in their eyes. You may have made an enemy.",
+                        verbs: {
+                            "stay": {
+                                description: "You stay, despite your reservations, hoping to change your mind.",
+                                reputationImpact: 2
+                            },
+                            "escape": {
+                                description: "You slip away into the night, disappearing from the camp to seek your own path.",
+                                reputationImpact: -3
+                            }
+                        }
+                    }]
+                }
+            ]
+        }
+    ];
+    
+    // To track game state (which option the user chose)
+    let gameState = {
+        currentStage: 0, 
+        chosenOption: null,
+        currentScenario: null
     };
+
+    // Pick a random game data dictionary
+    function randomGameData() {
+        const randomIndex = Math.floor(Math.random() * gameDataArray.length);
+        return gameDataArray[randomIndex];
+    }
 
     // User must be displayed the introduction to the game
     function outputIntroduction() {
-        addGameMessage(`Location: ${gameData.location}`);
-        addGameMessage(gameData.intro);
-        addGameMessage(gameData.action);
-        gameData.options.forEach(option => addGameMessage(option.choice));
+        const selectedGameData = randomGameData();
+        gameState.currentScenario = selectedGameData; // Store the selected scenario
+        
+        addGameMessage(`Location: ${selectedGameData.location}`);
+        addGameMessage(selectedGameData.intro);
+        addGameMessage(selectedGameData.action);
+        selectedGameData.options.forEach(option => addGameMessage(option.choice));
     }
-
-    // Function to handle input for the introduction stage (1 or 2)
-    function inputIntroduction(input) {
-        input = parseInt(input) - 1; // Convert the input to an index
-        let valid = false;
-
-        // loop to get the user's choice
-        while (!valid) {
-            // Check if input is valid
-            if (input >= 0 && input < gameData.options.length) {
-                addGameMessage(`${gameData.options[input].choice} selected`);
-
-                // Store the user's choice in gameState
-                gameState.chosenOption = input;
-
-                // Output the next action after selecting an option
-                let selectedOption = gameData.options[input];
-                addGameMessage(selectedOption.outcome);
-
-                // Move to the next stage (verb selection)
-                gameState.currentStage = 1;
-
-                // Show the verbs based on the selected option
-                selectedOption.continuation.forEach(step => {
-                    addGameMessage(step.action);
-                    addGameMessage("What will you do next? Choose a verb: lie, truth, joke, etc.");
-                });
-
-                valid = true; // Exit loop
-            } else {
-                addSystemMessage("Invalid choice! Please select '1' or '2'.");
-            }
-        }
-    }
-
-    // Function to handle verb selection
-    function inputIntroductionVerb(input) {
-        let valid = false;
-
-        // Get the selected option using gameState.chosenOption
-        let selectedOption = gameData.options[gameState.chosenOption];
-
-        // Loop through the continuation to check for valid verb
-        while (!valid) {
-            selectedOption.continuation.forEach(step => {
-                if (step.verbs[input]) {
-                    addGameMessage(step.verbs[input]); // Output the result of the verb
-                    valid = true; // Verb is valid, exit loop
-                }
-            });
-
-            if (!valid) {
-                addSystemMessage("Invalid verb! Please choose a valid verb.");
-                input = prompt("Enter a valid verb (lie, truth, joke, etc.):");
-            }
-        }
-    }
-
-    // To track game state (which option the user chose)
-    let gameState = {
-        currentStage: 0, // Track the user's current stage (0 = introduction, 1 = verb selection)
-        chosenOption: null // Track which option the user chose (1 or 2)
-    };
-
-    // Example usage (if the user selects '1' for the offer):
+    
+    // Call the introduction
     outputIntroduction();
 
-
-
-
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-    // Handling the logic once the user selects a choice.
-    // From here should it be random? 
-    // Should it trigger events? 
-    // In my opinion each of the three 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-    // Functions to simulate a GENERAL Allies response To different outcomes, These will be used when user interacts with characters.
-    // We could add sounds, personalised responses etc
-    // Failure function (Could be extended in literally a thousand ways)
-
-    function failure() {
-        gameOutputParagraph.innerHTML = "You failed to recruit the Ally. The Ally is not impressed with your efforts"
+    function inputIntroduction(input) {
+        const optionIndex = parseInt(input) - 1; 
+    
+        if (optionIndex === 0 || optionIndex === 1) {
+            let selectedOption = gameState.currentScenario.options[optionIndex];
+            gameState.chosenOption = optionIndex;
+            
+            addGameMessage(selectedOption.outcome);
+            
+            // Display the continuation action
+            if (selectedOption.continuation && selectedOption.continuation.length > 0) {
+                addGameMessage(selectedOption.continuation[0].action);
+                
+                // Display available verbs to the user
+                if (selectedOption.continuation[0].verbs) {
+                    const availableVerbs = Object.keys(selectedOption.continuation[0].verbs);
+                    addGameMessage(`Available actions: ${availableVerbs.join(', ')}`);
+                }
+            }
+        } else {
+            addSystemMessage("Invalid choice! Please select option 1 or 2.");
+        }
     }
-    // Successful function
-    function successful() {
-        gameOutputParagraph.innerHTML = "You successfully recruited the Ally. The Ally is very happy with you !"
+
+    function handleVerbSelection(verb) {
+        if (!gameState.currentScenario) {
+            addSystemMessage("Error: No game scenario selected. Please start again.");
+            return;
+        }
+        
+        const selectedOption = gameState.currentScenario.options[gameState.chosenOption];
+        
+        // Check if the verb exists in the current continuation
+        if (selectedOption.continuation && 
+            selectedOption.continuation[0] && 
+            selectedOption.continuation[0].verbs && 
+            selectedOption.continuation[0].verbs[verb]) {
+            
+            // Display the verb outcome
+            addGameMessage(selectedOption.continuation[0].verbs[verb].description);
+            // Now we need to pass in the users verb and find whether what they done increases repuation
+            if(selectedOption.continuation[0].verbs[verb].reputationImpact > 0){increaseReputation(selectedOption.continuation[0].verbs[verb].reputationImpact)}
+            else{decreaseReputation(selectedOption.continuation[0].verbs[verb].reputationImpact)}
+
+            currentState = 'introduction'; 
+            
+        } else {
+            addSystemMessage(`Invalid action! Available actions: ${Object.keys(selectedOption.continuation[0].verbs).join(', ')}`);
+        }
     }
-    // Abandon function (user quits the recruitment)
-    function abandon() {
-        gameOutputParagraph.innerHTML = "You decided to leave the Ally."
+
+    // We can now display from the above code show inventory, a random event selected from numbers and a verb displayed.
+    // Now we will want to delve a bit deeper into the story line, In my head the user will be given one option from them three for now
+    // The user will then be rewarded if they pass or fail through reputation
+
+    function increaseReputation(taskRep) {
+        let rep = userCharacter[0].reputation;
+        let increaseAmount = 0.01 * taskRep; 
+    
+        if (rep >= 0.9 && rep < 0.975) {
+            rep = Math.min(1.0, rep + increaseAmount / 2); 
+        } else if (rep < 0.9) {
+            rep = Math.min(1.0, rep + increaseAmount); 
+        }
+        userCharacter[0].reputation = rep;
+
+        addGameMessage(`Your reputation has increased by ${taskRep} it is now ${userCharacter[0].reputation}`)
     }
+
+    // Allow the decrease of importance if neccessary
+    function decreaseReputation(taskRep) {
+        let rep = userCharacter[0].reputation;
+        let decreaseAmount = 0.01 * taskRep;
+    
+        if (rep > 0.025 && rep <= 0.1) {
+            rep = Math.max(0.0, rep - decreaseAmount / 2); 
+        } else if (rep > 0.1) {
+            rep = Math.max(0.0, rep - decreaseAmount);  
+        }
+        userCharacter[0].reputation = rep;
+        addGameMessage(`Your reputation has decreased by ${taskRep} it is now ${userCharacter[0].reputation}`)
+    }
+
+    // So now that the user can follow through with one part of the game and repuatation in my head we should have two small encounters before meeting an ally
+
 
 });

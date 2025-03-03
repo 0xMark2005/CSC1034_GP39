@@ -30,7 +30,7 @@ function updateCountdown(){
             loadingScreen.style.opacity = "0"; // Fade out loading screen
             setTimeout(() => {
                 loadingScreen.style.display = "none"; // Hide loading screen
-                window.location.href = "index.html"; // Redirect to main game
+                window.location.href = "index.html"; // Redirect to main game 
             }, 1000); // Delay for smooth transition
         }), 500
     }
