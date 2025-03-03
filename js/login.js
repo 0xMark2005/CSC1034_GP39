@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Now, both username and password are valid. Check credentials
         if (username === "Admin" && password === "Admin!1234") {
-            window.location.href = "../html/main_menu.html"
+            window.location.href = "main_menu.html"
         } else {
             alert("Invalid credentials. Please try again.");
         }

@@ -3,10 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Button click events to open corresponding pages
     document.getElementById("login-button").onclick = function () {
-        window.location.href = "../html/login.html";
+        window.location.href = "login.html";
     }
 
     document.getElementById("signup-button").onclick = function () {
-        window.location.href = "../html/signup.html";
+        window.location.href = "signup.html";
     }
 });
