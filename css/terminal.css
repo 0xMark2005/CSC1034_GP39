@@ -43,7 +43,7 @@
     color: white;
 }
 
-.input-container {
+#input-terminal {
     background-color: #1D1D1D;
     color: white;
     padding: 10px;
@@ -87,23 +87,23 @@
     min-width: 50px; 
 }
 
-.input-container:hover { 
+#input-terminal:hover { 
     /* transform: scale(1.02); */ 
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     box-shadow: 0 0 10px #FFD700;
 }
 
-.input-container:hover .input-wrapper {
+#input-terminal:hover .input-wrapper {
     width: 105%;
 }
 
-.terminal-output-text {
+#terminal-output-container {
     list-style-type: none;
     padding: 0;
     margin-top: 10px;
 }
 
-.terminal-output-text li {
+#terminal-output-container li {
     padding: 5px 0;
     white-space: pre-wrap;
 }

@@ -1,19 +1,19 @@
+import * as Terminal from "./terminal.js";
+
 document.addEventListener("DOMContentLoaded", function () {
     
-    // Get the user input
-    const userInput = document.getElementById("userInput");
-    const terminalOutputContainer = document.createElement("ul"); 
-    terminalOutputContainer.classList.add("terminal-output-text"); 
-    document.getElementById("output-terminal").appendChild(terminalOutputContainer); 
+    //initialize the terminal
+    Terminal.initialize();
 
+    //get the user-input element
+    const userInput = document.getElementById("user-input");
+
+    //add event for the user input
     userInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
-            const choice = userInput.value.trim();
-            // Create a new line in the terminal with user input
-            const newLine = document.createElement("li");
-            newLine.textContent = `> ${choice}`;
-            terminalOutputContainer.appendChild(newLine);
-            userInput.value = ""; // Clear input 
+            
+            //get the user input
+            const choice = Terminal.getUserInput();
 
             // Wait 1 second before processing the input
             setTimeout(() => {
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         window.location.replace("game.html");        
                         break;
                     case "2":
-                        addSystemMessage("Loading Game...");
+                        Terminal.outputMessage("Loading Game...", "#00FF00");
                         break;
                     case "3":
                         document.getElementById("gameBegins").style.display = "none";
@@ -31,27 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.getElementById("userSettings").style.display = "block";
                         break;
                     case "4":
-                        addSystemMessage("Logging Out...");
+                        Terminal.outputMessage("Logging Out...", "#FF8181");
                         window.location.replace("index.html");
                         break;
                     default:
-                        addSystemMessage("Invalid choice! Please enter 1, 2, 3, or 4.");
+                        Terminal.outputMessage("Invalid choice! Please enter 1, 2, 3, or 4.", "#FF8181")
                 }
             }, 1000); // 1 sec delay
         }
     });
-
-    // Function to add system messages after user input
-    function addSystemMessage(message) {
-        const systemMessage = document.createElement("li");
-        systemMessage.textContent = message;
-        systemMessage.style.color = "#FF8181"; 
-        terminalOutputContainer.appendChild(systemMessage);
-
-        while (terminalOutputContainer.children.length > 4) {
-            terminalOutputContainer.removeChild(terminalOutputContainer.firstChild);
-        }
-    }
-
     
 });
