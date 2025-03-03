@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!--Set the meta tags-->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!--Title-->
+        <title>ReignFall Game</title>
+        <link rel="icon" type="image/x-icon" href="../assets/images/reignfall-logo.png">
+
+        <!--CSS Import-->
+        <link rel="stylesheet" href="../css/theme.css">
+        <link rel="stylesheet" href="../css/terminal.css">
+        <link rel="stylesheet" href="../css/game.css">
+        
+    </head>
+    <body>
+        <div id="main-container">
+            <!-- User selects to play the game from menu, so menu is hidden and the story introduction begins -->
+            <div id="gameBegins" style="display: none;">
+                <h1 id="gameBeginsTitle"></h1>
+                    <div class="terminal-two" id="gameOutputContainer" style="height: 300px;">
+                    <p id="gameOutputParagraph">
+
+                    </p>
+                </div>
+                <!-- User should be able to enter text into the game -->
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <input type="text" id="userInput" placeholder="Type here...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript Import -->
+        <script src="../js/game.js"></script>
+    </body>
+</html>

@@ -1,9 +1,5 @@
+//Add events after page has loaded
 document.addEventListener("DOMContentLoaded", function () {
-    // Show the login form when the "Login" button is clicked
-    document.getElementById("login").onclick = function () {
-        document.getElementById("loginForm").style.display = "block";
-        document.querySelector(".button-container").style.display = "none"; 
-    };
 
     // Validate login credentials
     document.getElementById("submitLogin").onclick = function () {
@@ -17,14 +13,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Now, both username and password are valid. Check credentials
         if (username === "Admin" && password === "Admin!1234") {
-            document.getElementById("loginForm").style.display = "none";
-            document.getElementById("menu").style.display = "block";
+            window.location.href = "../html/main_menu.html"
         } else {
             alert("Invalid credentials. Please try again.");
         }
     };
 });
 
+
+//-----
+//Functions
+//-----
 
 // Password validation function
 function validatePasswordInput(password) {
@@ -44,7 +43,6 @@ function validatePasswordInput(password) {
 
 // Username validation function
 function validateUsernameInput(username) {
-    // Trim spaces
     username = username.trim();
 
     // Only allow letters and numbers (no special characters allowed)
@@ -57,6 +55,8 @@ function validateUsernameInput(username) {
 
     return true;
 }
+
+//
 function changePasswordToClear() {
     var x = document.getElementById("password");
     if (x.type === "password") {

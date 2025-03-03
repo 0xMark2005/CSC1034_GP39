@@ -1,12 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+    
     // Get the user input
     const userInput = document.getElementById("userInput");
     const terminalOutputContainer = document.createElement("ul"); 
-    terminalOutputContainer.classList.add("terminal-output"); 
-    document.querySelector(".terminal-two").appendChild(terminalOutputContainer); 
-
-
-    
+    terminalOutputContainer.classList.add("terminal-output-text"); 
+    document.getElementById("output-terminal").appendChild(terminalOutputContainer); 
 
     userInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
@@ -22,13 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 switch (choice) {
                     // user selects 1 / Begin game so the menu is hidden and the header appears INSIDE terminal (this can be changed to outside if necessary)
                     case "1":
-                        document.getElementById("gameBegins").style.display = "block";
-                        document.getElementById("menu").style.display = "none";
-                        document.getElementById("title").style.display = "block";
-                        document.getElementById("userSettings").style.display = "none";
-
-                        // Method which is exposed in js/game.js
-                        window.typeWriter()
+                        window.location.replace("../html/game.html");
                         break;
                     case "2":
                         addSystemMessage("Loading Game...");
@@ -40,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         break;
                     case "4":
                         addSystemMessage("Logging Out...");
-                        document.getElementById("button-container").style.display = "none";
+                        window.location.replace("../html/index.html");
                         break;
                     default:
                         addSystemMessage("Invalid choice! Please enter 1, 2, 3, or 4.");

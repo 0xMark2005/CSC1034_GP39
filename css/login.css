@@ -1,0 +1,8 @@
+/** centering login**/
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    width: 300px; 
+    margin: 0 auto;
+}
