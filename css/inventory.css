@@ -14,7 +14,7 @@
     overflow: hidden;
 }
 
-.inventory-outer-container ~ .terminal-two {
+.inventory-outer-container ~ #output-terminal{
     border-radius: 0 0 0 0;
 }
 
