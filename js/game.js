@@ -1,39 +1,21 @@
+import * as Terminal from "./terminal.js";
+
+const systemMessageColor = `#FF81811`;
+const gameMessageColor = `#00FF00`;
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Menu for the terminal in the game.js screen 
 
-    const gameUserInput = document.getElementById("gameUserInput");
-    const gameDiv = document.getElementById("gameBegins");
-    gameDiv.style.display = "block";
-
-    if (!gameUserInput || !gameDiv) {
-        console.error("Error: gameUserInput or gameDiv not found!");
-        return; 
-    }
-
-    // Get or create the terminal output container
-    const outputTerminal = document.getElementById("output-terminal"); 
-    let terminalOutputContainer = outputTerminal.querySelector(".terminal-output-text");
-
-    if (!terminalOutputContainer) { // If there is no output container
-        terminalOutputContainer = document.createElement("ul");
-        terminalOutputContainer.classList.add("terminal-output-text");
-    }
-
-    outputTerminal.appendChild(terminalOutputContainer); // Adds the output container to the output terminal
+    //Initialize the terminal
+    Terminal.initialize();
+    const gameUserInput = document.getElementById("user-input"); //needed for the keypress event
 
     let currentState = 'introduction'; // Track the current game state
 
     // Detect when the user presses Enter
     gameUserInput.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
-            const choice = gameUserInput.value.trim();
-
-            // Create the list for the terminal
-            const newLine = document.createElement("li");
-            newLine.textContent = `> ${choice}`;
-            terminalOutputContainer.appendChild(newLine);
-
-            gameUserInput.value = ""; 
+            //get the user's input
+            const choice = Terminal.getUserInput();
 
             setTimeout(() => {
                 if (choice == "Show Inventory") {
@@ -52,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         break;
                         // Add more states as needed
                     default:
-                        addSystemMessage("Invalid state. Try again!");
+                        Terminal.outputMessage("Invalid state. Try again!", systemMessageColor);
                         break;
                 }
             }, 1000);
@@ -68,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentState = 'verbSelection'; 
             inputIntroduction(choice); 
         } else {
-            addSystemMessage("Invalid choice! Please choose '1' or '2'.");
+            Terminal.outputMessage("Invalid choice! Please choose '1' or '2'.", systemMessageColor);
         }
     }
 
@@ -191,27 +173,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Output name
         nameText = `> Name: ${name}`;
-        addGameMessage(nameText);
+        Terminal.outputMessage(nameText, gameMessageColor);
 
         // Output hunger
         hungerText = `> Hunger: ${hunger}`;
-        addGameMessage(hungerText);
+        Terminal.outputMessage(hungerText, gameMessageColor);
 
         // Output Reputation
         reputationText = `> Reputation: ${reputation}`;
-        addGameMessage(reputationText);
+        Terminal.outputMessage(reputationText, gameMessageColor);
 
 
         // Will not output inventory as conflicts with Josephs designs
 
         // Output the gained allies
 
-        addGameMessage(`> Gained Allies`);
+        Terminal.outputMessage(`> Gained Allies`, gameMessageColor);
         user.gainedAllies.forEach(ally => {
             // Display each ally's name and friendship level
             let allyName = allies[ally.userAllyIndex].name;
 
-            addGameMessage(`> Ally Name: ${allyName} | Friendship Level: ${ally.friendshipLevel.toFixed(2)}`);
+            Terminal.outputMessage(`> Ally Name: ${allyName} | Friendship Level: ${ally.friendshipLevel.toFixed(2)}`, gameMessageColor);
         });
     }
 
@@ -241,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     ];
 
-    // Get the paragraph in index.html which will be changed to facilitate the meeting of an ally
+    // Get the paragraph in game.html which will be changed to facilitate the meeting of an ally
     var gameOutputParagraph = document.getElementById("gameOutputParagraph");
 
     // Function to get a random phrase/description for a specific ally
@@ -429,10 +411,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedGameData = randomGameData();
         gameState.currentScenario = selectedGameData; // Store the selected scenario
         
-        addGameMessage(`Location: ${selectedGameData.location}`);
-        addGameMessage(selectedGameData.intro);
-        addGameMessage(selectedGameData.action);
-        selectedGameData.options.forEach(option => addGameMessage(option.choice));
+        Terminal.outputMessage(`Location: ${selectedGameData.location}`, gameMessageColor);
+        Terminal.outputMessage(selectedGameData.intro, gameMessageColor);
+        Terminal.outputMessage(selectedGameData.action, gameMessageColor);
+        selectedGameData.options.forEach(option => Terminal.outputMessage(option.choice, gameMessageColor));
     }
     
     // Call the introduction
@@ -445,26 +427,26 @@ document.addEventListener('DOMContentLoaded', function() {
             let selectedOption = gameState.currentScenario.options[optionIndex];
             gameState.chosenOption = optionIndex;
             
-            addGameMessage(selectedOption.outcome);
+            Terminal.outputMessage(selectedOption.outcome, gameMessageColor);
             
             // Display the continuation action
             if (selectedOption.continuation && selectedOption.continuation.length > 0) {
-                addGameMessage(selectedOption.continuation[0].action);
+                Terminal.outputMessage(selectedOption.continuation[0].action, gameMessageColor);
                 
                 // Display available verbs to the user
                 if (selectedOption.continuation[0].verbs) {
                     const availableVerbs = Object.keys(selectedOption.continuation[0].verbs);
-                    addGameMessage(`Available actions: ${availableVerbs.join(', ')}`);
+                    Terminal.outputMessage(`Available actions: ${availableVerbs.join(', ')}`, gameMessageColor);
                 }
             }
         } else {
-            addSystemMessage("Invalid choice! Please select option 1 or 2.");
+            Terminal.outputMessage("Invalid choice! Please select option 1 or 2.", systemMessageColor);
         }
     }
 
     function handleVerbSelection(verb) {
         if (!gameState.currentScenario) {
-            addSystemMessage("Error: No game scenario selected. Please start again.");
+            Terminal.outputMessage("Error: No game scenario selected. Please start again.", systemMessageColor);
             return;
         }
         
@@ -477,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedOption.continuation[0].verbs[verb]) {
             
             // Display the verb outcome
-            addGameMessage(selectedOption.continuation[0].verbs[verb].description);
+            Terminal.outputMessage(selectedOption.continuation[0].verbs[verb].description, gameMessageColor);
             // Now we need to pass in the users verb and find whether what they done increases repuation
             if(selectedOption.continuation[0].verbs[verb].reputationImpact > 0){increaseReputation(selectedOption.continuation[0].verbs[verb].reputationImpact)}
             else{decreaseReputation(selectedOption.continuation[0].verbs[verb].reputationImpact)}
@@ -485,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentState = 'introduction'; 
             
         } else {
-            addSystemMessage(`Invalid action! Available actions: ${Object.keys(selectedOption.continuation[0].verbs).join(', ')}`);
+            Terminal.outputMessage(`Invalid action! Available actions: ${Object.keys(selectedOption.continuation[0].verbs).join(', ')}`, systemMessageColor);
         }
     }
 
@@ -504,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         userCharacter[0].reputation = rep;
 
-        addGameMessage(`Your reputation has increased by ${taskRep} it is now ${userCharacter[0].reputation}`)
+        Terminal.outputMessage(`Your reputation has increased by ${taskRep} it is now ${userCharacter[0].reputation}`, gameMessageColor)
     }
 
     // Allow the decrease of importance if neccessary
@@ -518,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
             rep = Math.max(0.0, rep - decreaseAmount);  
         }
         userCharacter[0].reputation = rep;
-        addGameMessage(`Your reputation has decreased by ${taskRep} it is now ${userCharacter[0].reputation}`)
+        Terminal.outputMessage(`Your reputation has decreased by ${taskRep} it is now ${userCharacter[0].reputation}`, gameMessageColor)
     }
 
     // So now that the user can follow through with one part of the game and repuatation in my head we should have two small encounters before meeting an ally

@@ -23,11 +23,11 @@ export function initialize(){
             outputTerminal.appendChild(terminalOutputContainer);
         }
         else{
-            alert("Input terminal could not be found, thus terminal functions will not work, please ensure an input terminal exists on this page.");
+            console.error("Error: Input terminal could not be found, thus terminal functions will not work, please ensure an input terminal exists on this page.");
         }
     }
     else{
-        alert("Output terminal could not be found, thus terminal functions will not work, please ensure an output terminal exists on this page.");
+        console.error("Error: Output terminal could not be found, thus terminal functions will not work, please ensure an output terminal exists on this page.");
     }   
 }
 
@@ -47,6 +47,7 @@ export function outputMessage(message, color){
 
     terminalOutputContainer.appendChild(systemMessage);
     scrollToBottom();
+    console.log(color);
 }
 
 //function to scroll to the bottom of the terminal after output
