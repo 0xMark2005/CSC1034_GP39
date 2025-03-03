@@ -10,12 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return; // Exit if elements don't exist
     }
 
-    //get the user input box
-    const userInput = document.getElementById("userInput");
-
     // Get or create the terminal output container
-    const outputTerminal = document.getElementById("output-terminal"); 
-    const terminalOutputContainer = outputTerminal.querySelector(".terminal-output-text");
+    const outputTerminal = document.getElementById("gameOutputContainer"); 
+    let terminalOutputContainer = outputTerminal.querySelector(".terminal-output-text");
 
     if (!terminalOutputContainer) { // If there is no output container
         terminalOutputContainer = document.createElement("ul");
@@ -23,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     outputTerminal.appendChild(terminalOutputContainer); // Adds the output container to the output terminal
-
 
     let currentState = 'introduction'; // Track the current game state
 
@@ -36,7 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const newLine = document.createElement("li");
             newLine.textContent = `> ${choice}`;
             terminalOutputContainer.appendChild(newLine);
-
 
             gameUserInput.value = ""; // Clear input field
 
@@ -82,7 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
         inputIntroductionVerb(choice); // Assuming inputIntroductionVerb is properly defined elsewhere
     }
 
-
     // Function to add system messages and game messages. 
     // (System message will be the user input)
     function addSystemMessage(message, color = "#FFFFFF") {
@@ -92,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
         terminalOutputContainer.appendChild(systemMessage);
         scrollToBottom();
     }
+
     // GameMessage is the game output
     function addGameMessage(message, color = "#00FF00") {
         const systemMessage = document.createElement("li");
@@ -103,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Code to ensure terminal stays at bottom and scrolls
-
     function scrollToBottom() {
         let terminal = document.getElementById("gameOutputContainer");
         setTimeout(() => {
@@ -111,30 +105,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 10); // Small delay to ensure content is rendered before scrolling
     }
 
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+    // Type writer effect for the game
+    //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
+    // declare varabiables (We need an index, the text and the speed)
+    var i = 0; 
+    var txt = 'A long time ago...'; 
+    var speed = 150; 
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-    // End of Menu for game.js
-
-    // declare varabiables
-    var i = 0; // Starting at 0, increases through the string txt as each letter is outputted
-    var txt = 'A long time ago...'; // String to be wrote out through the typewriter
-    var speed = 150; // Speed or how long it will take to output the string
-
-    // Declare Function name which will be called in menu.js when the user enters 1 to start the game
     function typeWriter() {
-        // Find h1 id 
         var titleElement = document.getElementById("gameBeginsTitle");
-        // Start outputting the string to h1m passing and maintaining one letter at a time
         if (i < txt.length) {
             titleElement.innerHTML += txt.charAt(i);
             i++;
             setTimeout(typeWriter, speed);
         }
     }
-
-    // Expose typeWriter globally, to be called in menu.js
-    window.typeWriter = typeWriter;
+    typeWriter();
 
     // **************************************************************************
     // Start of Game code & logic

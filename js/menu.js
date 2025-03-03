@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 switch (choice) {
                     // user selects 1 / Begin game so the menu is hidden and the header appears INSIDE terminal (this can be changed to outside if necessary)
                     case "1":
-                        window.location.replace("../html/game.html");
+                        window.location.replace("../html/game.html");        
                         break;
                     case "2":
                         addSystemMessage("Loading Game...");
