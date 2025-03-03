@@ -99,11 +99,7 @@
 }
 
 .inventory-description {
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.3s ease;
-    text-align: center; /* Center text horizontally */
-    transform: translateY(-10px); /* Start slightly above final position */
-    width: 100%; /* Ensure full width for proper centering */
+    display: none;
 }
 
 .inventory-item-container.expanded .inventory-item-details {
