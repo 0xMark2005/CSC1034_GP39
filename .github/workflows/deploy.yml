@@ -1,0 +1,22 @@
+name: Deploy to SFTP Server
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy via SFTP
+        uses: appleboy/scp-action@master
+        with:
+          host: "jdonnelly73.webhosting1.eeecs.qub.ac.uk"
+          username: "jdonnelly73"
+          password: "CHZHy02qM20fcLVt"
+          source: "."
+          target: "/httpdocs/files"
