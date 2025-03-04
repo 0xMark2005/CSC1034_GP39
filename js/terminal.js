@@ -47,7 +47,7 @@ export function outputMessage(message, color){
 
     terminalOutputContainer.appendChild(systemMessage);
     scrollToBottom();
-    console.log(color);
+    // console.log(color);
 }
 
 //function to scroll to the bottom of the terminal after output
