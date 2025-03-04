@@ -189,7 +189,7 @@ button {
   max-width: 600px;
   color: white;
   padding: 10px;
-  display: flex;
+  display: flex!important; /* Ensure visibility */
   flex-direction: column;
   justify-content: space-between;
   position: relative;

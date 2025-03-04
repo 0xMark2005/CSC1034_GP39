@@ -13,12 +13,15 @@
         <link rel="stylesheet" href="css/theme.css">
         <link rel="stylesheet" href="css/terminal.css">
         <link rel="stylesheet" href="css/game.css">
+
+        </style>
     </head>
     <body>
-        <div class="container" id="wordScramble" style="display: none;">
-            <h2>Word Scramble</h2>
+        <div id="wordScramble" style="display: none;">
+            <div id="game-container">
+                <h2 align="center"><img src="css/assets/images/word-scramble-title.png" alt="Word Scramble" title="Word Scramble"width="50%" ></h2>
             <div class="content">
-                <p class="word"></p>
+                <div id="paper-word"><p class="word" style="background-image: url('css/assets/images/paper-background.png');   background-repeat: no-repeat; width: 20%; text-align: center;" > </p></div> 
                 <div class="details">
                     <p class="hint">Hint: <span></span></p>
                     <p class="time">Time Left: <span><b>30</b>s</span></p>
@@ -28,6 +31,7 @@
                     <button class="refresh-word">Refresh Word</button>
                     <button class="check-word">Check Word</button>
                 </div>
+            </div>
             </div>
         </div>
 
