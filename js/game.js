@@ -490,7 +490,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Pick a random game
+    let introPartTwoCompleted = false; // Flag to track if a scenario from introPartTwo has been used
+
     function randomGameData() {
+        if (gameState.currentObject === introPartTwo && introPartTwoCompleted) {
+            return null; // No more scenarios from introPartTwo should be used
+        }
+
         const incompleteGames = gameState.currentObject.filter(game => !game.completed);
         if (incompleteGames.length === 0) {
             return null; // No incomplete games left
@@ -504,6 +510,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedGameData = randomGameData();
         if (!selectedGameData) {
             Terminal.outputMessage("No more scenarios available.", systemMessageColor);
+            if (gameState.currentObject === introPartTwo) {
+                introPartTwoCompleted = true;
+                wordScrambleGame();
+            }
             return;
         }
         gameState.currentScenario = selectedGameData; // Store the selected scenario
@@ -512,13 +522,13 @@ document.addEventListener('DOMContentLoaded', function() {
         Terminal.outputMessage(selectedGameData.intro, gameMessageColor);
         Terminal.outputMessage(selectedGameData.action, gameMessageColor);
         selectedGameData.options.forEach(option => Terminal.outputMessage(option.choice, gameMessageColor));
+
+        // Mark introPartTwo as completed if a scenario from it is used
+        if (gameState.currentObject === introPartTwo) {
+            introPartTwoCompleted = true;
+        }
     }
     
-    // Call the introduction / game starts
-    gameState.currentObject = introPartOne;
-    
-    outputIntroduction();
-
     function inputIntroduction(input) {
         const optionIndex = parseInt(input) - 1; 
     
@@ -565,11 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Mark the game as completed
             markGameAsCompleted(gameID);
-
-            // Check what the user should do now
             checkFollowUp(selectedOption, verb);
-            
-            // now game state should change so user can input a number
             currentState = 'introduction'; 
 
         } else {
@@ -644,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // We want the user to be able to complete the tasks in any order but should complete all three of the IntroPartOne
     function findIncompleteGame() {
         const availableGames = gameState.currentObject.filter(game => !game.completed);
-        
+
         if (availableGames.length > 0) {
             // Move to the next available game based on the order or random selection
             const nextGameIndex = Math.floor(Math.random() * availableGames.length);
@@ -653,9 +659,15 @@ document.addEventListener('DOMContentLoaded', function() {
             outputIntroduction();
         } else {
             console.log("No incomplete games left, so now we need to move the user to across to a new object");
-            // Assign the next object for the game to follow through with
-            gameState.currentObject = introPartTwo;
-            findIncompleteGame(); // Call the function again to start the next part
+            if (gameState.currentObject === introPartOne) {
+                gameState.currentObject = introPartTwo;
+                findIncompleteGame(); // Call the function again to start the next part
+            } else if (gameState.currentObject === introPartTwo) {
+                if (!introPartTwoCompleted) {
+                    introPartTwoCompleted = true;
+                    wordScrambleGame();
+                }
+            }
         }
     }
 
@@ -672,6 +684,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function wordScrambleGame() {
+        const wordScrambleElement = document.getElementById("wordScramble");
+        if (wordScrambleElement) {
+            wordScrambleElement.style.display = "block";
+        } else {
+            console.error("wordScramble element not found");
+            return;
+        }
+
         let words = [
             {
                 word: "addition",
@@ -681,26 +701,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 word: "meeting",
                 hint: "Event in which people come together"
             }
-        ]
+        ];
+
         const wordText = document.querySelector(".word"),
-        hintText = document.querySelector(".hint span"),
-        timeText = document.querySelector(".time b"),
-        inputField = document.querySelector("input"),
-        refreshBtn = document.querySelector(".refresh-word"),
-        checkBtn = document.querySelector(".check-word");
+            hintText = document.querySelector(".hint span"),
+            timeText = document.querySelector(".time b"),
+            inputField = document.querySelector("input"),
+            refreshBtn = document.querySelector(".refresh-word"),
+            checkBtn = document.querySelector(".check-word");
 
         let correctWord, timer;
+
         const initTimer = maxTime => {
             clearInterval(timer);
             timer = setInterval(() => {
-                if(maxTime > 0) {
+                if (maxTime > 0) {
                     maxTime--;
                     return timeText.innerText = maxTime;
                 }
                 alert(`Time off! ${correctWord.toUpperCase()} was the correct word`);
                 initGame();
             }, 1000);
-        }
+        };
+
         const initGame = () => {
             initTimer(30);
             let randomObj = words[Math.floor(Math.random() * words.length)];
@@ -711,23 +734,29 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             wordText.innerText = wordArray.join("");
             hintText.innerText = randomObj.hint;
-            correctWord = randomObj.word.toLowerCase();;
+            correctWord = randomObj.word.toLowerCase();
             inputField.value = "";
             inputField.setAttribute("maxlength", correctWord.length);
-        }
+        };
+
         initGame();
+
         const checkWord = () => {
             let userWord = inputField.value.toLowerCase();
-            if(!userWord) return alert("Please enter the word to check!");
-            if(userWord !== correctWord) return alert(`Oops! ${userWord} is not a correct word`);
+            if (!userWord) return alert("Please enter the word to check!");
+            if (userWord !== correctWord) return alert(`Oops! ${userWord} is not a correct word`);
             alert(`Congrats! ${correctWord.toUpperCase()} is the correct word`);
             initGame();
-        }
+        };
+
         refreshBtn.addEventListener("click", initGame);
         checkBtn.addEventListener("click", checkWord);
     }
     
-        
+    // Call the introduction / game starts
+    gameState.currentObject = introPartTwo;
+    outputIntroduction();
+
 
 
 });
