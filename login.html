@@ -1,37 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <!--Set the meta tags-->
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <!-- Set the meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!--Title-->
-        <title>ReignFall Login</title>
-        <link rel="icon" type="image/x-icon" href="assets/images/reignfall-logo.png">
+    <!-- Title -->
+    <title>ReignFall Login</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/reignfall-logo.png">
 
-        <!--CSS Import-->
-        <link rel="stylesheet" href="css/theme.css">
-        <link rel="stylesheet" href="css/login.css">
-        
-    </head>
-    <body>
-        <!-- Main Container Div -->
-        <div id="main-container">
+    <!-- CSS Import -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <main class="main">
+        <input type="checkbox" id="chk" aria-hidden="true">
 
-            <!-- Game Title -->
-            <div id="title">
-                <h1><img src="assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall"width="60%" ></h1>
-            </div>
+        <!-- Sign Up Section -->
+        <section class="signup">
+            <form>
+                <label for="chk" aria-hidden="true">Sign Up</label>
+                <p style="text-align: center;">Please sign up to access the game!</p>
+                <div>
+                    <input type="text" name="username" placeholder="Username" required aria-label="Username">
+                </div>
+                <div>
+                    <input type="password" name="password" placeholder="Password" required aria-label="Password">
+                </div>
+                <div>
+                    <input type="password" name="confirmPassword" placeholder="Confirm Password" required aria-label="Confirm Password">
+                </div>
+                <div class="button-container">
+                    <button type="submit">Sign Up</button>
+                </div>
+            </form>
+        </section>
 
-            <!-- Login Form -->
-            <div id="loginForm">
-                <h2>Login</h2>
-                <input type="text" id="username" class="standardtextfield" placeholder="Username" value="Admin" />
-                <input type="password" id="password" class="standardtextfield" placeholder="Password" value="Admin!1234" />
+        <!-- Login Section -->
+        <section class="login">
+            <form>
+                <label for="chk" aria-hidden="true">Login</label>
+                <p style="text-align: center;">Please log in to access your account!</p>
+                <div>
+                    <input type="text" id="loginUsername" name="loginUsername" placeholder="Username" value="Admin">
 
-                <!-- An element to toggle between password visibility -->
+                </div>
+                <div>
+                    <input type="password" id="loginPassword" name="loginPassword" placeholder="Password" value="Admin!1234">
+                </div>
+
+                <!-- Password visibility toggle -->
                 <div class="checkbox-wrapper-3">
-                    <input type="checkbox" id="cbx-3" onclick="changePasswordToClear()"/>
+                    <input type="checkbox" id="cbx-3" onclick="changePasswordToClear()">
                     <label for="cbx-3" class="toggle">
                         <span></span>
                     </label>
@@ -39,14 +60,15 @@
                 </div>
 
                 <div class="button-container">
-                    <button id="submitLogin" style="width: 100%;">Login</button>
+                    <button type="submit" id="submitLogin">Login</button>
                 </div>
-            </div>
+            </form>
+        </section>
+    </main>
 
-        </div>
-
-        <!-- JavaScript Import -->
-        <script src="js/validation.js"></script>
-        <script src="js/login.js"></script>
-    </body>
+    <!-- JavaScript Import -->
+    <script src="js/validation.js" defer></script>
+    <script src="js/login.js" defer></script>
+    <script src="js/signup.js" defer></script>
+</body>
 </html>

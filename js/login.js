@@ -1,24 +1,22 @@
-//Add events after page has loaded
-document.addEventListener("DOMContentLoaded", function () {
+document.getElementById("submitLogin").addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent form submission
 
-    // Validate login credentials
-    document.getElementById("submitLogin").onclick = function () {
-        var username = document.getElementById("username").value;
-        var password = document.getElementById("password").value;
+    var username = document.getElementById("loginUsername").value;
+    var password = document.getElementById("loginPassword").value;
 
-        // Validate username and password
-        if (!validateUsernameInput(username) || !validatePasswordInput(password)) {
-            return; 
-        }
+    // Validate username and password
+    if (!validateUsernameInput(username) || !validatePasswordInput(password)) {
+        return; 
+    }
 
-        // Now, both username and password are valid. Check credentials
-        if (username === "Admin" && password === "Admin!1234") {
-            window.location.href = "main_menu.html"
-        } else {
-            alert("Invalid credentials. Please try again.");
-        }
-    };
+    // Now, both username and password are valid. Check credentials
+    if (username === "Admin" && password === "Admin!1234") {
+        window.location.href = "main_menu.html";
+    } else {
+        alert("Invalid credentials. Please try again.");
+    }
 });
+
 
 
 //-----
@@ -58,7 +56,7 @@ function validateUsernameInput(username) {
 
 //
 function changePasswordToClear() {
-    var x = document.getElementById("password");
+    var x = document.getElementById("loginPassword");
     if (x.type === "password") {
       x.type = "text";
     } else {
