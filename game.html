@@ -18,16 +18,22 @@
     </head>
     <body>
         <div id="wordScramble" style="display: none;">
-            <div id="game-container">
+            <div id="game-container" style="border-radius: 8px; margin-bottom: 15px;">
                 <h2 align="center"><img src="css/assets/images/word-scramble-title.png" alt="Word Scramble" title="Word Scramble"width="50%" ></h2>
             <div class="content">
-                <div id="paper-word"><p class="word" style="background-image: url('css/assets/images/paper-background.png');   background-repeat: no-repeat; width: 20%; text-align: center;" > </p></div> 
+                
+                <div class="paper-word">
+                    <img src="css/assets/images/paper-background.png" alt="background" style="width:50%;">
+                    <div class="centered">
+                        <p class="word"></p>
+                    </div> 
+                </div> 
                 <div class="details">
-                    <p class="hint">Hint: <span></span></p>
+                    <p class="hint"><i>"<span></span>"</i></p>
                     <p class="time">Time Left: <span><b>30</b>s</span></p>
                 </div>
-                <input type="text" spellcheck="false" placeholder="Enter a valid word">
-                <div class="buttons">
+                <input class="standardtextfield" type="text" spellcheck="false" placeholder="Enter a valid word">
+                <div class="button-container">
                     <button class="refresh-word">Refresh Word</button>
                     <button class="check-word">Check Word</button>
                 </div>

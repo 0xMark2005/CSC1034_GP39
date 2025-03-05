@@ -24,7 +24,7 @@
 
 #game-container {
     background-color: #283D2F;
-    border-radius: 8px 8px 0px 0px;
+    border-radius: 8px;
     width: 100%;
     max-width: 600px;
     color: white;
@@ -33,18 +33,36 @@
     flex-direction: column;
     justify-content: space-between;
     position: relative;
+    margin-bottom: 15px;
   }
-  
 
-#game-container ~ #main-container {
-border-radius: 0px 0px 8px 8px;
+  .paper-word {
+    position: relative;
+    text-align: center;
+    display: inline-block; 
+    color: rgba(0, 0, 0, 0.678);
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 5px;
 }
 
-#paper-word
-{
+.paper-word img {
+    display: block; 
+    width: 50%; 
+    margin: auto; 
+}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
     text-align: center;
-    background-image: url("css/assets/images/paper-background.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.details {
+    text-align: center;
+    justify-content: center;
 }
