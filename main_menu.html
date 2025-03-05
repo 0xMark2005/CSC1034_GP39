@@ -79,5 +79,97 @@
         <!-- JavaScript Import -->
         <script type="module" src="js/menu.js"></script>
         <script src="js/settings.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                fetch('includes/get_tools.php') // Ensure correct path to PHP file
+                    .then(response => response.json())
+                    .then(data => {
+                        const container = document.getElementById('inventory');
+                        if (!container) return;
+            
+                        container.innerHTML = "";
+            
+                        if (!data || data.length === 0) {
+                            container.textContent = "No tools found in the inventory.";
+                        } else {
+                            data.forEach(tool => {
+                                const toolDiv = document.createElement('div');
+                                toolDiv.classList.add('inventory-item-container');
+            
+                                const img = document.createElement('img');
+                                img.src = tool.itemImgThumbnail;
+                                img.alt = tool.itemName;
+                                img.title = tool.itemName;
+            
+                                // Create the details div
+                                const detailsDiv = document.createElement('div');
+                                detailsDiv.classList.add('inventory-item-details');
+            
+                                const nameElement = document.createElement('strong');
+                                nameElement.textContent = tool.itemName;
+            
+                                const descriptionElement = document.createElement('p');
+                                descriptionElement.classList.add('inventory-description');
+                                descriptionElement.textContent = tool.itemDescription || 'No description available';
+            
+                                detailsDiv.appendChild(nameElement);
+                                detailsDiv.appendChild(descriptionElement);
+            
+                                toolDiv.appendChild(img);
+                                toolDiv.appendChild(detailsDiv);
+                                container.appendChild(toolDiv);
+            
+                                // Handle click to expand/collapse
+                                toolDiv.addEventListener('click', () => {
+                                    // Close any other expanded items
+                                    document.querySelectorAll('.inventory-item-container').forEach(item => {
+                                        if (item !== toolDiv) {
+                                            item.classList.remove('expanded');
+                                            const desc = item.querySelector('.inventory-description');
+                                            if (desc) {
+                                                desc.classList.remove('show');
+                                                desc.classList.remove('marquee');
+                                            }
+                                        }
+                                    });
+            
+                                    // Toggle the clicked item s
+                                    toolDiv.classList.toggle('expanded');
+            
+                                    // If collapsing, immediately hide description
+                                    if (!toolDiv.classList.contains('expanded')) {
+                                        descriptionElement.classList.remove('show');
+                                        descriptionElement.classList.remove('marquee');
+                                    } else {
+                                        // If expanding, show description after delay
+                                        setTimeout(() => {
+                                            if (toolDiv.classList.contains('expanded')) {
+                                                descriptionElement.classList.add('show');
+                                                
+                                                // Check if the description text is wider than its container
+                                                // and apply marquee effect if needed
+                                                setTimeout(() => {
+                                                    // Need another timeout to ensure the element is rendered with proper styles
+                                                    const descWidth = descriptionElement.scrollWidth;
+                                                    const containerWidth = descriptionElement.clientWidth;
+                                                    
+                                                    if (descWidth > containerWidth) {
+                                                        descriptionElement.classList.add('marquee');
+                                                    } else {
+                                                        descriptionElement.classList.remove('marquee');
+                                                    }
+                                                }, 50);
+                                            }
+                                        }, 500);
+                                    }
+                                });
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching tools:", err);
+                    });
+            });
+        </script>
     </body>
 </html>

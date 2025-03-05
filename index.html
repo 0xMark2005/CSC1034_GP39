@@ -38,7 +38,7 @@
         <script src="js/index.js"></script>
         <script>
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('../includes/get_tools.php') // Ensure correct path to PHP file
+            fetch('includes/get_tools.php') // Ensure correct path to PHP file
                 .then(response => response.json())
                 .then(data => {
                     const container = document.getElementById('inventory');
