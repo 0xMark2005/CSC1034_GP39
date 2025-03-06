@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameUserInput = document.getElementById("user-input"); //needed for the keypress event
 
     let currentState = 'introduction'; // Track the current game state
-
+    let usedAllies = []; // To track during the game add allies to the array to ensure user only selects one ally if that makes sense.
     // Detect when the user presses Enter
     gameUserInput.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
@@ -32,7 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     case 'verbSelection':
                         handleVerbSelection(choice);
                         break;
-                        // Add more states as needed
+                    case 'gameBattle':
+                        handleBattle(choice);
+                        break;
+                    case 'allyAction':
+                        handleAllyMovementSelection(choice);
+                        break;
                     default:
                         Terminal.outputMessage("Invalid state. Try again!", systemMessageColor);
                         break;
@@ -57,26 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to handle the verb selection after the introduction stage
     function handleVerbSelection(choice) {
         inputIntroductionVerb(choice); // Assuming inputIntroductionVerb is properly defined elsewhere
-    }
-
-    // Function to add system messages and game messages. 
-    // (System message will be the user input)
-    function addSystemMessage(message, color = "#FFFFFF") {
-        const systemMessage = document.createElement("li");
-        systemMessage.textContent = message;
-        systemMessage.style.color = color;
-        terminalOutputContainer.appendChild(systemMessage);
-        scrollToBottom();
-    }
-
-    // GameMessage is the game output
-    function addGameMessage(message, color = "#00FF00") {
-        const systemMessage = document.createElement("li");
-        systemMessage.textContent = message;
-        systemMessage.style.color = color;
-        systemMessage.style.fontSize = '12px';
-        terminalOutputContainer.appendChild(systemMessage);
-        scrollToBottom();
     }
 
     // Code to ensure terminal stays at bottom and scrolls
@@ -413,45 +398,72 @@ document.addEventListener('DOMContentLoaded', function() {
     // The user's characters array, with multiple discussions done this can be changed at anytime
     // This should be saved to the database as well I think
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-    var userCharacter = new Array();
-    userCharacter = [{
+    var userCharacter = [{
         name: "Will be loaded from db",
-        hunger: 0.4, // Should this be random each time the game starts
-        reputation: 0.6, // Should this be random each time the game starts
-        inventory: [{
-                item1: "Null",
-                durability: "1.0",
-                strength: 0.75
+        hunger: 0.4,
+        reputation: 0.6,
+        inventory: [
+            {
+                name: "Sword",
+                durability: 1.0,
+                strength: 2.5 // Significantly increased strength
             },
             {
-                item2: "Null",
-                durability: "1.0",
-                strength: 0.75
+                name: "Shield",
+                durability: 1.0,
+                strength: 1.5 // Increased strength as it's defensive but still useful
             },
             {
-                item3: "Null",
-                durability: "1.0",
-                strength: 0.75
-            },
-            {
-                item4: "Null",
-                durability: "1.0",
-                strength: 0.75
-            },
-            {
-                item5: "Null",
-                durability: "1.0",
-                strength: 0.75
-            },
+                name: "Potion",
+                durability: 1.0,
+                strength: 1.0 // Potions now have some attack value
+            }
         ],
-        gainedAllies: [ 
+        gainedAllies: [
             {
-                userAllyIndex: 1,
-                friendshipLevel: 0.5
+                allyName: "Kings Disowned Bastard",
+                friendshipLevel: 0.5,
+                strength: 3.0, // Increased strength
+                defense: 1.0,
+                health: 50,
+                maxHealth: 50,
+                assignedItem: { name: "Potion", durability: 1.0, strength: 1.0 },
+                isDefending: false
+            },
+            {
+                allyName: "General Grievous",
+                friendshipLevel: 0.5,
+                strength: 4.0, // Increased strength
+                defense: 1.2,
+                health: 45,
+                maxHealth: 45,
+                assignedItem: { name: "Sword", durability: 1.0, strength: 2.5 },
+                isDefending: false
+            },
+            {
+                allyName: "Obe Wan Kenboi",
+                friendshipLevel: 0.5,
+                strength: 3.5, // Increased strength
+                defense: 1.5,
+                health: 55,
+                maxHealth: 55,
+                assignedItem: { name: "Shield", durability: 1.0, strength: 1.5 },
+                isDefending: false
             }
         ]
-    }]
+    }];
+    
+    // Make sure enemies have reasonable stats too
+    var enemies = [
+        {
+            name: "Dark Knight",
+            health: 100,
+            maxHealth: 100,
+            strength: 3.0,
+            defense: 1.5, // Reduced defense to allow damage to get through
+            description: "A fearsome knight clad in dark armor."
+        }
+    ];
 
     // Function to output user details to the terminal
     function outputUser() {
@@ -494,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function randomGameData() {
         if (gameState.currentObject === introPartTwo && introPartTwoCompleted) {
-            return null; // No more scenarios from introPartTwo should be used
+            return null; 
         }
 
         const incompleteGames = gameState.currentObject.filter(game => !game.completed);
@@ -692,6 +704,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+
         let words = [
             {
                 word: "addition",
@@ -743,9 +756,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const checkWord = () => {
             let userWord = inputField.value.toLowerCase();
-            if (!userWord) return alert("Please enter the word to check!");
-            if (userWord !== correctWord) return alert(`Oops! ${userWord} is not a correct word`);
-            alert(`Congrats! ${correctWord.toUpperCase()} is the correct word`);
+            if (!userWord) return console.log("Please enter the word to check!");
+            if (userWord !== correctWord) return console.log(`Oops! ${userWord} is not a correct word`);
+            console.log(`Congrats! ${correctWord.toUpperCase()} is the correct word`);
             initGame();
         };
 
@@ -754,9 +767,240 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Call the introduction / game starts
-    gameState.currentObject = introPartTwo;
-    outputIntroduction();
+    // gameState.currentObject = introPartTwo;
+    // outputIntroduction();
 
+    // The beginning of the battle game
+// The beginning of the battle game
+function gameBattle(initiator, enemy) {
+    console.log("Beginning battle game");
+    if (initiator == 0) {
+        // User is the initiator
+        console.log("User is the initiator");
+        Terminal.outputMessage(`You have initiated a battle against ${enemies[0].name}`, systemMessageColor);
+        // Output all of the available allies the user can select from
+        Terminal.outputMessage("Select an ally to use in the battle:", systemMessageColor);
+        // Output the user's allies
+        for (let i = 0; i < userCharacter[0].gainedAllies.length; i++) {
+            Terminal.outputMessage(`${i}. ${userCharacter[0].gainedAllies[i].allyName}`, systemMessageColor);
+        }
+        console.log("Users ally has been selected");
+        // Change the menu system to facilitate the user selecting an ally
+        currentState = 'gameBattle';
+    }
+}
+    gameBattle(0, enemies[0]);
 
+    function handleBattle(choice) {
+        // Check if the user has selected a valid ally
+        if (choice >= 0 && choice < userCharacter[0].gainedAllies.length) {
+            // User has selected a valid ally
+            const selectedAlly = userCharacter[0].gainedAllies[choice];
+            if (usedAllies.includes(selectedAlly)) {
+                Terminal.outputMessage(`${selectedAlly.allyName} has already been used this round. Select another ally.`, systemMessageColor);
+                return;
+            }
+            usedAllies.push(selectedAlly);
+            Terminal.outputMessage(`You have selected ${selectedAlly.allyName}`, gameMessageColor);
+            console.log(`You have selected ${selectedAlly.allyName}`);
 
+            // Ask the user what they would like to do with their ally
+            Terminal.outputMessage("What would you like to do with this ally?", systemMessageColor);
+            Terminal.outputMessage("1. Attack", systemMessageColor);
+            Terminal.outputMessage("2. Defend", systemMessageColor);
+            Terminal.outputMessage("3. Heal an ally", systemMessageColor);
+
+            currentState = 'allyAction';
+            gameState.selectedAlly = selectedAlly; // Store the selected ally in the game state
+        } else {
+            Terminal.outputMessage("Invalid choice! Please select a valid ally number.", systemMessageColor);
+        }
+    }
+
+    // Allow the user to be able to select each of the allies and pass in what they would like to do with each ally 
+    function handleAllyMovementSelection(choice) {
+        const selectedAlly = gameState.selectedAlly;
+        if (!selectedAlly) {
+            Terminal.outputMessage("No ally selected! Please select an ally first.", systemMessageColor);
+            currentState = 'gameBattle';
+            return;
+        }
+
+        switch (choice) {
+            case '1':
+                Terminal.outputMessage(`${selectedAlly.allyName} is attacking!`, gameMessageColor);
+                console.log(`${selectedAlly.allyName} is attacking!`);
+                // Simulate the attack
+                simulateAttack(selectedAlly);
+                break;
+            case '2':
+                Terminal.outputMessage(`${selectedAlly.allyName} is defending!`, gameMessageColor);
+                console.log(`${selectedAlly.allyName} is defending!`);
+                // Simulate the defense
+                simulateDefense(selectedAlly);
+                break;
+            case '3':
+                Terminal.outputMessage(`${selectedAlly.allyName} is healing an ally!`, gameMessageColor);
+                console.log(`${selectedAlly.allyName} is healing an ally!`);
+                // Simulate the healing
+                simulateHealing(selectedAlly);
+                break;
+            default:
+                Terminal.outputMessage("Invalid choice! Please select option 1, 2, or 3.", systemMessageColor);
+                break;
+        }
+
+        // Check if all allies have had their turn
+        if (usedAllies.length === userCharacter[0].gainedAllies.length) {
+            // All allies have had their turn, now it's the enemy's turn
+            simulateEnemyTurn();
+            // Reset used allies for the next round
+            usedAllies = [];
+        } else {
+            // Prompt the user to select the next ally
+            Terminal.outputMessage("Select the next ally to use in the battle:", systemMessageColor);
+            for (let i = 0; i < userCharacter[0].gainedAllies.length; i++) {
+                if (!usedAllies.includes(userCharacter[0].gainedAllies[i])) {
+                    Terminal.outputMessage(`${i}. ${userCharacter[0].gainedAllies[i].allyName}`, systemMessageColor);
+                }
+            }
+            currentState = 'gameBattle';
+        }
+    }
+    function simulateAttack(ally) {
+        // Fix the attack logic here
+        let baseAttackPower = ally.strength * ally.assignedItem.strength;
+        
+        console.log(`Base attack power: ${ally.strength} * ${ally.assignedItem.strength} = ${baseAttackPower}`);
+    
+        let enemy = enemies[0]; 
+        
+        // Calculate damage by subtracting enemy defense from attack power
+        // Ensure a minimum damage of at least 10% of base attack power idk any other logic for this
+
+        let damage = Math.max(baseAttackPower * 5, baseAttackPower - enemy.defense);
+        
+        console.log(`Effective damage after considering enemy's defense (${enemy.defense}): ${damage}`);
+    
+        // Output the result of the attack
+        Terminal.outputMessage(`${ally.allyName} attacks ${enemy.name} with ${damage.toFixed(1)} damage!`, gameMessageColor);
+    
+        // Reduce enemy's health by the calculated damage
+        enemy.health -= damage;
+        console.log(`Enemy's remaining health: ${enemy.health.toFixed(2)}`);
+    
+        // Check if the enemy is defeated
+        if (enemy.health <= 0) {
+            Terminal.outputMessage(`${enemy.name} is defeated!`, gameMessageColor);
+            checkBattleOutcome();
+        } else {
+            Terminal.outputMessage(`${enemy.name} has ${enemy.health.toFixed(2)} health remaining.`, gameMessageColor);
+        }
+    }
+    
+    
+    function startNewRound() {
+        // Reset used allies for the next round
+        usedAllies = [];
+        
+        // Prompt the user to select the next ally
+        Terminal.outputMessage("--- New Round ---", gameMessageColor);
+        Terminal.outputMessage("Select an ally to use in the battle:", systemMessageColor);
+        for (let i = 0; i < userCharacter[0].gainedAllies.length; i++) {
+            Terminal.outputMessage(`${i}. ${userCharacter[0].gainedAllies[i].allyName}`, systemMessageColor);
+        }
+        currentState = 'gameBattle';
+    }
+    
+    function checkBattleOutcome() {
+        // Check if the battle is over
+        let enemy = enemies[0];
+        
+        if (enemy.health <= 0) {
+            Terminal.outputMessage("You have defeated the enemy!", gameMessageColor);
+            currentState = 'introduction'; // Reset to introduction state after battle
+            return true; // Battle is over
+        } else if (userCharacter[0].gainedAllies.every(ally => ally.health <= 0)) {
+            Terminal.outputMessage("All your allies have been defeated!", systemMessageColor);
+            currentState = 'introduction'; // Reset to introduction state after battle
+            return true; // Battle is over
+        }
+        
+        return false; // Battle continues
+    }
+
+    function simulateDefense(ally) {
+        Terminal.outputMessage(`${ally.allyName} is defending!`, gameMessageColor);
+        console.log(`${ally.allyName} is defending`);
+    
+        // Set a defending flag on the ally
+        ally.isDefending = true;
+    
+        // Increase defense while in defensive stance
+        ally.defense += 10;  // You can tweak this value for the defensive boost
+    
+        Terminal.outputMessage(`${ally.allyName} raises their guard and is protected from the next enemy attack!`, gameMessageColor);
+    }
+
+    
+    
+    function simulateEnemyTurn() {
+        // Implement the enemy's turn logic here
+        Terminal.outputMessage("The enemy is attacking!", systemMessageColor);
+    
+        let enemy = enemies[0];
+    
+        // Loop through each ally and randomly decide if the enemy attacks them
+        userCharacter[0].gainedAllies.forEach(ally => {
+            // If the ally is defending, reduce the damage by a factor (e.g., 50% less damage)
+            let damageReduction = ally.isDefending ? 0.5 : 1.0;
+    
+            // Randomly determine if the ally will be attacked
+            if (Math.random() < 0.75) { // 75% chance to attack each ally
+                // Calculate enemy damage with a minimum damage floor
+                let enemyAttackPower = enemy.strength || 2; // Default to 2 if strength is not defined
+                let enemyDamage = Math.max(enemyAttackPower * 0.1, enemyAttackPower - ally.defense);
+    
+                // Apply damage reduction if the ally is defending
+                enemyDamage *= damageReduction;
+
+                // Introduce a dodge chance for the ally
+                let dodgeChance = 0.2; // 20% chance to dodge
+                if (Math.random() < dodgeChance) {
+                    Terminal.outputMessage(`${ally.allyName} dodged the enemy's attack!`, systemMessageColor);
+                } else {
+                    ally.health -= enemyDamage; // Apply damage
+    
+                    // Output the result of the enemy's attack
+                    Terminal.outputMessage(`${ally.allyName} was attacked by the enemy for ${enemyDamage.toFixed(1)} damage! Health remaining: ${Math.max(0, ally.health).toFixed(1)}`, systemMessageColor);
+    
+                    // Reset the ally's defense after being attacked (optional based on your game design)
+                    if (ally.isDefending) {
+                        ally.isDefending = false;
+                        ally.defense -= 10;  // Revert defense boost after the attack
+                    }
+                }
+            } else {
+                Terminal.outputMessage(`${ally.allyName} dodged the enemy's attack!`, systemMessageColor);
+            }
+        });
+    
+        // Check if battle is over
+        if (checkBattleOutcome()) {
+            // Battle is over, no need to continue
+            return;
+        }
+    
+        // Start the next round by allowing the player to select allies again
+        startNewRound();
+    }
+    
+
+    function simulateHealing(ally) {
+        // Implement the healing logic here
+        Terminal.outputMessage(`${ally.allyName} heals an ally!`, gameMessageColor);
+        // Example: Heal a random ally
+        const randomAlly = userCharacter[0].gainedAllies[Math.floor(Math.random() * userCharacter[0].gainedAllies.length)];
+        randomAlly.health = Math.min(randomAlly.maxHealth, randomAlly.health + 20);
+    }
 });
