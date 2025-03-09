@@ -1,132 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <!--Set the meta tags-->
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReignFall</title>
+    <link rel="icon" type="image/x-icon" href="css/assets/images/reignfall-logo.png">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
 
-        <!--Title & Logo-->
-        <title>ReignFall</title>
-        <link rel="icon" type="image/x-icon" href="css/assets/images/reignfall-logo.png">
+    <div id="main-container" class="centered"> 
 
-        <!-- CSS Import -->
-        <link rel="stylesheet" href="css/theme.css">
-        <link rel="stylesheet" href="css/index.css">
+        <!-- Game Title (Always Visible) -->
+        <div id="title">
+            <h1>
+                <img src="css/assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall" width="80%">
+            </h1>
+        </div>
 
-    </head>
-    <body>
-        <!-- Main Container Div -->      
-        <div id="main-container"> 
-
-            <!-- Game Title -->   
-            <div id="title">
-                <h1><img src="css/assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall"width="60%" ></h1>
+        <!-- Outer Container (Always Present) -->
+        <div id="index-options-container">
+            
+            <!-- Menu Screen (Default Active) -->
+            <div id="menu-screen" class="screen active">
+                <h2>Log In or Sign Up</h2>
+                <div class="button-container">
+                    <button class="index-menu-button" onclick="showLoginScreen()">
+                        <img src="css/assets/images/waving guy.gif" alt="Existing User">
+                        <span>Existing Users</span>
+                    </button>
+                    
+                    <button class="index-menu-button" onclick="showCreateAccountScreen()">
+                        <img src="css/assets/images/newcharacter.gif" alt="New User">
+                        <span>New Users</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Buttons To allow the user to login or Sign Up -->
-            <div class="button-container">
-                <button id="login-button">Login</button>
-                <button id="signup-button">Sign Up</button>
+            <!-- Login Screen (Initially Hidden) -->
+            <div id="login-screen" class="screen">
+                <div class="login-header">
+                    <img src="css/assets/images/waving guy.gif" alt="Existing User">
+                    <h2>Existing Users</h2>
+                </div>
+                <input type="text" placeholder="Username">
+                <input type="password" placeholder="Password">
+                <button class="login-button">LOGIN</button>
+                <a href="#" onclick="showMenuScreen()">Go Back</a>
+            </div>
+
+            <!-- Create Account Screen (Initially Hidden) -->
+            <div id="create-account-screen" class="screen">
+                <div class="login-header">
+                    <img src="css/assets/images/newcharacter.gif" alt="New User">
+                    <h2>Create an Account</h2>
+                </div>
+                <input type="text" placeholder="Username">
+                <input type="email" placeholder="Email">
+                <input type="password" placeholder="Password">
+                <button class="login-button">CREATE</button>
+                <a href="#" onclick="showMenuScreen()">Go Back</a>
             </div>
 
         </div>
-        
-   
-        <!-- JavaScript Import -->
-        <script src="js/menu.js"></script>
-        <script src="js/settings.js"></script>
-        <script src="js/index.js"></script>
-        <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            fetch('includes/get_tools.php') // Ensure correct path to PHP file
-                .then(response => response.json())
-                .then(data => {
-                    const container = document.getElementById('inventory');
-                    if (!container) return;
-        
-                    container.innerHTML = "";
-        
-                    if (!data || data.length === 0) {
-                        container.textContent = "No tools found in the inventory.";
-                    } else {
-                        data.forEach(tool => {
-                            const toolDiv = document.createElement('div');
-                            toolDiv.classList.add('inventory-item-container');
-        
-                            const img = document.createElement('img');
-                            img.src = tool.itemImgThumbnail;
-                            img.alt = tool.itemName;
-                            img.title = tool.itemName;
-        
-                            // Create the details div
-                            const detailsDiv = document.createElement('div');
-                            detailsDiv.classList.add('inventory-item-details');
-        
-                            const nameElement = document.createElement('strong');
-                            nameElement.textContent = tool.itemName;
-        
-                            const descriptionElement = document.createElement('p');
-                            descriptionElement.classList.add('inventory-description');
-                            descriptionElement.textContent = tool.itemDescription || 'No description available';
-        
-                            detailsDiv.appendChild(nameElement);
-                            detailsDiv.appendChild(descriptionElement);
-        
-                            toolDiv.appendChild(img);
-                            toolDiv.appendChild(detailsDiv);
-                            container.appendChild(toolDiv);
-        
-                            // Handle click to expand/collapse
-                            toolDiv.addEventListener('click', () => {
-                                // Close any other expanded items
-                                document.querySelectorAll('.inventory-item-container').forEach(item => {
-                                    if (item !== toolDiv) {
-                                        item.classList.remove('expanded');
-                                        const desc = item.querySelector('.inventory-description');
-                                        if (desc) {
-                                            desc.classList.remove('show');
-                                            desc.classList.remove('marquee');
-                                        }
-                                    }
-                                });
-        
-                                // Toggle the clicked item s
-                                toolDiv.classList.toggle('expanded');
-        
-                                // If collapsing, immediately hide description
-                                if (!toolDiv.classList.contains('expanded')) {
-                                    descriptionElement.classList.remove('show');
-                                    descriptionElement.classList.remove('marquee');
-                                } else {
-                                    // If expanding, show description after delay
-                                    setTimeout(() => {
-                                        if (toolDiv.classList.contains('expanded')) {
-                                            descriptionElement.classList.add('show');
-                                            
-                                            // Check if the description text is wider than its container
-                                            // and apply marquee effect if needed
-                                            setTimeout(() => {
-                                                // Need another timeout to ensure the element is rendered with proper styles
-                                                const descWidth = descriptionElement.scrollWidth;
-                                                const containerWidth = descriptionElement.clientWidth;
-                                                
-                                                if (descWidth > containerWidth) {
-                                                    descriptionElement.classList.add('marquee');
-                                                } else {
-                                                    descriptionElement.classList.remove('marquee');
-                                                }
-                                            }, 50);
-                                        }
-                                    }, 500);
-                                }
-                            });
-                        });
-                    }
-                })
-                .catch(err => {
-                    console.error("Error fetching tools:", err);
-                });
-        });
-    </script>
-    </body>
+    </div>
+
+    <script src="js/index.js"></script>
+
+</body>
 </html>
