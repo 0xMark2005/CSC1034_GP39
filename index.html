@@ -52,22 +52,35 @@
                 </div>
                 <input type="text" placeholder="Username">
                 <input type="password" placeholder="Password">
-                <button class="login-button">LOGIN</button>
+                <button class="login-button" onclick="handleLogin()">LOGIN</button>
+                <p id="login-error" style="color: red; display: none;"></p>
                 <a href="#" onclick="showMenuScreen()">Go Back</a>
             </div>
 
             <!-- Create Account Screen (Initially Hidden) -->
             <div id="create-account-screen" class="screen">
                 <div class="login-header">
-                    <img src="css/assets/images/newcharacter.gif" alt="New User">
+                    <img src="css/assets/images/waving guy.gif" alt="New User">
                     <h2>Create an Account</h2>
                 </div>
-                <input type="text" placeholder="Username">
-                <input type="email" placeholder="Email">
-                <input type="password" placeholder="Password">
-                <button class="login-button">CREATE</button>
+                <input type="text" id="register-username" placeholder="Username">
+                <input type="password" id="register-password" placeholder="Password">
+            
+                <!-- Password Visibility Toggle -->
+                <div class="checkbox-wrapper-3">
+                    <input type="checkbox" id="cbx-register" onclick="togglePasswordVisibility('register-password')">
+                    <label for="cbx-register" class="toggle">
+                        <span></span>
+                    </label>
+                    <span class="toggle-text">Show Password</span>
+                </div>
+            
+                <button class="login-button" onclick="handleRegister()">CREATE</button>
+                <p id="register-error" style="color: red; display: none;"></p>
                 <a href="#" onclick="showMenuScreen()">Go Back</a>
             </div>
+            
+            
 
         </div>
     </div>
