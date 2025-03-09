@@ -16,6 +16,11 @@ body {
   align-items: center;
 }
 
+body.high-contrast {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
 /** Style Header One's content **/
 h1 {
   font-size: 2.5em;
@@ -193,6 +198,21 @@ button {
   flex-direction: column;
   justify-content: space-between;
   position: relative;
+}
+
+body.high-contrast #main-container {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+body.high-contrast #output-terminal {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+body.high-contrast #input-terminal {
+    background-color: #000000;
+    color: #FFFFFF;
 }
 
 @media (max-width: 768px) {

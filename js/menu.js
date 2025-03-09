@@ -1,10 +1,10 @@
 import * as Terminal from "./terminal.js";
-
+import SettingsManager from "./settingsManager.js";
 document.addEventListener("DOMContentLoaded", function () {
     
     //initialize the terminal
     Terminal.initialize();
-
+    const currentSettings = SettingsManager.applySettings();
     //get the user-input element
     const userInput = document.getElementById("user-input");
 
@@ -26,9 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         Terminal.outputMessage("Loading Game...", "#00FF00");
                         break;
                     case "3":
-                        document.getElementById("gameBegins").style.display = "none";
-                        document.getElementById("menu").style.display = "none";
-                        document.getElementById("userSettings").style.display = "block";
+                        window.location.replace("settings.html");  
                         break;
                     case "4":
                         Terminal.outputMessage("Logging Out...", "#FF8181");
