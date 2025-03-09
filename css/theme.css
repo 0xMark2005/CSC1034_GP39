@@ -29,6 +29,13 @@ body::before {
   background: rgba(46, 46, 46, 0.776);  /* 10% opacity overlay */
   z-index: -1;
 }
+}
+
+body.high-contrast {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
 /** Style Header One's content **/
 h1 {
   font-size: 2.5em;
