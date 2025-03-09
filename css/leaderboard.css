@@ -1,0 +1,106 @@
+.leaderboard {
+    background-color: #2A2A2A;
+    color: #FFFFFF;
+    width: 50%;
+    max-width: 600px;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.leaderboard h2 {
+    font-size: 2rem;
+}
+
+.leaderboard ol {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.leaderboard .header,
+.leaderboard li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+}
+
+.leaderboard .header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    background-color: #404040;
+    margin-bottom: 5px;
+    padding: 10px;
+}
+
+.leaderboard .header div,
+.leaderboard li div {
+    text-align: center;
+}
+
+/* Force Rank and Score to be small and Name to be large */
+.leaderboard .rank {
+    flex: 0 0 50px;
+    width: 50px;
+    text-align: left;
+}
+
+.leaderboard .name {
+    flex: 1;
+    text-align: center;
+}
+
+.leaderboard .score {
+    flex: 0 0 80px;
+    width: 80px;
+    text-align: right;
+}
+
+.leaderboard li {
+    border-bottom: 1px solid rgba(153,145,105,255);
+}
+
+.leaderboard li:last-child {
+    border-bottom: none;
+}
+
+.leaderboard::-webkit-scrollbar {
+    width: 8px;
+}
+
+.leaderboard::-webkit-scrollbar-track {
+    background: #595959;
+    border-radius: 10px;
+}
+
+.leaderboard::-webkit-scrollbar-thumb {
+    background: #404040;
+    border-radius: 10px;
+}
+
+.leaderboard li:nth-child(1) {
+    background: gold;
+    color: black;
+    font-weight: bold;
+}
+
+.leaderboard li:nth-child(2) {
+    background: silver;
+    color: black;
+    font-weight: bold;
+}
+
+.leaderboard li:nth-child(3) {
+    background: #cd7f32;
+    color: black;
+    font-weight: bold;
+}
+
+

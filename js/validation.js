@@ -33,6 +33,23 @@ function validatePasswordInput(password) {
 
 window.validatePasswordInput = validatePasswordInput;
 
+//Ensure passwords entered into signup match
+function validatePasswordRepeat(password1,password2)
+{
+    //Check if passwords are the same
+    if(password1 == pasword2)
+    {
+        return true;
+    }
+    else
+    {
+        alert("Passwords entered must be the same");
+        return false;
+    }
+}
+
+window.validatePasswordRepeat = validatePasswordRepeat;
+
 // Username Validation (Only letters and numbers allowed)
 function validateUsernameInput(username) {
     // Trim spaces
