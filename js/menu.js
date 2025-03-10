@@ -5,6 +5,15 @@ document.addEventListener("DOMContentLoaded", function () {
     //initialize the terminal
     Terminal.initialize();
     const currentSettings = SettingsManager.applySettings();
+
+
+     // Retrieve username from session (stored during login)
+     let username = localStorage.getItem("username");
+     if (username) {
+         Terminal.outputMessage(`Hello, ${username}`, "#00FF00");
+     }
+
+     
     //get the user-input element
     const userInput = document.getElementById("user-input");
 

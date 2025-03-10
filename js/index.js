@@ -1,6 +1,9 @@
 // Add events after page has loaded
 document.addEventListener("DOMContentLoaded", function () {
-
+    if (localStorage.getItem("loggedIn") === "true") {
+        window.location.href = "main_menu.html";
+        return;
+    }
     // Button click events to open corresponding pages
     document.getElementById("login-button").onclick = function () {
         window.location.href = "login.html";
@@ -165,7 +168,7 @@ async function handleRegister() {
     params.append('query', query);
 
     try {
-        let response = await fetch('https://jdonnelly73.webhosting1.eeecs.qub.ac.uk/includes/db_connect.php', {
+        let response = await fetch('includes/db_connect.php', {
             method: 'POST',
             body: params
         });
