@@ -1,116 +1,195 @@
+window.appSettings = {
+    currentTextSize: "16px",
+    isHighContrast: false
+};
+
+import * as Terminal from "./terminal.js";
+
 document.addEventListener("DOMContentLoaded", function () {
-    const userInput = document.getElementById("userSettingsInput");
-    const userSettingsDiv = document.getElementById("userSettings");
-    // userSettingsDiv.style.display = "block"; Shows code straight away
+    Terminal.initialize();  // Initialize terminal
+    const userInput = document.getElementById("user-input");
+    let currentMode = "main"; 
 
-    if (!userInput || !userSettingsDiv) {
-        console.error("Error: userSettingsInput or userSettingsDiv not found!");
-        return; // Exit if elements don't exist
-    }
+    loadSettings();  // Load settings first
+    applyCurrentSettings();
+    displayMainMenu();
 
-    // Get or create the terminal output container
-    let terminalContainer = userSettingsDiv.querySelector(".terminal-two");
-    let terminalOutputContainer = terminalContainer.querySelector(".terminal-output");
-
-    if (!terminalOutputContainer) {
-        terminalOutputContainer = document.createElement("ul");
-        terminalOutputContainer.classList.add("terminal-output");
-        terminalContainer.appendChild(terminalOutputContainer);
-    }
-
-    // Detect when the user presses Enter
     userInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
-            const choice = userInput.value.trim();
-            console.log(`User entered: ${choice}`);
-
-            // Create a new line in the terminal
-            const newLine = document.createElement("li");
-            newLine.textContent = `> ${choice}`;
-            terminalOutputContainer.appendChild(newLine);
-
-            userInput.value = ""; // Clear input field
-
-            // Process the input after 1 second
-            setTimeout(() => {
-                switch (choice) {
-                    case "1":
-                        addSystemMessage("Option 1 selected: Text Size", "#FFFFFF");
-                        break;
-                    case "2":
-                        addSystemMessage("Option 2 selected: High Contrast", "#FFFFFF");
-                        break;
-                    case "3":
-                        ScreenCalibration();
-                        break;
-                    case "4":
-                        addSystemMessage("Option 4 selected: Exit Settings", "#FFFFFF");
-                        break;
-                    default:
-                        addSystemMessage("Invalid choice! Please enter 1, 2, 3, or 4.");
-                }
-            }, 1000);
+            const input = Terminal.getUserInput().trim();
+            if (input !== "") processInput(input);
         }
     });
 
-    // Function to add system messages
-    function addSystemMessage(message, color = "#FFFFFF") {
-        const systemMessage = document.createElement("li");
-        systemMessage.textContent = message;
-        systemMessage.style.color = color;
-        terminalOutputContainer.appendChild(systemMessage);
-
-        // Keep only the last 4 messages
-        while (terminalOutputContainer.children.length > 4) {
-            terminalOutputContainer.removeChild(terminalOutputContainer.firstChild);
+    function processInput(input) {
+        switch (currentMode) {
+            case "main":
+                processMainMenuInput(input);
+                break;
+            case "textSize":
+                processTextSizeInput(input);
+                break;
+            default:
+                Terminal.outputMessage("Unknown mode. Returning to main menu.", "#FF8181");
+                displayMainMenu();
         }
     }
 
-    /* Screen Calibration function 
-    * - Change Terminal from white background black font to black background white font
-    * - 
-    */
-    function ScreenCalibration() {
-        addSystemMessage("The terminal will change from white to black", "#FFFFFF");
+    function processMainMenuInput(input) {
+        switch (input) {
+            case "1":
+                Terminal.outputMessage("Opening text size settings...", "#00FF00");
+                setTimeout(() => { currentMode = "textSize"; displayTextSizeOptions(); }, 500);
+                break;
+            case "2":
+                toggleHighContrast();
+                displayMainMenu();
+                break;
+            case "3":
+                screenCalibration();
+                break;
+            case "4":
+                Terminal.outputMessage("Exiting to main page...", "#FF8181");
+                window.location.replace("main_menu.html");
+                break;
+            default:
+                Terminal.outputMessage("Invalid choice! Please enter 1, 2, 3, or 4.", "#FF8181");
+                displayMainMenu();
+        }
+    }
+
+    function processTextSizeInput(input) {
+        let sizeLabel = "";
+        
+        switch (input) {
+            case "1": 
+                window.appSettings.currentTextSize = "12px"; 
+                sizeLabel = "small";
+                break;
+            case "2": 
+                window.appSettings.currentTextSize = "16px"; 
+                sizeLabel = "medium";
+                break;
+            case "3": 
+                window.appSettings.currentTextSize = "20px"; 
+                sizeLabel = "large";
+                break;
+            case "0": 
+                Terminal.outputMessage("Returning to main menu...", "#00FF00"); 
+                setTimeout(() => { currentMode = "main"; displayMainMenu(); }, 500);
+                return;
+            default:
+                Terminal.outputMessage("Invalid choice! Enter 1, 2, 3, or 0 to return.", "#FF8181");
+                displayTextSizeOptions();
+                return;
+        }
+        
+        Terminal.outputMessage(`Text size changed to ${sizeLabel}`, "#00FF00");
+        applyTextSize();
+        saveSettings();
+        setTimeout(() => { currentMode = "main"; displayMainMenu(); }, 500);
+    }
+
+    function applyTextSize() {
+        document.body.style.fontSize = window.appSettings.currentTextSize;
+    }
+
+    function applyCurrentSettings() {
+        // Apply text size
+        applyTextSize();
+        
+        // Apply contrast mode
+        document.body.classList.toggle("high-contrast", window.appSettings.isHighContrast);
+    }
     
+    function saveSettings() {
+        try {
+            localStorage.setItem('appSettings', JSON.stringify(window.appSettings));
+            console.log("Settings saved successfully");
+        } catch (e) {
+            console.error("Could not save settings:", e);
+        }
+    }
+    
+    function loadSettings() {
+        try {
+            const savedSettings = localStorage.getItem('appSettings');
+            if (savedSettings) {
+                const parsedSettings = JSON.parse(savedSettings);
+                window.appSettings = {...window.appSettings, ...parsedSettings};
+                console.log("Settings loaded successfully");
+            }
+        } catch (e) {
+            console.error("Could not load settings:", e);
+        }
+    }
+
+    function displayMainMenu() {
+        Terminal.outputMessage("===== SETTINGS MENU =====", "#00FFFF");
+        Terminal.outputMessage("1. Change Text Size", "#00FF00");
+        Terminal.outputMessage("2. Toggle High Contrast Mode", "#00FF00");
+        Terminal.outputMessage("3. Screen Calibration", "#00FF00");
+        Terminal.outputMessage("4. Exit to Main Page", "#00FF00");
+        displayActiveSettings();
+        Terminal.outputMessage("Enter your choice (1-4):", "#FFFFFF");
+    }
+
+    function displayTextSizeOptions() {
+        Terminal.outputMessage("===== TEXT SIZE SETTINGS =====", "#00FFFF");
+        Terminal.outputMessage("1. Small (12px)", "#00FF00");
+        Terminal.outputMessage("2. Medium (16px) - default", "#00FF00");
+        Terminal.outputMessage("3. Large (20px)", "#00FF00");
+        Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
+        Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
+    }
+
+    function toggleHighContrast() {
+        window.appSettings.isHighContrast = !window.appSettings.isHighContrast;
+        Terminal.outputMessage(`High contrast mode ${window.appSettings.isHighContrast ? "enabled" : "disabled"}`, "#00FF00");
+        document.body.classList.toggle("high-contrast");
+        saveSettings();
+    }
+
+    function screenCalibration() {
+        Terminal.outputMessage("===== SCREEN CALIBRATION =====", "#00FFFF");
+        Terminal.outputMessage("The terminal will change from white to black", "#FFFFFF");
         let countdown = 3;
-        let countdownRunning = false; // To prevent conflicts between countdowns
-    
-        // Function to change terminal background to black
-        function updateTerminalCountdown() {
+
+        function updateBackground(color, message, nextStep) {
             if (countdown > 0) {
-                addSystemMessage(`Changing in... ${countdown}`, "#FF0000"); // Red countdown text
+                Terminal.outputMessage(`Changing in... ${countdown}`, "#FF0000");
                 countdown--;
-                setTimeout(updateTerminalCountdown, 1000); // Wait 1 second before updating again
+                setTimeout(() => updateBackground(color, message, nextStep), 1000);
             } else {
-                // Change the terminal background color to black and text to white
-                terminalContainer.style.backgroundColor = "#000000"; // Black background
-                terminalContainer.style.color = "#FFFFFF"; // White text
-                addSystemMessage("Terminal background changed to black!", "#FFFFFF");
-    
-                // Reset the countdown for the second phase
+                const terminalContainer = document.getElementById("output-terminal");
+                if (color === "#000000") {
+                    terminalContainer.style.backgroundColor = color;
+                    terminalContainer.style.color = "#FFFFFF";
+                } else {
+                    document.body.style.backgroundColor = color;
+                }
+                Terminal.outputMessage(message, "#FFFFFF");
                 countdown = 3;
-                addSystemMessage("Changing body background to green", "#FFFFFF");
-                updateBodyCountdown(); // Start second countdown to change body background
+                setTimeout(nextStep, 1000);
             }
         }
-    
-        // Function to change the body background to green
-        function updateBodyCountdown() {
-            if (countdown > 0) {
-                addSystemMessage(`Changing in... ${countdown}`, "#FF0000"); // Red countdown text
-                countdown--;
-                setTimeout(updateBodyCountdown, 1000); // Wait 1 second before updating again
-            } else {
-                // Change the body's background color to green
-                var body = document.getElementsByTagName("BODY")[0];
-                body.style.backgroundColor = "#00FF00"; // Green background
-                addSystemMessage("Body background changed to green!", "#FFFFFF");
-            }
-        }
-    
-        // Start the terminal countdown first
-        updateTerminalCountdown();
+
+        // Start calibration sequence
+        updateBackground("#000000", "Terminal background changed to black!", () => {
+            Terminal.outputMessage("Changing body background to green", "#FFFFFF");
+            updateBackground("#00FF00", "Body background changed to green!", () => {
+                Terminal.outputMessage("Changing body background to blue", "#FFFFFF");
+                updateBackground("#0000FF", "Body background changed to blue!", () => {
+                    Terminal.outputMessage("Calibration complete! Returning to main menu...", "#FFFFFF");
+                    setTimeout(() => { currentMode = "main"; displayMainMenu(); }, 2000);
+                });
+            });
+        });
     }
-    
+
+    function displayActiveSettings() {
+        Terminal.outputMessage("Current Settings:", "#FFFF00");
+        Terminal.outputMessage(`• Text Size: ${window.appSettings.currentTextSize}`, "#FFFF00");
+        Terminal.outputMessage(`• High Contrast: ${window.appSettings.isHighContrast ? "Enabled" : "Disabled"}`, "#FFFF00");
+    }
 });

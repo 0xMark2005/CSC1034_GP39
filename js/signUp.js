@@ -1,10 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Show the sign-up form when the "sign up" button is clicked
-    document.getElementById("signUp").onclick = function () {
-        // Hide the button-container and sign-up button
-        document.querySelector(".button-container").style.display = "none";
-        
-        // Show the sign-up form
-        document.getElementById("signUpForm").style.display = "block"; // Ensure the correct ID here
-    };
+
+    
+    document.getElementById("submitSignUp").addEventListener("click", function(event)
+{
+    var username = document.getElementById("signUpUsername").value;
+    var password = document.getElementById("signUpPassword").value;
+    var password2 = document.getElementById("confirmPassword").value;
+
+    if(!validateUsernameInput(username) || !validatePasswordInput(password) || validatePasswordRepeat(password, password2))
+    {
+        return;
+    }
+    else{
+        console.log("Valid user");
+    }
+})
 });

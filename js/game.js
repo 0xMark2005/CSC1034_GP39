@@ -89,7 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(typeWriter, speed);
         }
     }
-    typeWriter();
 
     // **************************************************************************
     // Start of Game code & logic

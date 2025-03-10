@@ -1,10 +1,19 @@
 import * as Terminal from "./terminal.js";
-
+import SettingsManager from "./settingsManager.js";
 document.addEventListener("DOMContentLoaded", function () {
     
     //initialize the terminal
     Terminal.initialize();
+    const currentSettings = SettingsManager.applySettings();
 
+
+     // Retrieve username from session (stored during login)
+     let username = localStorage.getItem("username");
+     if (username) {
+         Terminal.outputMessage(`Hello, ${username}`, "#00FF00");
+     }
+
+     
     //get the user-input element
     const userInput = document.getElementById("user-input");
 
@@ -26,14 +35,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         Terminal.outputMessage("Loading Game...", "#00FF00");
                         break;
                     case "3":
-                        document.getElementById("gameBegins").style.display = "none";
-                        document.getElementById("menu").style.display = "none";
-                        document.getElementById("userSettings").style.display = "block";
+                        window.location.replace("settings.html");  
                         break;
-                    case "4":
-                        Terminal.outputMessage("Logging Out...", "#FF8181");
-                        window.location.replace("index.html");
-                        break;
+                        case "4":
+                            Terminal.outputMessage("Logging Out...", "#FF8181");
+                            localStorage.removeItem("loggedIn");
+                            localStorage.removeItem("username");
+                            window.location.replace("index.html");
+                            break;
+                        
                     default:
                         Terminal.outputMessage("Invalid choice! Please enter 1, 2, 3, or 4.", "#FF8181")
                 }

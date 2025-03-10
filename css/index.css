@@ -1,0 +1,160 @@
+/* Outer container stays fixed */
+#index-options-container {
+    width: 40%;
+    max-width: 400px;
+    background-color: black;
+    color: white;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    min-height: 250px;
+    overflow: hidden;
+}
+
+/* Only menu, login, and create account screens toggle visibility */
+.screen {
+    width: 100%;
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Only the active screen is visible */
+.screen.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Styling for menu buttons */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.index-menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    font-family: 'Consolas', 'Lucida Console', 'Courier New', monospace;
+    background-color: #363636;
+    color: white;
+    font-size: 18px;
+    padding: 18px 25px;
+    border: 2px solid #666;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 90%;
+    max-width: 320px;
+    text-align: left;
+}
+
+.index-menu-button:hover {
+    background-color: #444;
+    transform: scale(1.05);
+}
+
+/* Enlarge the button icons */
+.index-menu-button img {
+    width: 60px;
+    height: auto;
+    padding-left: 10px;
+}
+
+/* Ensures text alignment */
+.index-menu-button span {
+    flex-grow: 1;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Login and Create Account Screens */
+.login-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.login-header img {
+    width: 60px;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 5px 0;
+    background: #222;
+    border: 2px solid #444;
+    color: white;
+    border-radius: 5px;
+}
+
+.login-button {
+    background-color: gray;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-button:hover {
+    background-color: #555;
+}
+
+a {
+    display: block;
+    margin-top: 10px;
+    color: white;
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+    #index-options-container {
+        width: 100%;  /* Full width on smaller screens */
+        max-width: none;
+        border-radius: 0; 
+    }
+    
+    .index-menu-button {
+        max-width: 250px;
+        font-size: 16px;
+        padding: 12px 20px;
+    }
+
+    .index-menu-button img {
+        width: 90px;
+    }
+}
+
+@media (max-width: 400px) {
+    #index-options-container {
+        width: 100%; 
+        padding: 15px; 
+    }
+
+    .index-menu-button {
+        max-width: 200px;
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+
+    .index-menu-button img {
+        width: 70px;
+    }
+}

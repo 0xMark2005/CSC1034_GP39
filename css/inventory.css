@@ -1,5 +1,5 @@
 .inventory-outer-container {
-    background-color: #374130;
+    background-color: #374130d6;
     color: white;
     padding: 10px;
     width: 100%;
@@ -10,7 +10,7 @@
     justify-content: center;
     text-align: left;
     box-shadow: 0 0 10px #92929240;
-    height: 20%;
+    height: 25%;
     overflow: hidden;
 }
 
@@ -29,8 +29,8 @@
     display: flex;
     align-items: center;
     justify-content: center; /* Center icon before clicking */
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     background-image: radial-gradient(rgba(255, 255, 255, 0.206), rgba(241, 220, 63, 0.128));
     color: black;
     border: 2px solid #6C6016;
@@ -52,8 +52,8 @@
 }
 
 .inventory-item-container img {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     object-fit: cover;
     transition: transform 0.3s ease, margin 0.3s ease;
 }
@@ -86,7 +86,7 @@
     flex-direction: column;
     align-items: center; /* Center content horizontally */
     justify-content: center;
-    height: 50px;
+    height: 70px;
 }
 
 .inventory-item-details strong {
