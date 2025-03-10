@@ -14,12 +14,16 @@ document.addEventListener("DOMContentLoaded", function () {
 function showLoginScreen() {
     document.getElementById('menu-screen').classList.remove('active');
     document.getElementById('menu-screen').style.display = 'none';
+    document.getElementById('create-account-screen').classList.remove('active');
+    document.getElementById('create-account-screen').style.display = 'none';
 
+    // Show login screen
     document.getElementById('login-screen').style.display = 'flex';
     setTimeout(() => {
         document.getElementById('login-screen').classList.add('active');
     }, 10);
 }
+
 
 function showCreateAccountScreen() {
     document.getElementById('menu-screen').classList.remove('active');
