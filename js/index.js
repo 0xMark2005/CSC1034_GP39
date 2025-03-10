@@ -56,7 +56,9 @@ async function handleLogin() {
         return;
     }
 
-    let query = `SELECT * FROM users WHERE username='${username}' AND password='${password}' LIMIT 1`;
+    // Hash the password before querying
+    let hashedPassword = await hashPassword(password);
+    let query = `SELECT * FROM users WHERE username='${username}' AND passwordHash='${hashedPassword}' LIMIT 1`;
 
     let params = new URLSearchParams();
     params.append('hostname', 'localhost');
@@ -77,7 +79,7 @@ async function handleLogin() {
             document.getElementById('login-error').textContent = "Login failed: " + result.error;
             document.getElementById('login-error').style.display = "block";
         } else if (result.data && result.data.length > 0) {
-            alert("Login successful!"); // Placeholder for success action
+            alert("Login successful!");
         } else {
             document.getElementById('login-error').textContent = "Invalid username or password.";
             document.getElementById('login-error').style.display = "block";
@@ -88,6 +90,7 @@ async function handleLogin() {
         document.getElementById('login-error').style.display = "block";
     }
 }
+
 
 
 function togglePasswordVisibility(inputId) {
@@ -113,7 +116,9 @@ async function handleRegister() {
         return;
     }
 
-    let query = `INSERT INTO users (username, passwordHash) VALUES ('${username}', '${password}')`;
+    // Hash the password before inserting it into the database
+    let hashedPassword = await hashPassword(password);
+    let query = `INSERT INTO users (username, passwordHash) VALUES ('${username}', '${hashedPassword}')`;
 
     let params = new URLSearchParams();
     params.append('hostname', 'localhost');
