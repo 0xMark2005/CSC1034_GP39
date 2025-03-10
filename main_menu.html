@@ -14,7 +14,44 @@
         <link rel="stylesheet" href="css/terminal.css">
         <link rel="stylesheet" href="css/main_menu.css">
         <link rel="stylesheet" href="css/inventory.css">
-        
+        <!-- checking for logged in status-->
+        <script>
+            document.addEventListener("DOMContentLoaded", async function () {
+                let loggedIn = localStorage.getItem("loggedIn");
+                let sessionToken = localStorage.getItem("sessionToken");
+                let userID = localStorage.getItem("userID");
+            
+                if (loggedIn !== "true" || !sessionToken || !userID) {
+                    window.location.href = "index.html";
+                    return;
+                }
+            
+                // Verify the session token in the database
+                let query = `SELECT * FROM user_sessions WHERE userID='${userID}' AND session_token='${sessionToken}' AND expires_at > NOW() LIMIT 1`;
+                let params = new URLSearchParams();
+                params.append('hostname', 'localhost');
+                params.append('username', 'jdonnelly73');
+                params.append('password', 'CHZHy02qM20fcLVt');
+                params.append('database', 'CSC1034_CW_39');
+                params.append('query', query);
+            
+                try {
+                    let response = await fetch('includes/db_connect.php', { method: 'POST', body: params });
+                    let result = await response.json();
+                    if (!(result.data && result.data.length > 0)) {
+                        localStorage.removeItem("loggedIn");
+                        localStorage.removeItem("userID");
+                        localStorage.removeItem("sessionToken");
+                        window.location.href = "index.html";
+                    }
+                } catch (error) {
+                    console.error("Session verification error:", error);
+                    window.location.href = "index.html";
+                }
+            });
+            </script>
+            
+            
     </head>
     <body>
         <!-- Main Container Div -->

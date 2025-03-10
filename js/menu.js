@@ -28,10 +28,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     case "3":
                         window.location.replace("settings.html");  
                         break;
-                    case "4":
-                        Terminal.outputMessage("Logging Out...", "#FF8181");
-                        window.location.replace("index.html");
-                        break;
+                        case "4":
+                            Terminal.outputMessage("Logging Out...", "#FF8181");
+                            localStorage.removeItem("loggedIn");
+                            localStorage.removeItem("username");
+                            window.location.replace("index.html");
+                            break;
+                        
                     default:
                         Terminal.outputMessage("Invalid choice! Please enter 1, 2, 3, or 4.", "#FF8181")
                 }

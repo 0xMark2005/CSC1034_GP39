@@ -60,7 +60,6 @@ async function handleLogin() {
         return;
     }
 
-    // Hash the password before querying
     let hashedPassword = await hashPassword(password);
     let query = `SELECT * FROM users WHERE username='${username}' AND passwordHash='${hashedPassword}' LIMIT 1`;
 
@@ -76,14 +75,45 @@ async function handleLogin() {
             method: 'POST',
             body: params
         });
-        
         let result = await response.json();
 
         if (result.error) {
             document.getElementById('login-error').textContent = "Login failed: " + result.error;
             document.getElementById('login-error').style.display = "block";
         } else if (result.data && result.data.length > 0) {
-            alert("Login successful!");
+            let userID = result.data[0].userID;
+            // Generate a session token
+            let sessionToken = btoa(userID + ":" + Date.now() + ":" + Math.random());
+            // Expiration time set to 1 hour from now
+            let expiresAt = new Date(Date.now() + 60 * 60 * 1000)
+                .toISOString().slice(0, 19).replace('T', ' ');
+
+            // db new row
+            let sessionQuery = `INSERT INTO user_sessions (userID, session_token, expires_at) VALUES ('${userID}', '${sessionToken}', '${expiresAt}')`;
+            let sessionParams = new URLSearchParams();
+            sessionParams.append('hostname', 'localhost');
+            sessionParams.append('username', 'jdonnelly73');
+            sessionParams.append('password', 'CHZHy02qM20fcLVt');
+            sessionParams.append('database', 'CSC1034_CW_39');
+            sessionParams.append('query', sessionQuery);
+
+            let sessionResponse = await fetch('includes/db_connect.php', {
+                method: 'POST',
+                body: sessionParams
+            });
+            let sessionResult = await sessionResponse.json();
+            if (sessionResult.error) {
+                document.getElementById('login-error').textContent = "Session error: " + sessionResult.error;
+                document.getElementById('login-error').style.display = "block";
+                return;
+            }
+
+            //session token and userID locally saved
+            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("userID", userID);
+            localStorage.setItem("sessionToken", sessionToken);
+
+            window.location.href = "main_menu.html";
         } else {
             document.getElementById('login-error').textContent = "Invalid username or password.";
             document.getElementById('login-error').style.display = "block";
@@ -94,6 +124,9 @@ async function handleLogin() {
         document.getElementById('login-error').style.display = "block";
     }
 }
+
+
+
 
 
 
