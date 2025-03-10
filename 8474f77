@@ -1,0 +1,92 @@
+[33mccc7161[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33m8474f77[m objects added + mini game
+[33me0ad781[m Redirect logged-in users to the main menu and display a welcome message with their username
+[33m1ff7949[m Implement session management for user login; add session token generation and verification
+[33mf9d269e[m Update account creation screen image and improve screen visibility handling
+[33m3362b88[m removed defunct php files
+[33mb589c42[m Login and Registration works - connected to DB
+[33m7518b4e[m Added leaderboard
+[33m95173ea[m Implement user authentication with login and registration functionality; enhance database connection handling and error responses [NEW DBCONNECTOR!] ~ inventory broke now but that is okay ☹️
+[33m2854f8d[m Add centering class to main container in index.html
+[33me537096[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33m705dc16[m Add login and signup functionality with user authentication; update main menu logo size and enhance inventory styles
+[33m04cbcad[m updated favicon and fixed settings page, text size is now universal
+[33m9a6104d[m updated Game.js
+[33m62a973a[m fixes to inventory
+[33m795a599[m Refactor game layout and styles for improved aesthetics and functionality (added character 1 images)
+[33mf162c3a[m Added some style to game (in progress)
+[33m843c23e[m Word Scramble game
+[33mf017909[m Further Expansion of game.js
+[33m098a30f[m New logon/sign up. WIll need to make more changes
+[33m7b664b1[m Now using terminal in game
+[33mc9ddd02[m new terminal class implemented
+[33m7e57c22[m Updated index and game.js
+[33m190d285[m test commit
+[33m67914f5[m auto deploy to website script
+[33md7772c1[m gtting rid of description in inventories
+[33macf3a2f[m FIxed inventory unrounding corners
+[33mb3b9bee[m Enhance inventory item styles and expand/collapse functionality for better user experience
+[33m367a522[m Refactor inventory item styles for improved layout and interaction
+[33m96bd17f[m Trying to fix inventory
+[33m32278df[m Removed html to help with hosting on server
+[33m5071116[m FIxed Errors with game.js and index.html
+[33m51d90d0[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33m19c7e5d[m More organisational changes
+[33m0b7cd21[m Reorganisation of html files
+[33m15b9aec[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33m133eac5[m loading screen implemented
+[33mefe0be6[m game.js functionality
+[33m6bd8589[m Remove unused assets and update tools API to include item description
+[33m2881465[m Add inventory item details display and improve CSS formatting
+[33mae045c6[m Implement dynamic inventory loading and add tools API endpoint
+[33mef52706[m Update test_connect.php
+[33m48e5516[m Refactor database connection script in test_connect.php for improved clarity and error handling
+[33m01867ea[m Add comment to test_connect.php for connection error clarification
+[33mb3332e1[m fixed db file locations
+[33mb4dc5ab[m Add database connection scripts for MySQL
+[33ma36dd51[m Updated Game.js
+[33m5c85ba3[m Add active state scaling effect for inventory items
+[33m7ee6306[m Add cursor pointer on inventory item hover
+[33me389e4c[m Inventory system styling
+[33mabbf7b2[m Logo added with alt text
+[33m88e840c[m Start of game.js
+[33m48a9d29[m FIXED CHANGES MANUALLY - VERSION WORKS
+[33m4f3a241[m Revert "Fixed settings.js"
+[33m1cdcf11[m Revert "more updated signUp. CSS corrected just need java looked at i think"
+[33m657a373[m Revert "Updated Settings.js"
+[33m749214b[m Updated Settings.js
+[33m106b4db[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33m465f745[m more updated signUp. CSS corrected just need java looked at i think
+[33m7fb89fe[m Fixed settings.js
+[33m9e22cde[m robots.txt updated
+[33m6e68662[m Readded Checkbox
+[33m71f181c[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33ma806cf7[m fixed css
+[33mea4ff9b[m checkbox re-added
+[33mee2815a[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33m111562f[m settings btn
+[33ma338b19[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33mda8358c[m signup
+[33m3653ef8[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33m0f13674[m Login Checkbox added
+[33m567b199[m settings and changing system msg colour
+[33md27e87e[m Cleaned up terminal - deletes after 4 lines of user input
+[33m9ee3005[m Fixed bug with terminal
+[33mdecfd0c[m Updated login.js
+[33mf02fa23[m Fixed Login
+[33md69a383[m Added validation
+[33m6a2784d[m Added styling to menu + more terminal effects
+[33m048562c[m TypeWriter effect added
+[33med54fca[m Added Functionality to menu (NEEDS CSS)
+[33m11cd0a8[m Merge branch 'main' of https://github.com/0xMark2005/CSC1034_GP39
+[33mf1d9cd2[m Update index.html
+[33m994e550[m Styling for the login and first menu screens - also accessibility features implemented.
+[33m7c21c7e[m Create robots.txt
+[33m6bcf72f[m Added images
+[33m37ac0d0[m Login Functionality
+[33mf67c759[m Login Click functionality
+[33ma26d129[m Menu after login
+[33m48448df[m Sample JS for login
+[33mcc8352c[m Added buttons Need styled
+[33m75b4691[m Skeleton File with updated index.html and themes.css
+[33m12891f4[m Initial commit
