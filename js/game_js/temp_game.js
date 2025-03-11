@@ -1,6 +1,6 @@
 //Imports
 import { Terminal } from "../terminal.js";
-import { GameTracker } from "./game_tracking.js";
+import { GameTracker } from "./game_tracker.js";
 
 document.addEventListener("DOMContentLoaded", function(){
 
@@ -44,6 +44,27 @@ async function loadAreaFromJSON(filepath){
     catch{
         console.error("Error loading area from JSON: ", error);
     }
+}
+
+function loadDialogue(){
+    let currentAreaDialogue; //store the current area dialogue tree data
+
+    //check through the area array for the current dialogue
+    for(let i=0; i<GameTracker.currentArea.length; i++){
+
+        //if found set currentAreaDialogue
+        if(GameTracker.currentArea[i].dialogue = GameTracker.currentDialogue){
+            currentAreaDialogue = GameTracker.currentArea[i];
+            return;
+        }
+
+        //if not found after searching through all dialogues, output error
+        if(i === GameTracker.currentArea.length - 1){
+            console.error(`Dialogue: '${GameTracker.currentDialogue}' could not be found.`)
+        }
+    }
+
+    //Terminal.outputMessage()
 }
 
 

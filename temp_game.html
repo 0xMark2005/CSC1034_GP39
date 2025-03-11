@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!--Set the meta tags-->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!--Title-->
+        <title>ReignFall Game</title>
+        <link rel="icon" type="image/x-icon" href="css/assets/images/logo_favicon.png">
+
+        <!--CSS Import-->
+        <link rel="stylesheet" href="css/theme.css">
+        <link rel="stylesheet" href="css/terminal.css">
+        <link rel="stylesheet" href="css/game.css">
+        <link rel="stylesheet" href="css/temp_game.css">
+
+        </style>
+    </head>
+    <body>
+        <!--
+        <div id="wordScramble" style="display: none;">
+            <div id="game-container" style="border-radius: 8px; margin-bottom: 15px;">
+                <h2 align="center"><img src="css/assets/images/word-scramble-title.png" alt="Word Scramble" title="Word Scramble"width="50%" ></h2>
+            <div class="content">
+                
+                <div class="paper-word">
+                    <img src="css/assets/images/paper-background.png" alt="background" style="width:50%;">
+                    <div class="centered">
+                        <p class="word"></p>
+                    </div> 
+                </div> 
+                <div class="details">
+                    <p class="hint"><i>"<span></span>"</i></p>
+                    <p class="time">Time Left: <span><b>30</b>s</span></p>
+                </div>
+                <input class="standardtextfield" type="text" spellcheck="false" placeholder="Enter a valid word">
+                <div class="button-container">
+                    <button class="refresh-word">Refresh Word</button>
+                    <button class="check-word">Check Word</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        -->
+
+        <!-- Character Details -->
+        <div id="character-details">
+
+        </div>
+        <!-- Game Terminal Output Section -->
+        
+        <div id="main-container">
+
+        <!-- Game Details -->
+        <div id="game-details">
+            <p id="area-span" class="game-detail-text">Area: </p>
+            <p id="reputation-span" class="game-detail-text">Reputation: </p>
+            <p id="score-span" class="game-detail-text">Score: </p>
+        </div>
+
+        <!-- Game Image -->   
+        <div id="current-image">
+            <h1><img src="css/assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall"width="60%" ></h1>
+        </div>
+
+        <!-- Output Terminal -->
+        <div id="output-terminal" style="height: 300px;">
+            <p id="gameOutputParagraph"></p>
+        </div>
+
+        <!-- User Input for Game Terminal -->
+        <div id="input-terminal">
+            <div class="input-wrapper">
+                <input type="text" id="user-input" placeholder="Type here...">
+            </div>
+        </div>
+    </div>
+        
+    <!-- Padding for right side -->
+    <div id="right-padding">
+
+    </div>
+
+        <!-- JavaScript Import -->
+        <script type="module" src="./js/game.js"></script>
+        <script type="module">
+            import SettingsManager from "./js/settingsManager.js";
+            document.addEventListener("DOMContentLoaded", () => {
+                SettingsManager.applySettings();
+            });
+        </script>
+          
+    </body>
+</html>
