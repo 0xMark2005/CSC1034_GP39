@@ -1,4 +1,4 @@
-import * as Terminal from "./terminal.js";
+import { Terminal } from "./terminal.js";
 
 const systemMessageColor = `#FF81811`;
 const gameMessageColor = `#00FF00`;
@@ -6,8 +6,9 @@ const gameMessageColor = `#00FF00`;
 document.addEventListener('DOMContentLoaded', function() {
 
         //Initialize the terminal
-        Terminal.initialize();
-        const gameUserInput = document.getElementById("user-input");
+        let outputTerminal = document.getElementById("output-terminal"); 
+        let userInput = document.getElementById("user-input");
+        Terminal.initialize(outputTerminal, userInput);
 
         /**
          * Variables to allow for the game to start and run
@@ -25,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
          * When the user clicks enter in the terminal and their input is passed into the below switch statement
          * This finds which part of the game the user is on and 
          */
-        gameUserInput.addEventListener("keypress", function(event) {
+        userInput.addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 const choice = Terminal.getUserInput();
 

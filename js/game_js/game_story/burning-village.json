@@ -1,0 +1,16 @@
+[
+    {
+        "dialogue": "start",
+        "message": "msg",
+        "options": [
+            {"lock-log": "has swam", "choice": "swim", "message": "you swim.", "reputation": 5, "minigame": "word-scramble", "next": "next dialogue"},
+            {"choice": "run", "message": "you run.",  "reputation": -5, "next": "next dialogue"},
+            {"unlock-log": "has key", "choice": "run", "message": "you run.", "recruit":"Bard", "reputation": -5, "next": "next dialogue"}
+        ]
+    },
+
+    {
+        "dialogue": "next dialogue",
+        "message": "msg2"
+    }
+]

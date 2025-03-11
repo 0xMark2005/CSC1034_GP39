@@ -1,21 +1,19 @@
-import * as Terminal from "./terminal.js";
+import { Terminal } from "./terminal.js";
 import SettingsManager from "./settingsManager.js";
+
 document.addEventListener("DOMContentLoaded", function () {
     
-    //initialize the terminal
-    Terminal.initialize();
+    //Initialize the terminal
+    let outputTerminal = document.getElementById("output-terminal"); 
+    let userInput = document.getElementById("user-input");
+    Terminal.initialize(outputTerminal, userInput);
     const currentSettings = SettingsManager.applySettings();
 
-
-     // Retrieve username from session (stored during login)
-     let username = localStorage.getItem("username");
-     if (username) {
-         Terminal.outputMessage(`Hello, ${username}`, "#00FF00");
-     }
-
-     
-    //get the user-input element
-    const userInput = document.getElementById("user-input");
+    // Retrieve username from session (stored during login)
+    let username = localStorage.getItem("username");
+    if (username) {
+        Terminal.outputMessage(`Hello, ${username}`, "#00FF00");
+    }
 
     //add event for the user input
     userInput.addEventListener("keypress", function (event) {
