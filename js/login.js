@@ -3,6 +3,15 @@ document.getElementById("submitLogin").addEventListener("click", function (event
 
     var username = document.getElementById("loginUsername").value;
     var password = document.getElementById("loginPassword").value;
+    
+    // Get the reCAPTCHA response
+    var recaptchaResponse = grecaptcha.getResponse();
+
+    // Check if reCAPTCHA is solved
+    if (recaptchaResponse.length == 0) {
+        alert("Please complete the reCAPTCHA.");
+        return;  // Prevent further action
+    }
 
     // Validate username and password
     if (!validateUsernameInput(username) || !validatePasswordInput(password)) {
@@ -17,15 +26,8 @@ document.getElementById("submitLogin").addEventListener("click", function (event
     }
 });
 
-
-
-//-----
-//Functions
-//-----
-
 // Password validation function
 function validatePasswordInput(password) {
-    // Trim spaces
     password = password.trim();
 
     // Updated regex allowing more special characters
@@ -43,7 +45,6 @@ function validatePasswordInput(password) {
 function validateUsernameInput(username) {
     username = username.trim();
 
-    // Only allow letters and numbers (no special characters allowed)
     const regex = /^[A-Za-z0-9]+$/;
 
     if (!regex.test(username)) {
@@ -54,7 +55,7 @@ function validateUsernameInput(username) {
     return true;
 }
 
-//
+// Show/Hide Password functionality
 function changePasswordToClear() {
     var x = document.getElementById("loginPassword");
     if (x.type === "password") {
@@ -62,4 +63,4 @@ function changePasswordToClear() {
     } else {
       x.type = "password";
     }
-  }
+}

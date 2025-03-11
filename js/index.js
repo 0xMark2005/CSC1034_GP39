@@ -63,6 +63,14 @@ async function handleLogin() {
         return;
     }
 
+    // Check reCAPTCHA validation
+    let recaptchaResponse = grecaptcha.getResponse();
+    if (!recaptchaResponse) {
+        document.getElementById('login-error').textContent = "Please complete the reCAPTCHA.";
+        document.getElementById('login-error').style.display = "block";
+        return;
+    }
+    
     let hashedPassword = await hashPassword(password);
     let query = `SELECT * FROM users WHERE username='${username}' AND passwordHash='${hashedPassword}' LIMIT 1`;
 
@@ -128,11 +136,6 @@ async function handleLogin() {
     }
 }
 
-
-
-
-
-
 function togglePasswordVisibility(inputId) {
     let passwordInput = document.getElementById(inputId);
     passwordInput.type = passwordInput.type === "password" ? "text" : "password";
@@ -193,13 +196,16 @@ async function handleRegister() {
     }
 }
 
-
-// Hash password using SHA-256
+// Hash password using SHA-256 and a salt
 async function hashPassword(password) {
     const encoder = new TextEncoder();
-    const data = encoder.encode(password);
+    const salt = crypto.getRandomValues(new Uint8Array(16)); // Generate a random salt
+    const data = encoder.encode(password + salt);
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    return Array.from(new Uint8Array(hashBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+    const hashArray = Array.from(new Uint8Array(hashBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+    
+    // Return both the hash and the salt for storage
+    return hashArray + ":" + Array.from(salt).map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // Toggle password visibility for both fields

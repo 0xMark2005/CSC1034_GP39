@@ -13,6 +13,8 @@
         <link rel="stylesheet" href="css/theme.css">
         <link rel="stylesheet" href="css/index.css">
 
+        <!-- Google reCAPTCHA -->
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     </head>
     <body>
         <!-- Main Container Div -->      
@@ -52,6 +54,7 @@
                 </div>
                 <input type="text" id="login-username" placeholder="Username">
                 <input type="password" id="login-password" placeholder="Password">
+                <div class="g-recaptcha" data-sitekey="6Le7EvEqAAAAAHRHzSVEdHTJRXdmH8mXo9gNmQkm"></div>
                 <button class="login-button" onclick="handleLogin()">LOGIN</button>
                 <p id="login-error" style="color: red; display: none;"></p>
                 <a href="#" onclick="showMenuScreen()">Go Back</a>

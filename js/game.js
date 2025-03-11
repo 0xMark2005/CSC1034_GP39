@@ -14,12 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
          * 
          *  currentState: Allows for the game to recognise that the game is in the introductory mode when inputting from user input
          *  usedAllies: Allows us to track which allies the user has used when in the round based battle
-         *  introPartTwoCompleted: Allows us to detect when intopartTwo is done, this is neccessary because we need to know when the user
-         *                         has completed ONE of the entities within introPartTwo
+         *  prisonDataCompleted: Allows us to detect when intopartTwo is done, this is neccessary because we need to know when the user
+         *                         has completed ONE of the entities within prisonData
          */
         let currentState = 'introduction';
         let usedAllies = [];
-        let introPartTwoCompleted = false;
+        let prisonDataCompleted = false;
 
         /**
          * When the user clicks enter in the terminal and their input is passed into the below switch statement
@@ -90,49 +90,37 @@ document.addEventListener('DOMContentLoaded', function() {
          * All the game data is stored in the below objects, this allows for the user to be able to interact with the game
          * and make decisions based on the information given to them. Generally user is presented with a choice and then a verb
          * to select from.
+         * 
+         * Because the game follows a strict story line introductoryData will not have any randomisation, however prisonData will
+         * have randomisation as the user progresses through the game.
          */
-        const introPartOne = [{
-                // Scotts added object
+        const introductoryData = [
+            {
+                // As Shea outlines in the outline this provdes the user with the first scenario, in my head if the village is being 
+                // attacked the user will only have one option which is to run to the forest.
                 gameID: 1,
-                location: "King's Castle",
+                location: "The Burning Village",
                 completed: false,
                 importanceLevel: 0.4,
-                intro: "You walk near the King's castle, you notice a guard standing by the gates. You think of an idea to try and deceive the guard to join you.",
-                action: "The guard, a traditionally loyal character, could be a valuable asset to your plan. Test your cunning and wit in your attempt to win the guard's loyalty.",
+                intro: "A group of renkown knights come to inform your village that the king had requested a larger tax of 60% of their profits after a very successful harvest. "+
+                "The villagers desperately pleaded for a reduction to the tax as it would mean they wouldn’t be able to afford various things needed for their survival such as firewood and bread,"+
+                " but the knights are stubborn which led to them attacking the village as punishment for disrespecting the king. The knights laugh while destroying the village.",
+                action: "With nothing but a sword, a small healing potion, and some rations, you flee into the darkness, heading toward the capital in search of refuge.",
                 options: [{
-                        choice: "1. Tell the guard about your plan with the revolutionaries.",
-                        outcome: "The guard wants to test your commitment to the cause and asks where the Hidden Rebel Base is.",
+                        choice: "1. Run towards the forest",
+                        outcome: "The only path forward is through the dense and dangerous woods, with mysteries awaiting.",
                         continuation: [{
-                            action: "You have to decide what to do. Can you trust the guard, or would you back away? Could you lie to him and tell him where an old Rebel Base used to be?",
+                            action: "Exhausted and alone, you must find shelter before the knights or a pack of wolves find you.",
                             verbs: {
-                                "trust": {
-                                    description: "You recruit the guard, and he decides to swear an oath of loyalty to your cause.",
-                                    reputationImpact: 4
+                                "cave": {
+                                    description: "You spot a small cave and take refuge inside, hoping to rest before continuing your journey.",
+                                    reputationImpact: 0,
+                                    gameOver: false
                                 },
-                                "backaway": {
-                                    description: "You fail to recruit the guard. Perhaps you could have trusted him. This could affect your plan greatly.",
-                                    reputationImpact: -4
-                                },
-                                "lie": {
-                                    description: "You tell him where an old rebel base is to see if he will tell the King.",
-                                    reputationImpact: 0
-                                }
-                            }
-                        }]
-                    },
-                    {
-                        choice: "2. Tell the guard to meet you at a secret location.",
-                        outcome: "The guard agrees, but for what reason?",
-                        continuation: [{
-                            action: "The guard cannot be trusted yet. Should you meet him alone and trust that he comes alone, or will you bring backup and sting the meetup in case he does the same?",
-                            verbs: {
-                                "trust": {
-                                    description: "You trust him and meet him at the location. He does not come alone, and you must decide whether to flee or stay.",
-                                    reputationImpact: 0
-                                },
-                                "sting": {
-                                    description: "You bring backup to the location. This was the right choice as you escape and now know not to trust him.",
-                                    reputationImpact: 2
+                                "campfire": {
+                                    description: "You set up a campfire, but the glow attracts a pack of wolves. You are overwhelmed and do not survive.",
+                                    reputationImpact: -5,
+                                    gameOver: true
                                 }
                             }
                         }]
@@ -140,207 +128,158 @@ document.addEventListener('DOMContentLoaded', function() {
                 ]
             },
             {
+                // User has now made it past the forest and now is required to wait in line, since both of the outcomes are so
+                // different we are required to make a new object for the continuation...
+                // If user selects option 2 then the user should go straight to slums skipping prison
                 gameID: 2,
-                location: "Quiet Village",
+                location: "The Capital Gates",
                 completed: false,
-                importanceLevel: 0.05,
-                intro: "You arrive at a small, peaceful village. People go about their daily routines, and the air smells of fresh bread.",
-                action: "A young boy approaches you, looking lost and anxious.",
-                options: [{
-                        choice: "1. Ask the boy if he’s lost",
-                        outcome: "The boy nods eagerly, telling you that he can’t find his way home.",
-                        continuation: [{
-                            action: "He points toward a hill and asks you to accompany him.",
-                            verbs: {
-                                "help": {
-                                    description: "You walk with him to the top of the hill where he spots his house in the distance. He thanks you and runs home.",
-                                    reputationImpact: 1
-                                },
-                                "ignore": {
-                                    description: "You decide to ignore him and continue your journey. The boy looks disappointed but doesn’t protest.",
-                                    reputationImpact: -1
-                                },
-                                "suggest": {
-                                    description: "You suggest he ask someone else for help. He hesitates but thanks you and walks away.",
-                                    reputationImpact: 0,
+                importanceLevel: 0.2,
+                intro: "After days of grueling travel, surviving on scraps and stolen rations, you finally stand before the towering gates of the capital. The golden crests of the king gleam under the sun, but the scent of sweat and desperation fills the air. A long line of weary travelers and peasants stretches before you, their hollow eyes filled with hope and fear. \n\nNearby, a group of nobles draped in silk and gold stride past the crowd, their servants carrying chests of goods. The guards barely glance at them before ushering them inside, while the common folk wait under the scorching sun.",
+                action: "As you approach the front of the line, a guard in battered steel armor steps forward, scrutinizing you with a hard glare.",
+                options: [
+                    {
+                        choice: "1. Tell the guard your village was attacked",
+                        outcome: "The guard's grip tightens on his spear. 'No survivors allowed. King's orders.' Before you can react, soldiers seize you.",
+                        continuation: [
+                            {
+                                action: "You are dragged through the gates, but instead of safety, you find yourself shackled and thrown into the depths of the capital prison.",
+                                verbs: {
+                                    "accept": {
+                                        description: "You resign yourself to captivity, knowing survival depends on patience and cunning.",
+                                        reputationImpact: -3
+                                    },
+                                    "resist": {
+                                        description: "You lash out, fighting against the guards, but the blunt end of a spear cracks against your ribs. Pain sears through your body as you are beaten into submission.",
+                                        reputationImpact: -5
+                                    }
                                 }
                             }
-                        }]
+                        ]
                     },
                     {
-                        choice: "2. Ask the boy if he needs help finding someone",
-                        outcome: "The boy shakes his head and seems to calm down, telling you that he was just looking for his pet rabbit.",
-                        continuation: [{
-                            action: "He points toward a garden in the village and runs off in search of the rabbit.",
-                            verbs: {
-                                "help": {
-                                    description: "You follow the boy and help him search the garden. After a while, he finds the rabbit and thanks you with a smile.",
-                                    reputationImpact: 2
-                                },
-                                "watch": {
-                                    description: "You simply watch him search, offering no help. He notices but doesn’t seem upset.",
-                                    reputationImpact: -1
-                                },
-                                "leave": {
-                                    description: "You leave the boy to his search and move on. He doesn’t seem to mind much.",
-                                    reputationImpact: 0,
+                        choice: "2. Say you're here to visit a friend in the slums",
+                        outcome: "The guard narrows his eyes but sighs, uninterested in your story. 'Move along. No trouble.' He steps aside, letting you through.",
+                        continuation: [
+                            {
+                                action: "You slip into the crowded and grimy streets of the slums. Beggars cling to passersby, merchants peddle stolen goods, and the stench of unwashed bodies lingers in the humid air.",
+                                verbs: {
+                                    "explore": {
+                                        description: "You weave through the labyrinth of alleys, listening for whispers of rebellion or opportunity.",
+                                        reputationImpact: 1
+                                    },
+                                    "hide": {
+                                        description: "You lower your hood and stick to the shadows, ensuring no unwanted eyes track your movement.",
+                                        reputationImpact: 0
+                                    }
                                 }
                             }
-                        }]
+                        ]
                     }
-                ]
+                ]               
             },
-            {
-                gameID: 3,
-                location: "Forest Path",
-                completed: false,
-                importanceLevel: 0.05,
-                intro: "You walk along a quiet, winding forest path. The sounds of nature are calming, and the sunlight filters through the trees.",
-                action: "You spot an elderly woman sitting by the side of the path, knitting something by hand.",
-                options: [{
-                        choice: "1. Stop and talk to the woman",
-                        outcome: "She looks up with a smile, nodding at you kindly.",
-                        continuation: [{
-                            action: "She offers you a piece of her knitting as a good luck charm.",
-                            verbs: {
-                                "accept": {
-                                    description: "You thank her and take the charm, feeling a strange sense of peace as you continue your journey.",
-                                    reputationImpact: 1
-                                },
-                                "refuse": {
-                                    description: "You politely decline and wish her well, continuing on your way.",
-                                    reputationImpact: 0
-                                },
-                                "talk": {
-                                    description: "You engage in a brief conversation, but soon realize there’s not much to say. She waves you off with a chuckle.",
-                                    reputationImpact: 0
-                                }
-                            }
-                        }]
-                    },
-                    {
-                        choice: "2. Keep walking and ignore the woman",
-                        outcome: "You walk past her, not sparing her a second glance. She doesn’t seem to mind.",
-                        continuation: [{
-                            action: "The forest path continues without incident, and the air remains peaceful.",
-                            verbs: {
-                                "reflect": {
-                                    description: "You reflect on your decision to not engage, but quickly move on.",
-                                    reputationImpact: 0
-                                },
-                                "keepMoving": {
-                                    description: "You continue walking without giving it much thought.",
-                                    reputationImpact: 0
-                                }
-                            }
-                        }]
-                    }
-                ]
-            }
         ];
+        
 
         /**
-         * Second Object - The storyline needs to be clearer
+         * Second Object this facilitates the user going to prison however the user can escape from the prison
+         * This is the first time the user is given a choice to escape or not, if they do not escape they will be given a game over
+         * If user escapes prison then progress to slums
          */
-        const introPartTwo = [{
-                gameID: 1,
+        const prisonData = [{ 
+            gameID: 3,
+            location: "The Prison",
+            completed: false,
+            importanceLevel: 0.3,
+            intro: "You find yourself locked in a grimy prison cell, sentenced to life for the crime of survival. Guards patrol the halls, tormenting prisoners for amusement.",
+            action: "One night, a guard falls asleep near your cell, his keys dangling from his belt just out of reach.",
+            options: [{
+                    choice: "1. Reach for the keys",
+                    outcome: "As you grab for them, the keys fall, waking the guard. You are caught and sentenced to execution.",
+                    continuation: [{
+                        action: "There is no escape this time.",
+                        verbs: {
+                            "game over": {
+                                description: "Your journey ends here.",
+                                reputationImpact: -10
+                            }
+                        }
+                    }]
+                },
+                {
+                    choice: "2. Use an electromagnet to grab the keys",
+                    outcome: "Using an insulated wire and a loose nail, you create an electromagnet and carefully retrieve the keys without alerting the guard.",
+                    continuation: [{
+                        action: "You unlock the cell and slip into the shadows, heading toward the sewers.",
+                        verbs: {
+                            "escape": {
+                                description: "You successfully navigate the underground tunnels and emerge into the slums.",
+                                reputationImpact: 5
+                            }
+                        }
+                    }]
+                }
+            ]
+        }
+        ];
+        /**
+         * The user selects the correct verb to progress to the slums, so slums has their own object
+         */
+        const slumsData = [
+            {
+                gameID: 4,
                 location: "The Slums",
                 completed: false,
-                importanceLevel: 0.1,
+                importanceLevel: 0.5,
                 intro: "You find yourself in the heart of the slums, where narrow alleys twist and turn, and the air smells of damp stone and food scraps. The people here seem worn down by life, but there's a spark of defiance in their eyes.",
                 action: "A rough-looking man approaches you. He eyes you up and down before speaking.",
-                options: [{
+                options: [
+                    {
                         choice: "1. Ask the man what he wants",
-                        outcome: "He grins, revealing a few missing teeth.",
-                        continuation: [{
-                            action: "He tells you there's a game going on tonight, a game of wits and deception. If you win, you'll gain access to people who can help you with your quest. If you lose, you'll owe them a favor.",
-                            verbs: {
-                                "agree": {
-                                    description: "You nod, intrigued by the challenge, and follow the man to a hidden tavern where the game is held.",
-                                    reputationImpact: 1
-                                },
-                                "decline": {
-                                    description: "You tell him you're not interested, but the man looks disappointed and walks off, muttering something about wasted potential.",
-                                    reputationImpact: 0
-                                },
-                                "question": {
-                                    description: "You ask him about the game, but he only chuckles, saying you'll find out when you get there.",
-                                    reputationImpact: 0
+                        outcome: "He tells you there's a game going on tonight, a game of wits and deception. If you win, you'll gain access to people who can help you with your quest. If you lose, you'll owe them a favor.",
+                        continuation: [
+                            {
+                                action: "Do you want to participate in the game?",
+                                verbs: {
+                                    "agree": {
+                                        description: "You agree to participate in the game.",
+                                        reputationImpact: 2,
+                                        gameOver: false
+                                    },
+                                    "decline": {
+                                        description: "You decline the offer and continue your journey.",
+                                        reputationImpact: -1,
+                                        gameOver: false
+                                    },
+                                    "question": {
+                                        description: "You question the man further about the game.",
+                                        reputationImpact: 0,
+                                        gameOver: false
+                                    }
                                 }
                             }
-                        }]
+                        ]
                     },
                     {
                         choice: "2. Ignore him and keep walking",
-                        outcome: "You turn your back on the man and continue through the slums. The noise of the city fades as you walk deeper into the grimy streets.",
-                        continuation: [{
-                            action: "As you pass a small alley, you hear a scuffle behind you. Turning around, you see a group of thugs watching you from the shadows.",
-                            verbs: {
-                                "approach": {
-                                    description: "You walk up to the thugs, unafraid. They seem impressed by your courage but warn you to watch your back in the slums.",
-                                    reputationImpact: 1
-                                },
-                                "ignore": {
-                                    description: "You ignore the thugs and keep walking, hoping they’ll leave you alone. They don’t follow.",
-                                    reputationImpact: 0
-                                },
-                                "threaten": {
-                                    description: "You threaten the thugs, telling them to stay out of your way. They laugh and disperse, impressed by your boldness.",
-                                    reputationImpact: 1
+                        outcome: "You continue walking through the slums, keeping an eye out for any opportunities or threats.",
+                        continuation: [
+                            {
+                                action: "You notice a group of people gathered around a fire, sharing stories and food.",
+                                verbs: {
+                                    "join": {
+                                        description: "You join the group and listen to their stories.",
+                                        reputationImpact: 1,
+                                        gameOver: false
+                                    },
+                                    "avoid": {
+                                        description: "You avoid the group and continue on your way.",
+                                        reputationImpact: 0,
+                                        gameOver: false
+                                    }
                                 }
                             }
-                        }]
-                    }
-                ]
-            },
-            {
-                gameID: 2,
-                location: "Hidden Tavern",
-                completed: false,
-                importanceLevel: 0.2,
-                intro: "The hidden tavern is dimly lit, its patrons a mix of rough types and shady figures. A tense air fills the room as whispers pass between the tables. In the center, a large table is set up for the deception game, and a crowd has gathered.",
-                action: "The man from earlier nods at you and gestures to the table, signaling you to join the game.",
-                options: [{
-                        choice: "1. Sit down at the table and join the game",
-                        outcome: "You take a seat at the table, your heart racing with anticipation. The dealer, a woman with piercing eyes, shuffles a deck of cards in front of you.",
-                        continuation: [{
-                            action: "The rules are simple: deceive your opponents and make them believe your lies. But one wrong move, and you'll lose everything.",
-                            verbs: {
-                                "bluff": {
-                                    description: "You confidently make your first move, bluffing your way through the game. The others are wary but unsure, giving you an edge.",
-                                    reputationImpact: 2
-                                },
-                                "fold": {
-                                    description: "You decide to fold early, sensing the game might be more dangerous than you first thought. You lose some coins, but keep your pride.",
-                                    reputationImpact: -1
-                                },
-                                "observe": {
-                                    description: "You take a more cautious approach, observing the other players carefully. You learn a lot, but don't make any moves yet.",
-                                    reputationImpact: 0
-                                }
-                            }
-                        }]
-                    },
-                    {
-                        choice: "2. Decline to play and leave the tavern",
-                        outcome: "You decide against the high-stakes game and turn to leave. The man eyes you with a mix of disappointment and respect as you exit the tavern.",
-                        continuation: [{
-                            action: "The moment you step outside, you're confronted by a cloaked figure who warns you that backing out of the game has consequences in the slums.",
-                            verbs: {
-                                "threaten": {
-                                    description: "You threaten the figure, ready to defend yourself if necessary. The figure smirks and disappears into the shadows.",
-                                    reputationImpact: 1
-                                },
-                                "plead": {
-                                    description: "You try to explain yourself, but the figure just laughs, telling you that you’ve made a mistake. You'll regret it later.",
-                                    reputationImpact: -1
-                                },
-                                "ignore": {
-                                    description: "You ignore the figure and continue walking. The streets feel even more dangerous now, but you’re not sure why.",
-                                    reputationImpact: 0
-                                }
-                            }
-                        }]
+                        ]
                     }
                 ]
             }
@@ -448,29 +387,35 @@ document.addEventListener('DOMContentLoaded', function() {
          * @returns A random game data object from the current object
          */
         function randomGameData() {
-            // Check if IntroPartTwo has any more scenarios to go through
-            if (gameState.currentObject === introPartTwo) {
-                // Find any entities within the object which are not completed i.e completed  = false;
-                const remainingGames = introPartTwo.filter(game => !game.completed);
+            if (gameState.currentObject === prisonData) {
+                // Ensure all prisonData scenarios are completed before marking it as done
+                const remainingGames = prisonData.filter(game => !game.completed);
                 if (remainingGames.length === 0) {
-                    introPartTwoCompleted = true;
+                    prisonDataCompleted = true;
                     gameBattle(0, enemies[0]);
                     currentState = 'gameBattle';
                     return null;
                 }
             }
-
-            // Check if any games are required to be completed in introPartOne
+        
             const incompleteGames = gameState.currentObject.filter(game => !game.completed);
             if (incompleteGames.length === 0) {
-                // if true we now move on to introPartTwo
-                if (gameState.currentObject === introPartOne) {
-                    gameState.currentObject = introPartTwo;
-                    // Force to find a new object (introPartTwo)
-                    return randomGameData();
+                // If introductoryData is done, move to prisonData
+                if (gameState.currentObject === introductoryData) {
+                    gameState.currentObject = prisonData;
+                    return randomGameData(); // Re-run the function with the new object
                 }
+                gameBattle(0, enemies[0]);
+                currentState = 'gameBattle';
+                return null; // No more incomplete games left
             }
-            // Bring the user a random object from the scenario to be displayed
+        
+            // Always start with the first incomplete game in introductoryData
+            if (gameState.currentObject === introductoryData) {
+                return incompleteGames[0];
+            }
+        
+            // For prisonData, continue to select randomly
             const randomIndex = Math.floor(Math.random() * incompleteGames.length);
             return incompleteGames[randomIndex];
         }
@@ -501,20 +446,27 @@ document.addEventListener('DOMContentLoaded', function() {
          */
         function inputIntroduction(input) {
             const optionIndex = parseInt(input) - 1;
-
+        
             if (optionIndex === 0 || optionIndex === 1) {
                 let selectedOption = gameState.currentScenario.options[optionIndex];
                 gameState.chosenOption = optionIndex;
-
+        
                 Terminal.outputMessage(selectedOption.outcome, gameMessageColor);
-
+        
                 // Mark the current scenario as completed
                 gameState.currentScenario.completed = true;
-
+        
+                // If user selects option 2 at "The Capital Gates", move to slums
+                if (gameState.currentScenario.gameID === 2 && optionIndex === 1) {
+                    gameState.currentObject = slumsData; // Assuming slumsData is defined
+                    findIncompleteGame(); // Start the next part in slums
+                    return;
+                }
+        
                 // Display the continuation action
                 if (selectedOption.continuation && selectedOption.continuation.length > 0) {
                     Terminal.outputMessage(selectedOption.continuation[0].action, gameMessageColor);
-
+        
                     // Display available verbs to the user
                     if (selectedOption.continuation[0].verbs) {
                         const availableVerbs = Object.keys(selectedOption.continuation[0].verbs);
@@ -532,25 +484,39 @@ document.addEventListener('DOMContentLoaded', function() {
          */
         function handleVerbSelection(verb) {
             const selectedOption = gameState.currentScenario.options[gameState.chosenOption];
-
+        
             // Ensure the verb exists in the current option's continuation
             const verbObject = selectedOption.continuation?.[0]?.verbs?.[verb];
-
+        
             if (verbObject) {
                 // Display the selected verb's description
                 Terminal.outputMessage(verbObject.description, gameMessageColor);
-
+        
                 // Adjust reputation based on the impact of the chosen action
                 if (verbObject.reputationImpact > 0) {
                     increaseReputation(verbObject.reputationImpact);
                 } else {
                     decreaseReputation(verbObject.reputationImpact);
                 }
-
+        
+                // Check if the game is over
+                if (verbObject.gameOver) {
+                    Terminal.outputMessage("Game Over. Thank you for playing!", systemMessageColor);
+                    currentState = 'gameOver';
+                    return;
+                }
+        
                 const gameID = gameState.currentScenario.gameID;
-
+        
                 // Mark the scenario as completed and move to the next step
                 markGameAsCompleted(gameID);
+        
+                // If user escapes from prison, call word scramble game
+                if (gameState.currentScenario.gameID === 3 && verb === "escape") {
+                    wordScrambleGame(); // Call word scramble - @Joseph change to your function name (will only occur if user is in the prison then enters escape)
+                    return;
+                }
+        
                 checkFollowUp(selectedOption, verb);
                 currentState = 'introduction';
             } else {
@@ -623,22 +589,27 @@ document.addEventListener('DOMContentLoaded', function() {
          * Finds the next incomplete game scenario. If all are completed, moves to the next phase.
          */
         function findIncompleteGame() {
-            const availableGames = gameState.currentObject.filter(game => !game.completed); // Filter games that are not completed
-
-            if (availableGames.length > 0) { // If there are incomplete games
-                const nextGameIndex = Math.floor(Math.random() * availableGames.length); // Randomly select the next incomplete game
-                console.log(`Moving to the next game: Game ${availableGames[nextGameIndex].gameID}`); // Log the selected game
-                gameState.currentScenario = availableGames[nextGameIndex]; // Set the current scenario to the selected game
-                outputIntroduction(); // Output the introduction for the game
+            const availableGames = gameState.currentObject.filter(game => !game.completed);
+        
+            if (availableGames.length > 0) {
+                // Move to the next available game based on the order or random selection
+                if (gameState.currentObject === introductoryData) {
+                    // Select the next incomplete game in order for introductoryData
+                    gameState.currentScenario = availableGames[0];
+                } else {
+                    // For prisonData, continue to select randomly
+                    const nextGameIndex = Math.floor(Math.random() * availableGames.length);
+                    gameState.currentScenario = availableGames[nextGameIndex];
+                }
+                outputIntroduction();
             } else {
-                console.log("No incomplete games left, moving to the next phase."); // No incomplete games, move to the next phase
-                if (gameState.currentObject === introPartOne) {
-                    gameState.currentObject = introPartTwo; // Move to the second part of the introduction
-                    findIncompleteGame(); // Check for incomplete games again
-                } else if (gameState.currentObject === introPartTwo) {
-                    if (!introPartTwoCompleted) {
-                        introPartTwoCompleted = true; // Mark the second intro part as completed
-                        gameBattle(0, enemies[0]); // Start the battle with the first enemy
+                if (gameState.currentObject === introductoryData) {
+                    gameState.currentObject = prisonData;
+                    findIncompleteGame(); // Call the function again to start the next part
+                } else if (gameState.currentObject === prisonData) {
+                    if (!prisonDataCompleted) {
+                        prisonDataCompleted = true;
+                        gameBattle(0, enemies[0]);
                     }
                 }
             }
@@ -951,7 +922,7 @@ document.addEventListener('DOMContentLoaded', function() {
             randomAlly.health = Math.min(randomAlly.maxHealth, randomAlly.health + 20);
         }
 
-        gameState.currentObject = introPartTwo;
+        gameState.currentObject = introductoryData;
         outputIntroduction();
     }
 ()); 

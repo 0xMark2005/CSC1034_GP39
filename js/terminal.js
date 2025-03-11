@@ -37,17 +37,55 @@ export function initialize(){
 //-------
 
 //output a non-user message to the terminal
-export function outputMessage(message, color){
-    const systemMessage = document.createElement("li");
-    systemMessage.textContent = message;
+const messageQueue = [];
+let isProcessing = false;
 
-    //message styling
-    systemMessage.style.color = color;
-    //systemMessage.style.fontSize = '12px';
+export function outputMessage(message, color) {
+    // Add the message to the queue
+    messageQueue.push({ message, color });
+    
+    // If we're not already processing a message, start processing
+    if (!isProcessing) {
+        processNextMessage();
+    }
+}
 
-    terminalOutputContainer.appendChild(systemMessage);
-    scrollToBottom();
-    // console.log(color);
+function processNextMessage() {
+    // If the queue is empty, mark as not processing and return
+    if (messageQueue.length === 0) {
+        isProcessing = false;
+        return;
+    }
+    isProcessing = true;
+    
+    // Get the next message from the queue
+    const { message, color } = messageQueue.shift();
+    const terminal = document.getElementById("output-terminal");
+    
+    // Create a new element for the message
+    const messageElement = document.createElement("div");
+    messageElement.style.color = color;
+    terminal.appendChild(messageElement);
+    
+    // Set up the typewriter effect
+    let i = 0;
+    const speed = 10;
+    
+    function typeWriter() {
+        if (i < message.length) {
+            messageElement.innerHTML += message.charAt(i);
+            i++;
+            setTimeout(typeWriter, speed);
+        } else {
+            // When this message is done, process the next one
+            processNextMessage();
+            // Scroll to the bottom after each message
+            scrollToBottom();
+        }
+    }
+    
+    // Start the typewriter effect for this message
+    typeWriter();
 }
 
 //function to scroll to the bottom of the terminal after output
@@ -58,28 +96,22 @@ function scrollToBottom() {
 }
 
 //output the user's choice to the terminal
-function outputUserChoice(message){
-    const userMessage = document.createElement("li");
-    userMessage.textContent = `> ${message}`;
-
-    //message styling
-    userMessage.style.color = "#FFFFFF";
-
-    //output message
-    terminalOutputContainer.appendChild(userMessage);
-    scrollToBottom();
-}
-
 
 
 //
 // Function for reading terminal input
 //
 
-export function getUserInput(){
+export function getUserInput() {
     const inputValue = userInput.value.trim();
-    outputUserChoice(inputValue);
 
+    const br = document.createElement('br');
+
+    document.getElementById("output-terminal").appendChild(br);
+    outputMessage(`> ${inputValue}`, "#FFFFFF");
+    document.getElementById("output-terminal").appendChild(br);
+
+    // Clear input field
     userInput.value = "";
 
     return inputValue;
