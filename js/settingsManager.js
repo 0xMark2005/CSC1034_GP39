@@ -23,10 +23,20 @@ const SettingsManager = {
     applySettings: function() {
         const settings = this.getSettings();
         
-        // Apply text size
-        document.body.style.fontSize = settings.currentTextSize;
+        let styleEl = document.getElementById("user-settings-style");
+        if (!styleEl) {
+            styleEl = document.createElement("style");
+            styleEl.id = "user-settings-style";
+            document.head.appendChild(styleEl);
+        }
+        // Force the font-size for html and body elements
+        styleEl.textContent = `
+            html, body {
+                font-size: ${settings.currentTextSize} !important;
+            }
+        `;
         
-        // Apply contrast mode
+        // Apply high contrast mode
         if (settings.isHighContrast) {
             document.body.classList.add("high-contrast");
         } else {

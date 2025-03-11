@@ -50,7 +50,25 @@
                 }
             });
             </script>
-            
+            <script>
+                (function() {
+                  var settings = localStorage.getItem("appSettings");
+                  var currentTextSize = "16px"; // default size
+                  if (settings) {
+                    try {
+                      var parsed = JSON.parse(settings);
+                      if (parsed.currentTextSize) {
+                        currentTextSize = parsed.currentTextSize;
+                      }
+                    } catch(e) {
+                      console.error("Error parsing settings:", e);
+                    }
+                  }
+                  // Set the font size on the root element immediately
+                  document.documentElement.style.fontSize = currentTextSize;
+                })();
+              </script>
+              
             
     </head>
     <body>
@@ -186,5 +204,7 @@
                     });
             });
         </script>
+      
+          
     </body>
 </html>

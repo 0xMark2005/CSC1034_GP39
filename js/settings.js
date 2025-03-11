@@ -10,9 +10,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInput = document.getElementById("user-input");
     let currentMode = "main"; 
 
-    loadSettings();  // Load settings first
-    applyCurrentSettings();
-    displayMainMenu();
+    // loading settings from db first
+    loadSettings().then(() => {
+        applyCurrentSettings();
+        displayMainMenu();
+    });
 
     userInput.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
@@ -102,25 +104,75 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.classList.toggle("high-contrast", window.appSettings.isHighContrast);
     }
     
-    function saveSettings() {
+    async function saveSettings() {
+        let userID = localStorage.getItem("userID");
+        if (!userID) { 
+            console.error("No user ID found for saving settings."); 
+            return; 
+        }
+        let textSize = window.appSettings.currentTextSize;
+        let highContrast = window.appSettings.isHighContrast ? 1 : 0;
+        let query = `UPDATE user_settings SET currentTextSize='${textSize}', isHighContrast='${highContrast}' WHERE userID='${userID}'`;
+        let params = new URLSearchParams();
+        params.append('hostname', 'localhost');
+        params.append('username', 'jdonnelly73');
+        params.append('password', 'CHZHy02qM20fcLVt');
+        params.append('database', 'CSC1034_CW_39');
+        params.append('query', query);
         try {
-            localStorage.setItem('appSettings', JSON.stringify(window.appSettings));
-            console.log("Settings saved successfully");
-        } catch (e) {
-            console.error("Could not save settings:", e);
+            let response = await fetch('includes/db_connect.php', { method: 'POST', body: params });
+            let result = await response.json();
+            if(result.error) {
+                console.error("Error saving settings:", result.error);
+            } else {
+                console.log("Settings saved to DB successfully");
+            }
+        } catch(e) {
+            console.error("Could not save settings to DB:", e);
         }
     }
     
-    function loadSettings() {
+    // Load settings from DB for the current user
+    async function loadSettings() {
+        let userID = localStorage.getItem("userID");
+        if (!userID) { 
+            console.error("No user ID found for loading settings."); 
+            return; 
+        }
+        let query = `SELECT * FROM user_settings WHERE userID='${userID}' LIMIT 1`;
+        let params = new URLSearchParams();
+        params.append('hostname', 'localhost');
+        params.append('username', 'jdonnelly73');
+        params.append('password', 'CHZHy02qM20fcLVt');
+        params.append('database', 'CSC1034_CW_39');
+        params.append('query', query);
         try {
-            const savedSettings = localStorage.getItem('appSettings');
-            if (savedSettings) {
-                const parsedSettings = JSON.parse(savedSettings);
-                window.appSettings = {...window.appSettings, ...parsedSettings};
-                console.log("Settings loaded successfully");
+            let response = await fetch('includes/db_connect.php', { method: 'POST', body: params });
+            let result = await response.json();
+            if (result.data && result.data.length > 0) {
+                const settingsData = result.data[0];
+                window.appSettings.currentTextSize = settingsData.currentTextSize;
+                window.appSettings.isHighContrast = (settingsData.isHighContrast == 1);
+            } else {
+                // No settings exist; create default row
+                let defaultTextSize = window.appSettings.currentTextSize;
+                let defaultHighContrast = window.appSettings.isHighContrast ? 1 : 0;
+                let insertQuery = `INSERT INTO user_settings (userID, currentTextSize, isHighContrast) VALUES ('${userID}', '${defaultTextSize}', '${defaultHighContrast}')`;
+                let insertParams = new URLSearchParams();
+                insertParams.append('hostname', 'localhost');
+                insertParams.append('username', 'jdonnelly73');
+                insertParams.append('password', 'CHZHy02qM20fcLVt');
+                insertParams.append('database', 'CSC1034_CW_39');
+                insertParams.append('query', insertQuery);
+                let insertResponse = await fetch('includes/db_connect.php', { method: 'POST', body: insertParams });
+                let insertResult = await insertResponse.json();
+                if (insertResult.error) {
+                    console.error("Error inserting default settings:", insertResult.error);
+                }
             }
-        } catch (e) {
-            console.error("Could not load settings:", e);
+            console.log("Settings loaded from DB successfully");
+        } catch(e) {
+            console.error("Could not load settings from DB:", e);
         }
     }
 
