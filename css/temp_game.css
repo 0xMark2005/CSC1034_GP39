@@ -52,6 +52,7 @@ body {
     border: 0px 1px 0px 1px solid black;
     color: #999169;
     font-weight: bold;
+    text-transform: capitalize;
 
     text-align: center;
 }
