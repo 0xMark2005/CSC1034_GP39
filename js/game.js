@@ -515,6 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // If user escapes from prison, call word scramble game
                 if (gameState.currentScenario.gameID === 3 && verb === "escape") {
                     wordScrambleGame(); // Call word scramble - @Joseph change to your function name (will only occur if user is in the prison then enters escape)
+                    prisonEscapeGame();
                     return;
                 }
         
