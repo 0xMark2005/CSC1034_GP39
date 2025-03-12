@@ -1,8 +1,10 @@
 export class GameTracker{
-    static nextAreaFilepath = `./game_story/burning-village`;
-    static areaName = "bruning-village";
-    static currentArea;
-    static currentDialogue = "start";
+    static areaName;
+    static areaFilepath = "./js/game_js/game_story/burning_village.json";
+    static currentArea = [];
+    static currentDialogue = "";
 
-
+    static setFilepath(){
+        this.areaFilepath = `./js/game_js/game_story/${this.areaName}.json`;
+    }
 }
