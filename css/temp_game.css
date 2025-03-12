@@ -3,14 +3,19 @@ body {
     flex-direction: row;
 }
 
-#character-details {
-    width: 100%;
+#character-details-container {
     flex: 2;
     background-color: white;
+    color:white;
+}
+
+.character-details-panel {
+    width: 100%;
+    height: 120px;
+    background-color:white;
 }
 
 #main-container {
-    width: 100%;
     flex: 6;
     padding-bottom: 40px;
 }
@@ -19,7 +24,7 @@ body {
     flex: 2;
 }
 
-#game-details {
+#game-details-container {
     width: 90%;
     box-sizing: border-box;
     height: 40px;
@@ -43,9 +48,10 @@ body {
     flex: 1;
     padding: 0;
     margin: 0;
+
     border: 0px 1px 0px 1px solid black;
-    color: whitesmoke;
-    justify-content: center;
-    align-items: center;
+    color: #999169;
+    font-weight: bold;
+
     text-align: center;
 }
