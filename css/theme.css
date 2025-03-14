@@ -5,9 +5,7 @@
 
 /* TEXT SIZE (AS PER SETTTINGS!)*/
 html, body {
-  html, body {
     font-size: var(--user-font-size, 16px) !important;
-  }
   
 }
 

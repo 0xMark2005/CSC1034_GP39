@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
                     // Cycle through all states and identify which one the user is currently in: This part cancels out the need for mohammeds progress file
+                    // Although can still be added and manipulate this
                     switch (currentState) {
                         case 'introduction':
                             handleIntroduction(choice);
@@ -187,44 +188,98 @@ document.addEventListener('DOMContentLoaded', function() {
          * This is the first time the user is given a choice to escape or not, if they do not escape they will be given a game over
          * If user escapes prison then progress to slums
          */
-        const prisonData = [{ 
-            gameID: 3,
+        const prisonData = [
+          {
+            gameID: 1,
+            location: "Capital Prison",
+            completed: false,
+            importanceLevel: 0.8,
+            intro: "Capital Prison is a nightmare, a crumbling fortress of despair. The air reeks of sweat, blood, and fear. Guards rule with brutal authority, "+
+            "their cruelty unchecked. Prisoners are pushed to the brink—starved, tortured, and left to rot in overcrowded cells. The walls echo with the sound of violence as inmates, driven to madness, "+
+            "plot their revenge. Tensions have reached a boiling point. A rebellion is in the making, and the entire prison is on the verge of erupting.",
+            action: "You stand in the midst of chaos as the prison erupts into violence. Prisoners are rallying together, and the guards are struggling to maintain control.",
+            options: [
+              {
+                choice: "1. Join the riot",
+                outcome: "You decide to join the prisoners in their rebellion against the guards. The risk is high, but you gain allies in the process.",
+                continuation: [
+                  {
+                    action: "The guards begin to retaliate fiercely, and the situation grows more dangerous by the minute.",
+                    verbs: {
+                      "fight": {
+                        description: "You fight valiantly but are eventually overpowered. The rebellion fails, and you are placed in solitary confinement.",
+                        reputationImpact: -15,
+                        // So user gains an ally, We should call an function in the corresponding methods when this scenario occurs
+
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                choice: "2. Stay neutral",
+                outcome: "You decide to avoid taking sides, staying out of the conflict in hopes of staying unnoticed. However, you risk losing a chance to escape if the riot succeeds.",
+                continuation: [
+                  {
+                    action: "As the fighting escalates, you begin to question whether staying neutral was the right choice.",
+                    verbs: {
+                      "wait": {
+                        description: "You wait in your cell as the situation unfolds, hoping for the right moment to escape.",
+                        reputationImpact: 0
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            gameID: 2,
             location: "The Prison",
             completed: false,
             importanceLevel: 0.3,
             intro: "You find yourself locked in a grimy prison cell, sentenced to life for the crime of survival. Guards patrol the halls, tormenting prisoners for amusement.",
             action: "One night, a guard falls asleep near your cell, his keys dangling from his belt just out of reach.",
-            options: [{
-                    choice: "1. Reach for the keys",
-                    outcome: "As you grab for them, the keys fall, waking the guard. You are caught and sentenced to execution.",
-                    continuation: [{
-                        action: "There is no escape this time.",
-                        verbs: {
-                            "game over": {
-                                description: "Your journey ends here.",
-                                reputationImpact: -10
-                            }
-                        }
-                    }]
-                },
-                {
-                    choice: "2. Use an electromagnet to grab the keys",
-                    outcome: "Using an insulated wire and a loose nail, you create an electromagnet and carefully retrieve the keys without alerting the guard.",
-                    continuation: [{
-                        action: "You unlock the cell and slip into the shadows, heading toward the sewers.",
-                        verbs: {
-                            "escape": {
-                                description: "You successfully navigate the underground tunnels and emerge into the slums.",
-                                reputationImpact: 5
-                            }
-                        }
-                    }]
-                }
+            options: [
+              {
+                choice: "1. Reach for the keys",
+                outcome: "As you grab for them, the keys fall, waking the guard. You are caught and sentenced to execution.",
+                continuation: [
+                  {
+                    action: "There is no escape this time.",
+                    verbs: {
+                      "game over": {
+                        description: "Your journey ends here.",
+                        reputationImpact: -10
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                choice: "2. Use an electromagnet to grab the keys",
+                outcome: "Using an insulated wire and a loose nail, you create an electromagnet and carefully retrieve the keys without alerting the guard.",
+                continuation: [
+                  {
+                    action: "You unlock the cell and slip into the shadows, heading toward the sewers.",
+                    verbs: {
+                      "escape": {
+                        description: "You successfully navigate the underground tunnels and emerge into the slums.",
+                        reputationImpact: 5
+                      }
+                    }
+                  }
+                ]
+              }
             ]
-        }
+          }
         ];
+        
         /**
-         * The user selects the correct verb to progress to the slums, so slums has their own object
+         * The user selects the correct verb to progress to the slums either has gotten out of prison or got into capital
+         * , so slums has their own object.
+         * 
+         * I think this should be an opportunity to recruit an ally
          */
         const slumsData = [
             {
@@ -250,11 +305,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     "decline": {
                                         description: "You decline the offer and continue your journey.",
                                         reputationImpact: -1,
-                                        gameOver: false
-                                    },
-                                    "question": {
-                                        description: "You question the man further about the game.",
-                                        reputationImpact: 0,
                                         gameOver: false
                                     }
                                 }
@@ -286,58 +336,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         ];
 
+
         /**
          * An object for the User's Character
          * This allows all of the stats to be stored in one place and can be accessed easily
          */
-        var userCharacter = [{
-            name: "Will be loaded from db",
-            hunger: 0.4,
-            reputation: 0.6,
-            gainedAllies: [{
-                    allyName: "Kings Disowned Bastard",
-                    friendshipLevel: 0.5,
-                    strength: 3.0,
-                    defense: 1.0,
-                    health: 50,
-                    maxHealth: 50,
-                    assignedItem: {
-                        name: "Potion",
-                        durability: 1.0,
-                        strength: 1.0
-                    },
-                    isDefending: false
-                },
-                {
-                    allyName: "General Grievous",
-                    friendshipLevel: 0.5,
-                    strength: 4.0,
-                    defense: 1.2,
-                    health: 45,
-                    maxHealth: 45,
-                    assignedItem: {
-                        name: "Sword",
-                        durability: 1.0,
-                        strength: 2.5
-                    },
-                    isDefending: false
-                },
-                {
-                    allyName: "Obe Wan Kenboi",
-                    friendshipLevel: 0.5,
-                    strength: 3.5,
-                    defense: 1.5,
-                    health: 55,
-                    maxHealth: 55,
-                    assignedItem: {
-                        name: "Shield",
-                        durability: 1.0,
-                        strength: 1.5
-                    },
-                    isDefending: false
-                }
-            ]
-        }];
+        // Define Ally Objects
+        var allies = [
+          {
+              allyName: "Kings Disowned Bastard",
+              friendshipLevel: 0.5,
+              strength: 3.0,
+              defense: 1.0,
+              health: 50,
+              maxHealth: 50,
+              assignedItem: {
+                  name: "Potion",
+                  durability: 1.0,
+                  strength: 1.0
+              },
+              isDefending: false
+          },
+          {
+              allyName: "General Grievous",
+              friendshipLevel: 0.5,
+              strength: 4.0,
+              defense: 1.2,
+              health: 45,
+              maxHealth: 45,
+              assignedItem: {
+                  name: "Sword",
+                  durability: 1.0,
+                  strength: 2.5
+              },
+              isDefending: false
+          },
+          {
+              allyName: "Obe Wan Kenboi",
+              friendshipLevel: 0.5,
+              strength: 3.5,
+              defense: 1.5,
+              health: 55,
+              maxHealth: 55,
+              assignedItem: {
+                  name: "Shield",
+                  durability: 1.0,
+                  strength: 1.5
+              },
+              isDefending: false
+          }
+        ];
+
+        // Define User Character
+        var userCharacter = {
+          name: "Will be loaded from db",
+          hunger: 0.4,
+          reputation: 0.6,
+          gainedAllies: []  // Array that will hold allies
+        };
+
 
         /**
          * Any enemies the user will face in the game
@@ -351,6 +408,11 @@ document.addEventListener('DOMContentLoaded', function() {
             defense: 1.5,
             description: "A fearsome knight clad in dark armor."
         }];
+
+        function addAlly(ally) {
+          userCharacter.gainedAllies.push(ally);
+          Terminal.outputMessage(`You have gained an ally: ${ally.allyName}`, gameMessageColor);
+        }
 
         /**
          * Output all of the user characters stats to the terminal
@@ -388,38 +450,42 @@ document.addEventListener('DOMContentLoaded', function() {
          * @returns A random game data object from the current object
          */
         function randomGameData() {
-            if (gameState.currentObject === prisonData) {
-                // Ensure all prisonData scenarios are completed before marking it as done
-                const remainingGames = prisonData.filter(game => !game.completed);
-                if (remainingGames.length === 0) {
-                    prisonDataCompleted = true;
-                    gameBattle(0, enemies[0]);
-                    currentState = 'gameBattle';
-                    return null;
-                }
-            }
-        
-            const incompleteGames = gameState.currentObject.filter(game => !game.completed);
-            if (incompleteGames.length === 0) {
-                // If introductoryData is done, move to prisonData
-                if (gameState.currentObject === introductoryData) {
-                    gameState.currentObject = prisonData;
-                    return randomGameData(); // Re-run the function with the new object
-                }
-                gameBattle(0, enemies[0]);
-                currentState = 'gameBattle';
-                return null; // No more incomplete games left
-            }
-        
-            // Always start with the first incomplete game in introductoryData
-            if (gameState.currentObject === introductoryData) {
-                return incompleteGames[0];
-            }
-        
-            // For prisonData, continue to select randomly
-            const randomIndex = Math.floor(Math.random() * incompleteGames.length);
-            return incompleteGames[randomIndex];
-        }
+          if (gameState.currentObject === prisonData) {
+              // Ensure all prisonData scenarios are completed before marking it as done
+              const remainingGames = prisonData.filter(game => !game.completed);
+              if (remainingGames.length === 0) {
+                  prisonDataCompleted = true;
+                  gameBattle(0, enemies[0]);
+                  currentState = 'gameBattle';
+                  return null;
+              }
+      
+              // Cycle through prisonData in order
+              const nextGame = prisonData.find(game => !game.completed);
+              return nextGame;
+          }
+      
+          const incompleteGames = gameState.currentObject.filter(game => !game.completed);
+          if (incompleteGames.length === 0) {
+              // If introductoryData is done, move to prisonData
+              if (gameState.currentObject === introductoryData) {
+                  gameState.currentObject = prisonData;
+                  return randomGameData(); // Re-run the function with the new object
+              }
+              gameBattle(0, enemies[0]);
+              currentState = 'gameBattle';
+              return null; // No more incomplete games left
+          }
+      
+          // Always start with the first incomplete game in introductoryData
+          if (gameState.currentObject === introductoryData) {
+              return incompleteGames[0];
+          }
+      
+          // For other data, continue to select randomly
+          const randomIndex = Math.floor(Math.random() * incompleteGames.length);
+          return incompleteGames[randomIndex];
+      }
 
         /**
          * Output the description of the current scenario to the terminal
@@ -513,10 +579,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 markGameAsCompleted(gameID);
         
                 // If user escapes from prison, call word scramble game
-                if (gameState.currentScenario.gameID === 3 && verb === "escape") {
+                if (gameState.currentScenario.gameID === 2 && verb === "escape") {
                     wordScrambleGame(); // Call word scramble - @Joseph change to your function name (will only occur if user is in the prison then enters escape)
                     prisonEscapeGame();
                     return;
+                }
+                if(gameState.currentScenario.gameID === 1 && verb === "fight") {
+                    // Add ally to userCharacter
+                    addAlly(allies[0]);
                 }
         
                 checkFollowUp(selectedOption, verb);
@@ -531,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
          * @param {number} taskRep - The amount of reputation to increase.
          */
         function increaseReputation(taskRep) {
-            let rep = userCharacter[0].reputation;
+            let rep = userCharacter.reputation;
             let increaseAmount = 0.01 * taskRep;
 
             if (rep >= 0.9 && rep < 0.975) {
@@ -540,8 +610,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 rep = Math.min(1.0, rep + increaseAmount);
             }
 
-            userCharacter[0].reputation = rep;
-            let percentage = userCharacter[0].reputation * 100;
+            userCharacter.reputation = rep;
+            let percentage = userCharacter.reputation * 100;
             Terminal.outputMessage(`Your reputation has increased by ${taskRep}. It is now ${percentage}%`, gameMessageColor);
         }
 
@@ -550,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
          * @param {number} taskRep - The amount of reputation to decrease.
          */
         function decreaseReputation(taskRep) {
-            let rep = userCharacter[0].reputation;
+            let rep = userCharacter.reputation;
             let decreaseAmount = 0.01 * taskRep;
 
             if (rep > 0.025 && rep <= 0.1) {
@@ -559,8 +629,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 rep = Math.max(0.0, rep - decreaseAmount);
             }
 
-            userCharacter[0].reputation = rep;
-            let percentage = userCharacter[0].reputation * 100;
+            userCharacter.reputation = rep;
+            let percentage = userCharacter.reputation * 100;
             Terminal.outputMessage(`Your reputation has decreased by ${taskRep}. It is now ${percentage}%`, gameMessageColor);
         }
 
@@ -591,31 +661,34 @@ document.addEventListener('DOMContentLoaded', function() {
          * Finds the next incomplete game scenario. If all are completed, moves to the next phase.
          */
         function findIncompleteGame() {
-            const availableGames = gameState.currentObject.filter(game => !game.completed);
-        
-            if (availableGames.length > 0) {
-                // Move to the next available game based on the order or random selection
-                if (gameState.currentObject === introductoryData) {
-                    // Select the next incomplete game in order for introductoryData
-                    gameState.currentScenario = availableGames[0];
-                } else {
-                    // For prisonData, continue to select randomly
-                    const nextGameIndex = Math.floor(Math.random() * availableGames.length);
-                    gameState.currentScenario = availableGames[nextGameIndex];
-                }
-                outputIntroduction();
-            } else {
-                if (gameState.currentObject === introductoryData) {
-                    gameState.currentObject = prisonData;
-                    findIncompleteGame(); // Call the function again to start the next part
-                } else if (gameState.currentObject === prisonData) {
-                    if (!prisonDataCompleted) {
-                        prisonDataCompleted = true;
-                        gameBattle(0, enemies[0]);
-                    }
-                }
-            }
-        }
+          const availableGames = gameState.currentObject.filter(game => !game.completed);
+      
+          if (availableGames.length > 0) {
+              // Move to the next available game based on the order or random selection
+              if (gameState.currentObject === introductoryData) {
+                  // Select the next incomplete game in order for introductoryData
+                  gameState.currentScenario = availableGames[0];
+              } else if (gameState.currentObject === prisonData) {
+                  // Cycle through prisonData in order
+                  gameState.currentScenario = availableGames[0];
+              } else {
+                  // For other data, continue to select randomly
+                  const nextGameIndex = Math.floor(Math.random() * availableGames.length);
+                  gameState.currentScenario = availableGames[nextGameIndex];
+              }
+              outputIntroduction();
+          } else {
+              if (gameState.currentObject === introductoryData) {
+                  gameState.currentObject = prisonData;
+                  findIncompleteGame(); // Call the function again to start the next part
+              } else if (gameState.currentObject === prisonData) {
+                  if (!prisonDataCompleted) {
+                      prisonDataCompleted = true;
+                      gameBattle(0, enemies[0]);
+                  }
+              }
+          }
+      }
 
         /**
          * Marks a game scenario as completed in the game state.
@@ -714,8 +787,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("User is the initiator");
                 Terminal.outputMessage(`You have initiated a battle against ${enemies[0].name}`, systemMessageColor); // Output the battle initiation
                 Terminal.outputMessage("Select an ally to use in the battle:", systemMessageColor); // Ask for an ally
-                for (let i = 0; i < userCharacter[0].gainedAllies.length; i++) { // List available allies
-                    Terminal.outputMessage(`${i}. ${userCharacter[0].gainedAllies[i].allyName}`, systemMessageColor);
+                for (let i = 0; i < userCharacter.gainedAllies.length; i++) { // List available allies
+                    Terminal.outputMessage(`${i}. ${userCharacter.gainedAllies[i].allyName}`, systemMessageColor);
                 }
                 console.log("Users ally has been selected");
                 currentState = 'gameBattle'; // Change state to 'gameBattle' for ally selection
@@ -727,8 +800,8 @@ document.addEventListener('DOMContentLoaded', function() {
          * @param {number} choice - The index of the selected ally.
          */
         function handleBattle(choice) {
-            if (choice >= 0 && choice < userCharacter[0].gainedAllies.length) { // Check if the ally selection is valid
-                const selectedAlly = userCharacter[0].gainedAllies[choice]; // Get the selected ally
+            if (choice >= 0 && choice < userCharacter.gainedAllies.length) { // Check if the ally selection is valid
+                const selectedAlly = userCharacter.gainedAllies[choice]; // Get the selected ally
                 if (usedAllies.includes(selectedAlly)) { // Check if the ally has already been used
                     Terminal.outputMessage(`${selectedAlly.allyName} has already been used this round. Select another ally.`, systemMessageColor);
                     return;
@@ -790,14 +863,14 @@ document.addEventListener('DOMContentLoaded', function() {
              * If so, it's the enemy's turn. 
              * If not, prompt the player to choose another ally.
              */
-            if (usedAllies.length === userCharacter[0].gainedAllies.length) {
+            if (usedAllies.length === userCharacter.gainedAllies.length) {
                 simulateEnemyTurn();
                 usedAllies = [];
             } else {
                 Terminal.outputMessage("Select the next ally to use in the battle:", systemMessageColor);
-                for (let i = 0; i < userCharacter[0].gainedAllies.length; i++) {
-                    if (!usedAllies.includes(userCharacter[0].gainedAllies[i])) {
-                        Terminal.outputMessage(`${i}. ${userCharacter[0].gainedAllies[i].allyName}`, systemMessageColor);
+                for (let i = 0; i < userCharacter.gainedAllies.length; i++) {
+                    if (!usedAllies.includes(userCharacter.gainedAllies[i])) {
+                        Terminal.outputMessage(`${i}. ${userCharacter.gainedAllies[i].allyName}`, systemMessageColor);
                     }
                 }
                 currentState = 'gameBattle';
@@ -837,8 +910,8 @@ document.addEventListener('DOMContentLoaded', function() {
             usedAllies = [];
             Terminal.outputMessage("--- New Round ---", gameMessageColor);
             Terminal.outputMessage("Select an ally to use in the battle:", systemMessageColor);
-            for (let i = 0; i < userCharacter[0].gainedAllies.length; i++) {
-                Terminal.outputMessage(`${i}. ${userCharacter[0].gainedAllies[i].allyName}`, systemMessageColor);
+            for (let i = 0; i < userCharacter.gainedAllies.length; i++) {
+                Terminal.outputMessage(`${i}. ${userCharacter.gainedAllies[i].allyName}`, systemMessageColor);
             }
             currentState = 'gameBattle';
         }
@@ -853,7 +926,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Terminal.outputMessage("You have defeated the enemy!", gameMessageColor);
                 currentState = 'introduction';
                 return true;
-            } else if (userCharacter[0].gainedAllies.every(ally => ally.health <= 0)) {
+            } else if (userCharacter.gainedAllies.every(ally => ally.health <= 0)) {
                 Terminal.outputMessage("All your allies have been defeated!", systemMessageColor);
                 currentState = 'introduction';
                 return true;
@@ -883,7 +956,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let enemy = enemies[0];
 
-            userCharacter[0].gainedAllies.forEach(ally => {
+            userCharacter.gainedAllies.forEach(ally => {
                 let damageReduction = ally.isDefending ? 0.5 : 1.0;
 
                 if (Math.random() < 0.75) {
@@ -920,11 +993,22 @@ document.addEventListener('DOMContentLoaded', function() {
          */
         function simulateHealing(ally) {
             Terminal.outputMessage(`${ally.allyName} heals an ally!`, gameMessageColor);
-            const randomAlly = userCharacter[0].gainedAllies[Math.floor(Math.random() * userCharacter[0].gainedAllies.length)];
+            const randomAlly = userCharacter.gainedAllies[Math.floor(Math.random() * userCharacter.gainedAllies.length)];
             randomAlly.health = Math.min(randomAlly.maxHealth, randomAlly.health + 20);
         }
 
-        gameState.currentObject = introductoryData;
-        outputIntroduction();
+
+
+
+        
+        // populate allies 
+        addAlly(allies[0]);
+        addAlly(allies[1]);
+        addAlly(allies[2]);
+        // start a battle
+
+        gameBattle(0, enemies[0]);
+        currentState = 'gameBattle'; 
+         
     }
 ()); 

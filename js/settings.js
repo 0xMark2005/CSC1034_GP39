@@ -3,11 +3,12 @@ window.appSettings = {
     isHighContrast: false
 };
 
-import * as Terminal from "./terminal.js";
+import { Terminal } from "./terminal.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-    Terminal.initialize();  // Initialize terminal
+    let outputTerminal = document.getElementById("output-terminal");
     const userInput = document.getElementById("user-input");
+    Terminal.initialize(outputTerminal, userInput);  // Initialize terminal
     let currentMode = "main"; 
 
     // loading settings from db first
