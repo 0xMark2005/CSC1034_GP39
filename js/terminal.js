@@ -58,7 +58,7 @@ export class Terminal{
         
         // Set up the typewriter effect
         let i = 0;
-        const speed = 10;
+        const speed = 0.1;
         
         function typeWriter() {
             if (i < message.length) {
