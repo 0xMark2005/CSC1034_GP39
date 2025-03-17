@@ -2,15 +2,17 @@
     {
         "dialogue": "start",
         "message": "msg",
+        "optionType": "number",
         "options": [
             {"lockLog": "has swam", "choice": "swim", "message": "you swim.", "reputation": 5, "minigame": "word-scramble", "next": "next dialogue"},
             {"choice": "run", "message": "you run.",  "reputation": -5, "next": "next dialogue"},
-            {"unlockLog": "has key", "choice": "run", "message": "you run.", "recruit":"Bard", "reputation": -5, "next": "next dialogue"}
+            {"unlockLog": "has key", "choice": "fly", "message": "you run.", "recruit":"Bard", "reputation": -5, "next": "next dialogue"}
         ]
     },
 
     {
         "dialogue": "next dialogue",
-        "message": "msg2"
+        "message": "msg2",
+        "optionType": "verb"
     }
 ]

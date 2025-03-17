@@ -4,6 +4,8 @@ export class GameTracker{
     static currentArea = [];
     static currentDialogue = "";
 
+    static gameLogs = ["has key", "has swam"];
+
     static setFilepath(){
         this.areaFilepath = `./js/game_js/game_story/${this.areaName}.json`;
     }
