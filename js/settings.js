@@ -1,6 +1,13 @@
 window.appSettings = {
     currentTextSize: "16px",
-    isHighContrast: false
+    isHighContrast: false,
+    volume: 100,
+    soundEnabled: true,
+    cursorStyle: "block",
+    terminalColor: "#171717",
+    animationsEnabled: true,
+    keyboardSounds: true,
+    textSpeed: "normal"
 };
 
 import { Terminal } from "./terminal.js";
@@ -32,6 +39,15 @@ document.addEventListener("DOMContentLoaded", function () {
             case "textSize":
                 processTextSizeInput(input);
                 break;
+            case "sound":
+                processSoundInput(input);
+                break;
+            case "appearance":
+                processAppearanceInput(input);
+                break;
+            case "accessibility":
+                processAccessibilityInput(input);
+                break;
             default:
                 Terminal.outputMessage("Unknown mode. Returning to main menu.", "#FF8181");
                 displayMainMenu();
@@ -52,17 +68,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 screenCalibration();
                 break;
             case "4":
+                Terminal.outputMessage("Opening sound settings...", "#00FF00");
+                setTimeout(() => { currentMode = "sound"; displaySoundOptions(); }, 500);
+                break;
+            case "5":
+                Terminal.outputMessage("Opening appearance settings...", "#00FF00");
+                setTimeout(() => { currentMode = "appearance"; displayAppearanceOptions(); }, 500);
+                break;
+            case "6":
+                Terminal.outputMessage("Opening accessibility settings...", "#00FF00");
+                setTimeout(() => { currentMode = "accessibility"; displayAccessibilityOptions(); }, 500);
+                break;
+            case "7":
                 Terminal.outputMessage("Exiting to main page...", "#FF8181");
                 window.location.replace("main_menu.html");
                 break;
             default:
-                Terminal.outputMessage("Invalid choice! Please enter 1, 2, 3, or 4.", "#FF8181");
+                Terminal.outputMessage("Invalid choice! Please enter 1-7.", "#FF8181");
                 displayMainMenu();
         }
     }
 
     function processTextSizeInput(input) {
         let sizeLabel = "";
+        let oldSize = window.appSettings.currentTextSize;
         
         switch (input) {
             case "1": 
@@ -87,6 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
         }
         
+        console.log(`Text size changed from ${oldSize} to ${window.appSettings.currentTextSize}`);
         Terminal.outputMessage(`Text size changed to ${sizeLabel}`, "#00FF00");
         applyTextSize();
         saveSettings();
@@ -94,7 +124,29 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function applyTextSize() {
+        console.log('Applying text size:', window.appSettings.currentTextSize);
+        
+        // Apply to body
         document.body.style.fontSize = window.appSettings.currentTextSize;
+        
+        // Apply to terminal elements
+        const terminal = document.getElementById('output-terminal');
+        const input = document.getElementById('user-input');
+        
+        if (terminal) {
+            terminal.style.fontSize = window.appSettings.currentTextSize;
+            console.log('Applied to terminal');
+        }
+        
+        if (input) {
+            input.style.fontSize = window.appSettings.currentTextSize;
+            console.log('Applied to input');
+        }
+        
+        // Force a redraw
+        document.body.style.display = 'none';
+        document.body.offsetHeight; // trigger a reflow
+        document.body.style.display = '';
     }
 
     function applyCurrentSettings() {
@@ -111,15 +163,26 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("No user ID found for saving settings."); 
             return; 
         }
-        let textSize = window.appSettings.currentTextSize;
-        let highContrast = window.appSettings.isHighContrast ? 1 : 0;
-        let query = `UPDATE user_settings SET currentTextSize='${textSize}', isHighContrast='${highContrast}' WHERE userID='${userID}'`;
+        
+        let query = `UPDATE user_settings SET 
+            currentTextSize='${window.appSettings.currentTextSize}',
+            isHighContrast='${window.appSettings.isHighContrast ? 1 : 0}',
+            volume='${window.appSettings.volume}',
+            soundEnabled='${window.appSettings.soundEnabled ? 1 : 0}',
+            cursorStyle='${window.appSettings.cursorStyle}',
+            terminalColor='${window.appSettings.terminalColor}',
+            animationsEnabled='${window.appSettings.animationsEnabled ? 1 : 0}',
+            keyboardSounds='${window.appSettings.keyboardSounds ? 1 : 0}',
+            textSpeed='${window.appSettings.textSpeed}'
+            WHERE userID='${userID}'`;
+        
         let params = new URLSearchParams();
         params.append('hostname', 'localhost');
         params.append('username', 'jdonnelly73');
         params.append('password', 'CHZHy02qM20fcLVt');
         params.append('database', 'CSC1034_CW_39');
         params.append('query', query);
+        
         try {
             let response = await fetch('includes/db_connect.php', { method: 'POST', body: params });
             let result = await response.json();
@@ -182,9 +245,12 @@ document.addEventListener("DOMContentLoaded", function () {
         Terminal.outputMessage("1. Change Text Size", "#00FF00");
         Terminal.outputMessage("2. Toggle High Contrast Mode", "#00FF00");
         Terminal.outputMessage("3. Screen Calibration", "#00FF00");
-        Terminal.outputMessage("4. Exit to Main Page", "#00FF00");
+        Terminal.outputMessage("4. Sound Settings", "#00FF00");
+        Terminal.outputMessage("5. Terminal Appearance", "#00FF00");
+        Terminal.outputMessage("6. Accessibility Options", "#00FF00");
+        Terminal.outputMessage("7. Exit to Main Page", "#00FF00");
         displayActiveSettings();
-        Terminal.outputMessage("Enter your choice (1-4):", "#FFFFFF");
+        Terminal.outputMessage("Enter your choice (1-7):", "#FFFFFF");
     }
 
     function displayTextSizeOptions() {
@@ -197,8 +263,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function toggleHighContrast() {
+        const oldState = window.appSettings.isHighContrast;
         window.appSettings.isHighContrast = !window.appSettings.isHighContrast;
+        
+        console.log(`High contrast mode changed from ${oldState} to ${window.appSettings.isHighContrast}`);
         Terminal.outputMessage(`High contrast mode ${window.appSettings.isHighContrast ? "enabled" : "disabled"}`, "#00FF00");
+        
         document.body.classList.toggle("high-contrast");
         saveSettings();
     }
@@ -244,5 +314,97 @@ document.addEventListener("DOMContentLoaded", function () {
         Terminal.outputMessage("Current Settings:", "#FFFF00");
         Terminal.outputMessage(`• Text Size: ${window.appSettings.currentTextSize}`, "#FFFF00");
         Terminal.outputMessage(`• High Contrast: ${window.appSettings.isHighContrast ? "Enabled" : "Disabled"}`, "#FFFF00");
+        Terminal.outputMessage(`• Volume: ${window.appSettings.volume}%`, "#FFFF00");
+        Terminal.outputMessage(`• Sound Effects: ${window.appSettings.soundEnabled ? "Enabled" : "Disabled"}`, "#FFFF00");
+        Terminal.outputMessage(`• Keyboard Sounds: ${window.appSettings.keyboardSounds ? "Enabled" : "Disabled"}`, "#FFFF00");
+        Terminal.outputMessage(`• Animations: ${window.appSettings.animationsEnabled ? "Enabled" : "Disabled"}`, "#FFFF00");
+        Terminal.outputMessage(`• Text Speed: ${window.appSettings.textSpeed}`, "#FFFF00");
+    }
+
+    function displaySoundOptions() {
+        Terminal.outputMessage("===== SOUND SETTINGS =====", "#00FFFF");
+        Terminal.outputMessage("1. Volume Level", "#00FF00");
+        Terminal.outputMessage("2. Toggle Sound Effects", "#00FF00");
+        Terminal.outputMessage("3. Toggle Keyboard Sounds", "#00FF00");
+        Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
+        Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
+    }
+
+    function displayAppearanceOptions() {
+        Terminal.outputMessage("===== TERMINAL APPEARANCE =====", "#00FFFF");
+        Terminal.outputMessage("1. Change Terminal Color", "#00FF00");
+        Terminal.outputMessage("2. Change Cursor Style", "#00FF00");
+        Terminal.outputMessage("3. Toggle Animations", "#00FF00");
+        Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
+        Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
+    }
+
+    function displayAccessibilityOptions() {
+        Terminal.outputMessage("===== ACCESSIBILITY OPTIONS =====", "#00FFFF");
+        Terminal.outputMessage("1. Text Speed", "#00FF00");
+        Terminal.outputMessage("2. Screen Reader Mode", "#00FF00");
+        Terminal.outputMessage("3. Input Timing", "#00FF00");
+        Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
+        Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
+    }
+
+    function processSoundInput(input) {
+        switch (input) {
+            case "1":
+                displayVolumeSlider();
+                break;
+            case "2":
+                toggleSoundEffects();
+                break;
+            case "3":
+                toggleKeyboardSounds();
+                break;
+            case "0":
+                currentMode = "main";
+                displayMainMenu();
+                break;
+            default:
+                Terminal.outputMessage("Invalid choice! Enter 0-3.", "#FF8181");
+        }
+    }
+
+    function processAppearanceInput(input) {
+        switch (input) {
+            case "1":
+                displayColorPicker();
+                break;
+            case "2":
+                cycleCursorStyle();
+                break;
+            case "3":
+                toggleAnimations();
+                break;
+            case "0":
+                currentMode = "main";
+                displayMainMenu();
+                break;
+            default:
+                Terminal.outputMessage("Invalid choice! Enter 0-3.", "#FF8181");
+        }
+    }
+
+    function processAccessibilityInput(input) {
+        switch (input) {
+            case "1":
+                cycleTextSpeed();
+                break;
+            case "2":
+                toggleScreenReader();
+                break;
+            case "3":
+                adjustInputTiming();
+                break;
+            case "0":
+                currentMode = "main";
+                displayMainMenu();
+                break;
+            default:
+                Terminal.outputMessage("Invalid choice! Enter 0-3.", "#FF8181");
+        }
     }
 });

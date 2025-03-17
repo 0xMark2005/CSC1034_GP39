@@ -742,18 +742,27 @@ document.addEventListener('DOMContentLoaded', function() {
          * Any enemies the user will face in the game
          * This will be expanded upon as the game progresses
          */
-        var enemies = [{
+        var castleEnemies = [{
             name: "Dark Knight",
             health: 100,
             maxHealth: 100,
             strength: 3.0,
             defense: 1.5,
             description: "A fearsome knight clad in dark armor."
-        }];
+        },
+        {
+            name: "Harvey",
+            health: 100,
+            maxHealth: 100,
+            strength: 3.0,
+            defense: 1.5,
+            description: "A fearsome knight clad in dark armor." 
+        }
+    ];
 
         function addAlly(ally) {
           userCharacter.gainedAllies.push(ally);
-          Terminal.outputMessage(`You have gained an ally: ${ally.allyName}`, gameMessageColor);
+          Terminal.outputMessage(`You have gained an ally: ${ally.allyName}`, "FFD700");
         }
 
         /**
@@ -797,7 +806,7 @@ document.addEventListener('DOMContentLoaded', function() {
               const remainingGames = prisonData.filter(game => !game.completed);
               if (remainingGames.length === 0) {
                   prisonDataCompleted = true;
-                  gameBattle(0, enemies[0]);
+                  gameBattle(0, castleEnemies[0]);
                   currentState = 'gameBattle';
                   return null;
               }
@@ -814,7 +823,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   gameState.currentObject = prisonData;
                   return randomGameData(); // Re-run the function with the new object
               }
-              gameBattle(0, enemies[0]);
+              gameBattle(0, castleEnemies[0]);
               currentState = 'gameBattle';
               return null; // No more incomplete games left
           }
@@ -894,49 +903,70 @@ document.addEventListener('DOMContentLoaded', function() {
          */
         function handleVerbSelection(verb) {
             const selectedOption = gameState.currentScenario.options[gameState.chosenOption];
-        
-            // Ensure the verb exists in the current option's continuation
             const verbObject = selectedOption.continuation?.[0]?.verbs?.[verb];
         
             if (verbObject) {
-                // Display the selected verb's description
                 Terminal.outputMessage(verbObject.description, gameMessageColor);
         
-                // Adjust reputation based on the impact of the chosen action
+                // Adjust reputation
                 if (verbObject.reputationImpact > 0) {
                     increaseReputation(verbObject.reputationImpact);
                 } else {
                     decreaseReputation(verbObject.reputationImpact);
                 }
         
-                // Check if we're in the slums and the user accepted the quest
+                // Check if we're in the slums scenario
                 if (gameState.currentObject === slumsData && 
-                    gameState.currentScenario.gameID === 4 && 
-                    gameState.chosenOption === 0 && 
-                    verb === "accept") {
-                    // Move to rescue general scenario
-                    gameState.currentObject = rescueGeneralData;
-                    findIncompleteGame();
-                    return;
+                    gameState.currentScenario.gameID === 4) {
+                    if (verb === "accept") {
+                        // Move to rescue general scenario
+                        gameState.currentScenario.completed = true;
+                        gameState.currentObject = rescueGeneralData;
+                        findIncompleteGame();
+                        return;
+                    } else if (verb === "decline") {
+                        // Skip rescue and move straight to castle takeover
+                        gameState.currentScenario.completed = true;
+                        gameState.currentObject = castleTakeoverData;
+                        findIncompleteGame();
+                        return;
+                    }
                 }
-        
-                // Check if rescue general is completed
-                if (gameState.currentObject === rescueGeneralData && 
-                    gameState.currentScenario.completed) {
-                    // Add the general as an ally
-                    addAlly(allies[1]); // Add General Grievous
-                    // Move to castle takeover
-                    gameState.currentObject = castleTakeoverData;
-                    findIncompleteGame();
-                    return;
-                }
-        
-                checkFollowUp(selectedOption, verb);
-                currentState = 'introduction';
-            } else {
-                Terminal.outputMessage(`Invalid action! Available actions: ${Object.keys(selectedOption.continuation?.[0]?.verbs || {}).join(', ')}`, systemMessageColor);
+
+        // Trigger battles at specific points in castleTakeoverData
+        if (gameState.currentObject === castleTakeoverData) {
+            switch (gameState.currentScenario.gameID) {
+                case 6: // After infiltrating the castle
+                    if (verb === "infiltrate" || verb === "charge") {
+                        Terminal.outputMessage("A group of royal guards blocks your path!", gameMessageColor);
+                        gameBattle(0, castleEnemies[0]);
+                        return;
+                    }
+                    break;
+                case 7: // During courtyard battle
+                    if (verb === "defend" || verb === "strike" || verb === "attack") {
+                        Terminal.outputMessage("The Elite Knight Commander appears!", gameMessageColor);
+                        gameBattle(0, castleEnemies[1]);
+                        return;
+                    }
+                    break;
+                case 9: // Final throne room battle
+                    if (verb === "fight") {
+                        Terminal.outputMessage("The Usurper King draws his sword!", gameMessageColor);
+                        gameBattle(0, castleEnemies[2]);
+                        return;
+                    }
+                    break;
             }
         }
+
+
+        checkFollowUp(selectedOption, verb);
+        currentState = 'introduction';
+    } else {
+        Terminal.outputMessage(`Invalid action! Available actions: ${Object.keys(selectedOption.continuation?.[0]?.verbs || {}).join(', ')}`, systemMessageColor);
+    }
+}
 
         /**
          * Increases the player's reputation based on their action.
@@ -1026,7 +1056,7 @@ document.addEventListener('DOMContentLoaded', function() {
               } else if (gameState.currentObject === prisonData) {
                   if (!prisonDataCompleted) {
                       prisonDataCompleted = true;
-                      gameBattle(0, enemies[0]);
+                      gameBattle(0, castleEnemies[0]);
                   }
               }
           }
@@ -1127,7 +1157,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("Beginning battle game");
             if (initiator == 0) { // If the user is the initiator
                 console.log("User is the initiator");
-                Terminal.outputMessage(`You have initiated a battle against ${enemies[0].name}`, systemMessageColor); // Output the battle initiation
+                Terminal.outputMessage(`You have initiated a battle against ${castleEnemies[0].name}`, systemMessageColor); // Output the battle initiation
                 Terminal.outputMessage("Select an ally to use in the battle:", systemMessageColor); // Ask for an ally
                 for (let i = 0; i < userCharacter.gainedAllies.length; i++) { // List available allies
                     Terminal.outputMessage(`${i}. ${userCharacter.gainedAllies[i].allyName}`, systemMessageColor);
@@ -1227,7 +1257,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let baseAttackPower = ally.strength * ally.assignedItem.strength;
             console.log(`Base attack power: ${ally.strength} * ${ally.assignedItem.strength} = ${baseAttackPower}`);
 
-            let enemy = enemies[0];
+            let enemy = castleEnemies[0];
             let damage = Math.max(baseAttackPower * 5, baseAttackPower - enemy.defense);
 
             console.log(`Effective damage after considering enemy's defense (${enemy.defense}): ${damage}`);
@@ -1262,7 +1292,7 @@ document.addEventListener('DOMContentLoaded', function() {
          * Check the outcome of the battle by evaluating if either the enemy or all allies have been defeated.
          */
         function checkBattleOutcome() {
-            let enemy = enemies[0];
+            let enemy = castleEnemies[0];
 
             if (enemy.health <= 0) {
                 Terminal.outputMessage("You have defeated the enemy!", gameMessageColor);
@@ -1296,7 +1326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function simulateEnemyTurn() {
             Terminal.outputMessage("The enemy is attacking!", systemMessageColor);
 
-            let enemy = enemies[0];
+            let enemy = castleEnemies[0];
 
             userCharacter.gainedAllies.forEach(ally => {
                 let damageReduction = ally.isDefending ? 0.5 : 1.0;
@@ -1346,6 +1376,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize the game state
 gameState.currentObject = introductoryData;
 
+/** 
 // populate allies 
 addAlly(allies[0]);
 // Note: General (allies[1]) will be added when rescued
@@ -1353,6 +1384,16 @@ addAlly(allies[0]);
 // start the game
 outputIntroduction();
 currentState = 'introduction'; 
-         
+*/
+// start game from slums 
+gameState.currentObject = introductoryData;  
+
+// populate allies 
+addAlly(allies[0]);
+// Note: General (allies[1]) will be added when rescued
+
+// start the game
+outputIntroduction();
+currentState = 'introduction';
     }
 ()); 

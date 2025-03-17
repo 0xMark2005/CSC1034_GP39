@@ -2,13 +2,17 @@
   box-sizing: border-box;
 }
 
+/* Update root variables */
+:root {
+    --base-font-size: 16px;
+    --high-contrast-bg: #000000;
+    --high-contrast-text: #FFFFFF;
+}
 
 /* TEXT SIZE (AS PER SETTTINGS!)*/
 html, body {
-    font-size: var(--user-font-size, 16px) !important;
-  
+    font-size: var(--base-font-size);
 }
-
 
 /** General Body Styling **/
 body {
@@ -38,10 +42,23 @@ body::before {
   z-index: -1;
 }
 
-
 body.high-contrast {
-    background-color: #000000;
-    color: #FFFFFF;
+    background-color: var(--high-contrast-bg);
+    color: var(--high-contrast-text);
+}
+
+.high-contrast #output-terminal,
+.high-contrast #input-terminal,
+.high-contrast .input-wrapper {
+    background-color: var(--high-contrast-bg);
+    color: var(--high-contrast-text);
+    border: 1px solid var(--high-contrast-text);
+}
+
+.high-contrast button {
+    background-color: var(--high-contrast-text);
+    color: var(--high-contrast-bg);
+    border: 2px solid var(--high-contrast-text);
 }
 
 /** Style Header One's content **/
@@ -60,8 +77,6 @@ h3 {
   background-repeat: no-repeat;  /* Prevents the image from repeating */
   height: 100vh;  /* Makes the background cover the full viewport height */
 }
-
-
 
 #loading-screen {
   font-family: clans OT 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
@@ -180,7 +195,6 @@ div.box p{
   100% { opacity: 0.3; }
 }
 
-
 /** Overall styling of buttons **/
 .button-container {
   display: flex;
@@ -207,7 +221,6 @@ button {
   text-decoration: none;
   display: inline-block;
 }
-
 
 /** Main container design - Slightly greyer card to which the output-terminal will appear on **/
 #main-container {
@@ -299,5 +312,12 @@ box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 .standardtextfield:focus {
 outline: 3px solid #FFD700;
 outline-offset: 2px;
+}
+
+/* Add responsive font scaling */
+@media screen and (max-width: 768px) {
+    html, body {
+        font-size: calc(var(--base-font-size) * 0.9);
+    }
 }
 
