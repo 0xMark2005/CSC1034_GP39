@@ -14,6 +14,8 @@
     text-align: left;
     box-shadow: 0 0 10px #92929240;
     overflow-y: auto;
+    font-size: inherit; /* Inherit from body */
+    transition: font-size 0.3s ease;
 }
   
 #output-terminal:hover { 
@@ -54,6 +56,8 @@
     align-items: center;
     text-align: left;
     box-shadow: 0 0 10px #92929240;
+    font-size: inherit; /* Inherit from body */
+    transition: font-size 0.3s ease;
 }
 
 
@@ -71,7 +75,7 @@
     content: "> ";
     color: white;
     font-family: monospace;
-    font-size: 16px;
+    font-size: inherit;
     white-space: nowrap; 
 }
 
@@ -80,11 +84,12 @@
     border: none;
     outline: none;
     padding: 5px;
-    font-size: 16px;
+    font-size: inherit; /* Inherit from body */
     background-color: transparent;
     color: white;
     font-family: monospace;
     min-width: 50px; 
+    transition: font-size 0.3s ease;
 }
 
 #input-terminal:hover { 
