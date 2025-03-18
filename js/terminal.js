@@ -8,19 +8,24 @@ export class Terminal{
 
     static initialize(givenoutputTerminal, givenUserInput){
         this.#outputTerminal = givenoutputTerminal //get the output terminal
-        if(this.#outputTerminal){
-            //set up the input terminal location
-            this.#userInput = givenUserInput;
+        this.#userInput = givenUserInput;
 
-            if(!this.#userInput){
-                console.error("Error: Input terminal could not be found, thus terminal functions will not work, please ensure an input terminal exists on this page.");
-            }
+        if (!this.#outputTerminal || !this.#userInput) {
+            console.error("Error: Terminal elements not found");
+            return;
         }
-        else{
-            console.error("Error: Output terminal could not be found, thus terminal functions will not work, please ensure an output terminal exists on this page.");
-        }   
     }
 
+    // Add setter/getter for input value
+    static setInputValue(value) {
+        if (this.#userInput) {
+            this.#userInput.value = value;
+        }
+    }
+
+    static getInputValue() {
+        return this.#userInput ? this.#userInput.value.trim() : '';
+    }
 
     //-------
     //Functions for outputting to terminal

@@ -1,0 +1,116 @@
+[
+  {
+    "dialogue": "capital_prison_intro",
+    "message": "Capital Prison is a nightmare—a crumbling fortress of despair. The air reeks of sweat, blood, and fear, and tensions have reached a boiling point. A rebellion is in the making.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Join the riot",
+        "message": "You decide to join the prisoners' rebellion. The risk is high, but you gain valuable allies.",
+        "reputation": -15,
+        "next": "riot_outcome"
+      },
+      {
+        "choice": "2. Stay neutral",
+        "message": "You decide to take no sides and remain unnoticed, though you risk losing your chance at escape.",
+        "reputation": 0,
+        "next": "neutral_outcome"
+      }
+    ]
+  },
+  {
+    "dialogue": "neutral_outcome",
+    "message": "While others fight, you bide your time and observe the prison's routines and weaknesses.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Plan a careful escape",
+        "message": "You notice the guards are less vigilant during shift changes.",
+        "reputation": 5,
+        "next": "escape_attempt"
+      },
+      {
+        "choice": "2. Look for allies",
+        "message": "You spot other prisoners who seem to be planning something.",
+        "reputation": 0,
+        "next": "prisoner_alliance"
+      }
+    ]
+  },
+  {
+    "dialogue": "escape_attempt",
+    "message": "You've identified the perfect time to make your escape attempt.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Use the sewers",
+        "message": "You discover a loose grate leading to the sewer system.",
+        "reputation": 0,
+        "next": "sewer_escape_intro"
+      },
+      {
+        "choice": "2. Disguise as a guard",
+        "message": "You manage to acquire a guard's uniform.",
+        "reputation": -5,
+        "next": "sewer_escape_intro"
+      }
+    ]
+  },
+  {
+    "dialogue": "prisoner_alliance",
+    "message": "The other prisoners reveal they've been planning a coordinated escape attempt.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Join their plan",
+        "message": "You decide to work together, improving your chances of success.",
+        "reputation": 5,
+        "next": "riot_outcome"
+      },
+      {
+        "choice": "2. Keep to your own plan",
+        "message": "You thank them but decide to stick to your original strategy.",
+        "reputation": 0,
+        "next": "escape_attempt"
+      }
+    ]
+  },
+  {
+    "dialogue": "prison_escape",
+    "message": "The moment has come. You must act quickly and decisively.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Use stealth",
+        "message": "You wait for the perfect moment and slip past the guards.",
+        "reputation": 0,
+        "next": "sewer_escape_intro"
+      },
+      {
+        "choice": "2. Create a distraction",
+        "message": "You cause chaos in another part of the prison to aid your escape.",
+        "reputation": -5,
+        "next": "sewer_escape_intro"
+      }
+    ]
+  },
+  {
+    "dialogue": "riot_outcome",
+    "message": "The riot erupts into chaos. Guards and prisoners clash violently throughout the prison.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Lead the charge",
+        "message": "You rally the prisoners and lead an assault on the main gate.",
+        "reputation": 5,
+        "next": "sewer_escape_intro"
+      },
+      {
+        "choice": "2. Slip away in the chaos",
+        "message": "While everyone is distracted, you find an opportunity to escape.",
+        "reputation": 0,
+        "next": "sewer_escape_intro"
+      }
+    ]
+  }
+]

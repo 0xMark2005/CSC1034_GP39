@@ -1,18 +1,34 @@
 [
     {
-        "dialogue": "start",
-        "message": "msg",
+        "dialogue": "burning_village_intro",
+        "message": "A group of renkown knights come to inform your village that the king had requested a larger tax of 60% of their profits after a very successful harvest. The villagers desperately pleaded for a reduction to the tax as it would mean they wouldn't be able to afford various things needed for their survival such as firewood and bread, but the knights are stubborn which led to them attacking the village as punishment for disrespecting the king. The knights laugh while destroying the village.\n\nWith nothing but a sword, a small healing potion, and some rations, you flee into the darkness, heading toward the capital in search of refuge.",
         "optionType": "number",
         "options": [
-            {"lockLog": "has swam", "choice": "swim", "message": "you swim.", "reputation": 5, "minigame": "word-scramble", "next": "next dialogue"},
-            {"choice": "run", "message": "you run.",  "reputation": -5, "next": "next dialogue"},
-            {"unlockLog": "has key", "choice": "fly", "message": "you run.", "recruit":"Bard", "reputation": -5, "next": "next dialogue"}
+            {
+                "choice": "1. Run towards the forest",
+                "message": "The only path forward is through the dense and dangerous woods, with mysteries awaiting.",
+                "reputation": 0,
+                "next": "forest_shelter"
+            }
         ]
     },
-
     {
-        "dialogue": "next dialogue",
-        "message": "msg2",
-        "optionType": "verb"
+        "dialogue": "forest_shelter",
+        "message": "Exhausted and alone, you must find shelter before the knights or a pack of wolves find you.",
+        "optionType": "verb",
+        "options": [
+            {
+                "choice": "cave",
+                "message": "You spot a small cave and take refuge inside, hoping to rest before continuing your journey.",
+                "reputation": 0,
+                "next": "capital_gates"
+            },
+            {
+                "choice": "campfire",
+                "message": "You set up a campfire, but the glow attracts a pack of wolves. You are overwhelmed and do not survive.",
+                "reputation": -5,
+                "gameOver": true
+            }
+        ]
     }
 ]

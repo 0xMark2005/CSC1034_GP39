@@ -9,6 +9,7 @@ const optionsColor = "#00FF00";
 let allowInput = false; //boolean stores whether user can input or not
 const options = []; //array to store the options the user currently can choose from
 let optionType = "number"; //boolean to store if input is numeric or a verb
+let currentSelectionIndex = -1;
 
 document.addEventListener("DOMContentLoaded", async function(){
 
@@ -24,16 +25,30 @@ document.addEventListener("DOMContentLoaded", async function(){
     GameTracker.setFilepath();
     await loadAreaFromJSON();
 
-    GameTracker.currentDialogue="start"
+    GameTracker.currentDialogue = "burning_village_intro";  // Was "start"
     loadDialogue();
 
 
     //-----
     //Adding event listeners
     //-----
-    userInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter" && allowInput) {
-            handleUserInput();
+    userInput.addEventListener("keydown", function(event) {
+        if (!allowInput) return;
+        
+        switch(event.key) {
+            case "ArrowUp":
+                event.preventDefault();
+                handleArrowNavigation('up');
+                break;
+            case "ArrowDown":
+                event.preventDefault();
+                handleArrowNavigation('down');
+                break;
+            case "Enter":
+                if (Terminal.getInputValue()) {
+                    handleUserInput();
+                }
+                break;
         }
     });
 
@@ -50,46 +65,45 @@ document.addEventListener("DOMContentLoaded", async function(){
 
 
 async function loadAreaFromJSON(){
-    try{
-        let response = await fetch(GameTracker.areaFilepath);   
-        let data = await response.json();
-        GameTracker.currentArea = data; 
+    try {
+        const response = await fetch(GameTracker.areaFilepath);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        GameTracker.currentArea = data;
 
         let newAreaName = GameTracker.areaName.replace("_", " ");
         document.getElementById("area-name").innerHTML = newAreaName;
     }
-    catch(error){
+    catch(error) {
         console.error("Error loading area from JSON: ", error);
+        console.log("Attempted to load from path:", GameTracker.areaFilepath);
     }
 }
 
-function loadDialogue(){
-    let currentAreaDialogue; //store the current area dialogue tree data
+function loadDialogue() {
+    let currentAreaDialogue;
+    allowInput = false;
 
-    allowInput = false; //dont allow input while outputting dialogue
-
-    try{
-        //check through the area array for the current dialogue
-        for(let i=0; i<GameTracker.currentArea.length; i++){
-
-            //if found set currentAreaDialogue
-            if(GameTracker.currentArea[i].dialogue = GameTracker.currentDialogue){
+    try {
+        for(let i=0; i < GameTracker.currentArea.length; i++) {
+            if(GameTracker.currentArea[i].dialogue === GameTracker.currentDialogue) {
                 currentAreaDialogue = GameTracker.currentArea[i];
                 break;
             }
         }
-    }
-    catch(error){
+    } catch(error) {
         console.error("Error: ", error);
     }
 
-    //if not found after searching through all dialogues, output error
-    if(!currentAreaDialogue){
-        console.error(`Dialogue: '${GameTracker.currentDialogue}' could not be found.`)
+    if(!currentAreaDialogue) {
+        console.error(`Dialogue: '${GameTracker.currentDialogue}' could not be found.`);
         return;
     }
 
-    //output the message in the dialogue
     Terminal.outputMessage(currentAreaDialogue.message, dialogueColor);
 
     //
@@ -105,7 +119,8 @@ function loadDialogue(){
         }
     }
 
-    optionType = options.optionType; //set option type
+    // Set option type from current dialogue
+    optionType = currentAreaDialogue.optionType;
     let unfilteredOptions = currentAreaDialogue.options; //array to store all options, before removing ones that require logs
     
     //set all available options based on logs
@@ -154,10 +169,9 @@ function loadDialogue(){
                 outputString += `\n`;
             }
         }
-        outputString += `${i+1}. `;
     }
     else{
-        outputString = `Enter a verb: `
+        outputString = `Enter a verb: `;
         for(let i=0; i < options.length; i++){
             let currentOption = options[i];
             outputString += `${currentOption.choice}`;
@@ -170,24 +184,178 @@ function loadDialogue(){
 
     Terminal.outputMessage(outputString, optionsColor);
 
+    currentSelectionIndex = -1;
+    Terminal.setInputValue('');
+
     allowInput = true; //allow input once options are displayed
 
 }
 
-
-
-function handleUserInput(){
+/**
+ * Processes user input based on the current option type (number or verb)
+ * 
+ * Handles special commands like inventory display and routes the input
+ * to the appropriate handler function based on the current option type.
+ * Includes a delay to improve user experience.
+ */
+function handleUserInput() {
     const choice = Terminal.getUserInput();
+    
     setTimeout(() => {
-        //list all unique options
-        if (choice == "Show Inventory") {
-            //Functionality to show inventory
+        // Special commands
+        if (choice === "Show Inventory") {
+            // TODO: Implement inventory display
             return;
         }
-
-        //if numeric input
-        //if verb input
-
+        
+        // Handle different input types
+        if (optionType === "number") {
+            handleNumericChoice(choice);
+        } else if (optionType === "verb") {
+            handleVerbChoice(choice.toLowerCase());
+        }
     }, 1000);
 }
 
+/**
+ * Processes numeric inputs from the user
+ * 
+ * Converts the user's numeric input to a zero-based index,
+ * validates it against available options, and processes the
+ * selected choice or displays an error message.
+ */
+function handleNumericChoice(choice) {
+    // Convert choice to number and subtract 1 for zero-based indexing
+    const choiceIndex = parseInt(choice) - 1;
+    
+    // Validate numeric input
+    if (isNaN(choiceIndex) || choiceIndex < 0 || choiceIndex >= options.length) {
+        Terminal.outputMessage("Invalid choice! Please enter a valid number.", "#FF0000");
+        return;
+    }
+    
+    // Process valid choice
+    processChoice(options[choiceIndex]);
+}
+
+/**
+ * Processes verb-based inputs from the user
+ * 
+ * Searches available options for a matching verb choice,
+ * processes the selected choice if found or displays an
+ * error message if no match exists.
+ */
+function handleVerbChoice(choice) {
+    // Find matching verb option
+    const selectedOption = options.find(option => 
+        option.choice.toLowerCase() === choice
+    );
+    
+    if (!selectedOption) {
+        Terminal.outputMessage("Invalid verb! Please enter one of the available options.", "#FF0000");
+        return;
+    }
+    
+    // Process valid choice
+    processChoice(selectedOption);
+}
+
+/**
+ * Processes a selected game option and handles its consequences
+ * 
+ * Displays result messages, processes reputation changes, checks for
+ * game over conditions, and manages area transitions. Handles complex
+ * area change logic including loading new areas from JSON files.
+ */
+function processChoice(option) {
+    // Output the result message
+    Terminal.outputMessage(option.message, dialogueColor);
+    
+    // Handle reputation changes if present
+    if (option.reputation) {
+        console.log(`Reputation change: ${option.reputation}`);
+    }
+    
+    // Check for game over
+    if (option.gameOver) {
+        Terminal.outputMessage("Game Over", "#FF0000");
+        allowInput = false;
+        return;
+    }
+    
+    // Move to next dialogue if specified
+    if (option.next) {
+        let nextDialogue = option.next;
+        let currentArea = GameTracker.areaName;
+        
+        // Check if we're moving to a new area
+        const areaTransitions = {
+            capital_gates: "capital_gates_intro",
+            prison: "capital_prison_intro",  // Only accessible from capital gates
+            sewer_escape: "sewer_escape_intro",
+            slums: "slums_intro",
+            rescue_general: "rescue_general_intro",
+            castle_takeover: "castle_takeover_intro"
+        };
+        
+        // Check if we need to change areas
+        let areaChanged = false;
+        let newArea = null;
+        
+        // First, determine if we're changing areas
+        for (const [area, startDialogue] of Object.entries(areaTransitions)) {
+            // Only allow prison transition from capital_gates area
+            if (area === "prison" && currentArea !== "capital_gates") {
+                continue;
+            }
+            
+            if (nextDialogue.includes(area.replace('_escape', ''))) {
+                newArea = area;
+                if (currentArea !== newArea) {
+                    areaChanged = true;
+                    GameTracker.areaName = newArea;
+                    GameTracker.currentDialogue = startDialogue;
+                }
+                break;
+            }
+        }
+        
+        // If not changing areas, just update the dialogue
+        if (!areaChanged) {
+            GameTracker.currentDialogue = nextDialogue;
+            loadDialogue();
+            return;
+        }
+        
+        // If changing areas, load the new area
+        GameTracker.setFilepath();
+        loadAreaFromJSON().then(() => {
+            loadDialogue();
+        }).catch((error) => {
+            console.error("Error during area transition:", error);
+            Terminal.outputMessage("Error loading the next area.", "#FF0000");
+        });
+    }
+}
+
+// Add new function to handle arrow navigation
+function handleArrowNavigation(direction) {
+    if (options.length === 0) return;
+
+    if (direction === 'up') {
+        // go forward through options
+        currentSelectionIndex = (currentSelectionIndex + 1) % options.length;
+    } else if (direction === 'down') {
+        // Clear selection
+        currentSelectionIndex = -1;
+        Terminal.setInputValue('');
+        return;
+    }
+
+    // Update input field based on option type
+    if (optionType === "number") {
+        Terminal.setInputValue((currentSelectionIndex + 1).toString());
+    } else {
+        Terminal.setInputValue(options[currentSelectionIndex].choice);
+    }
+}
