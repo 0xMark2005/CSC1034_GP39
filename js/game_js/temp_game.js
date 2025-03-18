@@ -6,6 +6,7 @@ import { GameTracker } from "./game_tracker.js";
 const dialogueColor = "#00FF00";
 const optionsColor = "#00FF00";
 const errorColor = "#FF0000";
+const optionResultColor = "#0000FF";
 
 let allowInput = false; //boolean stores whether user can input or not
 const options = []; //array to store the options the user currently can choose from
@@ -268,17 +269,15 @@ function processChoice(option) {
     // Output the result message
     Terminal.outputMessage(option.message, dialogueColor);
     
-    // Handle reputation changes if present
-    if (option.reputation) {
-        console.log(`Reputation change: ${option.reputation}`);
-    }
-    
-    // Check for game over
-    if (option.gameOver) {
+     // Check for game over
+     if (option.gameOver) {
         Terminal.outputMessage("Game Over", errorColor);
         allowInput = false;
         return;
     }
+    
+    // Handle reputation changes if present
+    updateReputation(option);
     
     // Move to next dialogue if specified
     if (option.next) {
@@ -354,5 +353,18 @@ function handleArrowNavigation(direction) {
         Terminal.setInputValue((currentSelectionIndex + 1).toString());
     } else {
         Terminal.setInputValue(options[currentSelectionIndex].choice);
+    }
+}
+
+
+//-----
+// Methods for updating game tracker based on selected option
+//-----
+
+function updateReputation(option){
+    if (option.reputation) {
+        Terminal.outputMessage(`Reputation change: ${option.reputation}`, optionResultColor);
+        GameTracker.changeReputation(option.reputation);
+        document.getElementById("reputation-number").innerHTML = GameTracker.getReputation();
     }
 }
