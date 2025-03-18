@@ -5,19 +5,19 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "1. Listen to the general's plan and divide the forces accordingly",
+        "choice": "Listen to the general's plan and divide the forces accordingly",
         "message": "You organize your allies and follow the general's strategy. Confidence surges as the plan takes shape.",
         "reputation": 0,
         "next": "castle_briefing"
       },
       {
-        "choice": "2. Challenge the general's plan",
+        "choice": "Challenge the general's plan",
         "message": "You propose an alternate strategy, and after heated discussion, the general hesitantly agrees.",
         "reputation": 0,
         "next": "castle_alternate"
       },
       {
-        "choice": "3. Act independently",
+        "choice": "Act independently",
         "message": "You reject the plan entirely, deciding to forge your own path.",
         "reputation": 0,
         "next": "castle_independent"

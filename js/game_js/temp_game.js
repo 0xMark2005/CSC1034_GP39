@@ -5,10 +5,11 @@ import { GameTracker } from "./game_tracker.js";
 //constants & variables
 const dialogueColor = "#00FF00";
 const optionsColor = "#00FF00";
+const errorColor = "#FF0000";
 
 let allowInput = false; //boolean stores whether user can input or not
 const options = []; //array to store the options the user currently can choose from
-let optionType = "number"; //boolean to store if input is numeric or a verb
+let optionType = "number"; //store if input is numeric or a verb
 let currentSelectionIndex = -1;
 
 document.addEventListener("DOMContentLoaded", async function(){
@@ -160,14 +161,10 @@ function loadDialogue() {
     //display all available options
     let outputString = ``;
     if(optionType === "number"){
-        outputString = `Enter a number: \n`;
+        Terminal.outputMessage(`Enter a number: `, dialogueColor);
         for(let i=0; i < options.length; i++){
             let currentOption = options[i];
-            outputString += `${i+1}. ${currentOption.choice}`;
-
-            if(i !== options.length - 1){
-                outputString += `\n`;
-            }
+            Terminal.outputMessage(`${i+1}. ${currentOption.choice}`, dialogueColor);
         }
     }
     else{
@@ -230,7 +227,7 @@ function handleNumericChoice(choice) {
     
     // Validate numeric input
     if (isNaN(choiceIndex) || choiceIndex < 0 || choiceIndex >= options.length) {
-        Terminal.outputMessage("Invalid choice! Please enter a valid number.", "#FF0000");
+        Terminal.outputMessage("Invalid choice! Please enter a valid number.", errorColor);
         return;
     }
     
@@ -252,7 +249,7 @@ function handleVerbChoice(choice) {
     );
     
     if (!selectedOption) {
-        Terminal.outputMessage("Invalid verb! Please enter one of the available options.", "#FF0000");
+        Terminal.outputMessage("Invalid verb! Please enter one of the available options.", errorColor);
         return;
     }
     
@@ -278,7 +275,7 @@ function processChoice(option) {
     
     // Check for game over
     if (option.gameOver) {
-        Terminal.outputMessage("Game Over", "#FF0000");
+        Terminal.outputMessage("Game Over", errorColor);
         allowInput = false;
         return;
     }
@@ -333,7 +330,7 @@ function processChoice(option) {
             loadDialogue();
         }).catch((error) => {
             console.error("Error during area transition:", error);
-            Terminal.outputMessage("Error loading the next area.", "#FF0000");
+            Terminal.outputMessage("Error loading the next area.", errorColor);
         });
     }
 }

@@ -5,13 +5,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Approach the guards directly",
+                "choice": "Approach the guards directly",
                 "message": "You decide to be honest with the guards about your situation. They seem sympathetic but are bound by strict orders.",
                 "reputation": 1,
                 "next": "guard_interaction"
             },
             {
-                "choice": "2. Look for another way in",
+                "choice": "Look for another way in",
                 "message": "You circle the walls, searching for an alternative entrance.",
                 "reputation": 0,
                 "next": "alternative_entrance"
@@ -62,13 +62,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Head to the market district",
+                "choice": "Head to the market district",
                 "message": "You decide the bustling market is the best place to learn about what's happening in the city.",
                 "reputation": 0,
                 "next": "market_scene"
             },
             {
-                "choice": "2. Search for the slums",
+                "choice": "Search for the slums",
                 "message": "You figure the slums might be safer for someone in your situation.",
                 "reputation": 0,
                 "next": "slums_intro"
@@ -81,13 +81,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Listen to the gossip",
+                "choice": "Listen to the gossip",
                 "message": "You overhear talk of resistance movements in the slums. Perhaps that's where you should head next.",
                 "reputation": 0,
                 "next": "slums_intro"
             },
             {
-                "choice": "2. Try to blend in with the crowd",
+                "choice": "Try to blend in with the crowd",
                 "message": "Your attempts to remain inconspicuous draw the attention of suspicious guards. They arrest you on the spot.",
                 "reputation": -5,
                 "next": "prison_intro"
@@ -100,13 +100,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Join the riot",
+                "choice": "Join the riot",
                 "message": "You decide to join the prisoners' rebellion. The risk is high, but you gain valuable allies.",
                 "reputation": -15,
                 "next": "riot_outcome"
             },
             {
-                "choice": "2. Stay neutral",
+                "choice": "Stay neutral",
                 "message": "You decide to take no sides and remain unnoticed, though you risk losing your chance at escape.",
                 "reputation": 0,
                 "next": "neutral_outcome"
@@ -119,13 +119,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Escape through the gate",
+                "choice": "Escape through the gate",
                 "message": "You join the escaping prisoners and flee into the city.",
                 "reputation": -10,
                 "next": "sewer_escape_intro"
             },
             {
-                "choice": "2. Stay and scavenge for supplies",
+                "choice": "Stay and scavenge for supplies",
                 "message": "You decide to stay behind and search for useful items amidst the chaos.",
                 "reputation": 5,
                 "next": "prison_escape"
@@ -138,13 +138,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Attempt to escape",
+                "choice": "Attempt to escape",
                 "message": "You see an opportunity to slip away while the guards are distracted.",
                 "reputation": 0,
                 "next": "prison_escape"
             },
             {
-                "choice": "2. Try to find a safer place",
+                "choice": "Try to find a safer place",
                 "message": "You search for a more secure location within the prison.",
                 "reputation": 0,
                 "next": "prison_escape"
@@ -157,13 +157,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Reach for the keys",
+                "choice": "Reach for the keys",
                 "message": "As you attempt to grab the keys, they slip—waking the guard. You are caught and sentenced to execution.",
                 "reputation": -10,
                 "gameOver": true
             },
             {
-                "choice": "2. Use an electromagnet to retrieve the keys",
+                "choice": "Use an electromagnet to retrieve the keys",
                 "message": "You fashion an electromagnet from scraps and carefully retrieve the keys. You unlock your cell and dash into the sewers.",
                 "reputation": 0,
                 "next": "sewer_escape_intro"

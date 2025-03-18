@@ -5,13 +5,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Ask the mysterious woman who she is",
+                "choice": "Ask the mysterious woman who she is",
                 "message": "She smirks and replies, 'I can make your life interesting if you're brave enough. There's a job that needs doing.'",
                 "reputation": 0,
                 "next": "slums_job_offer"
             },
             {
-                "choice": "2. Ignore her and keep moving",
+                "choice": "Ignore her and keep moving",
                 "message": "You decide it's best not to get involved and continue your journey deeper into the slums.",
                 "reputation": -1,
                 "next": "slums_deeper"
@@ -24,13 +24,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Accept the mission",
+                "choice": "Accept the mission",
                 "message": "You agree to help free the general. The woman provides you with details about the prison.",
                 "reputation": 5,
                 "next": "rescue_general_intro"
             },
             {
-                "choice": "2. Decline the offer",
+                "choice": "Decline the offer",
                 "message": "You decide the risk is too great and continue your journey through the slums.",
                 "reputation": -2,
                 "next": "slums_deeper"
@@ -43,13 +43,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Hide from the guards",
+                "choice": "Hide from the guards",
                 "message": "You duck into an abandoned building just as a patrol passes by.",
                 "reputation": 0,
                 "next": "slums_hideout"
             },
             {
-                "choice": "2. Try to blend in with the crowd",
+                "choice": "Try to blend in with the crowd",
                 "message": "You try to act natural and blend with the crowd.",
                 "reputation": 0,
                 "next": "slums_blend"
@@ -62,13 +62,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Explain your situation",
+                "choice": "Explain your situation",
                 "message": "You tell them about fleeing your village and seeking refuge.",
                 "reputation": 5,
                 "next": "resistance_intro"
             },
             {
-                "choice": "2. Leave quietly",
+                "choice": "Leave quietly",
                 "message": "You decide it's safer to slip away unnoticed.",
                 "reputation": 0,
                 "next": "slums_explore"
@@ -81,13 +81,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Follow the whispers",
+                "choice": "Follow the whispers",
                 "message": "You discretely follow the trail of information.",
                 "reputation": 0,
                 "next": "resistance_intro"
             },
             {
-                "choice": "2. Keep to yourself",
+                "choice": "Keep to yourself",
                 "message": "You decide not to risk getting involved.",
                 "reputation": -2,
                 "next": "slums_explore"

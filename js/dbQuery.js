@@ -1,10 +1,10 @@
 export class DBQuery{
-    static #dbConnectorUrl = "https://jdonnelly73.webhosting1.eeecs.qub.ac.uk/dbConnector.php";    //Change to point to the group DB dbConnector file.
+    static #dbConnectorUrl = "https://shannaway06.webhosting1.eeecs.qub.ac.uk/dbConnector.php";    //Change to point to the group DB dbConnector file.
 
     static #dbConfig = new URLSearchParams({     //Update this with database credentials.
         hostname: 'localhost',
-        username: 'jdonnelly73',
-        password: 'CHZHy02qM20fcLVt',
+        username: 'shannaway06',
+        password: 'PVhrKC3P89B12Zbb',
         database: 'CSC1034_CW_39',
     });
 

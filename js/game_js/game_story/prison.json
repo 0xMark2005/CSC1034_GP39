@@ -5,13 +5,13 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "1. Join the riot",
+        "choice": "Join the riot",
         "message": "You decide to join the prisoners' rebellion. The risk is high, but you gain valuable allies.",
         "reputation": -15,
         "next": "riot_outcome"
       },
       {
-        "choice": "2. Stay neutral",
+        "choice": "Stay neutral",
         "message": "You decide to take no sides and remain unnoticed, though you risk losing your chance at escape.",
         "reputation": 0,
         "next": "neutral_outcome"
@@ -24,13 +24,13 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "1. Plan a careful escape",
+        "choice": "Plan a careful escape",
         "message": "You notice the guards are less vigilant during shift changes.",
         "reputation": 5,
         "next": "escape_attempt"
       },
       {
-        "choice": "2. Look for allies",
+        "choice": "Look for allies",
         "message": "You spot other prisoners who seem to be planning something.",
         "reputation": 0,
         "next": "prisoner_alliance"
@@ -43,13 +43,13 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "1. Use the sewers",
+        "choice": "Use the sewers",
         "message": "You discover a loose grate leading to the sewer system.",
         "reputation": 0,
         "next": "sewer_escape_intro"
       },
       {
-        "choice": "2. Disguise as a guard",
+        "choice": "Disguise as a guard",
         "message": "You manage to acquire a guard's uniform.",
         "reputation": -5,
         "next": "sewer_escape_intro"
@@ -62,13 +62,13 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "1. Join their plan",
+        "choice": "Join their plan",
         "message": "You decide to work together, improving your chances of success.",
         "reputation": 5,
         "next": "riot_outcome"
       },
       {
-        "choice": "2. Keep to your own plan",
+        "choice": "Keep to your own plan",
         "message": "You thank them but decide to stick to your original strategy.",
         "reputation": 0,
         "next": "escape_attempt"
@@ -81,13 +81,13 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "1. Use stealth",
+        "choice": "Use stealth",
         "message": "You wait for the perfect moment and slip past the guards.",
         "reputation": 0,
         "next": "sewer_escape_intro"
       },
       {
-        "choice": "2. Create a distraction",
+        "choice": "Create a distraction",
         "message": "You cause chaos in another part of the prison to aid your escape.",
         "reputation": -5,
         "next": "sewer_escape_intro"
@@ -100,13 +100,13 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "1. Lead the charge",
+        "choice": "Lead the charge",
         "message": "You rally the prisoners and lead an assault on the main gate.",
         "reputation": 5,
         "next": "sewer_escape_intro"
       },
       {
-        "choice": "2. Slip away in the chaos",
+        "choice": "Slip away in the chaos",
         "message": "While everyone is distracted, you find an opportunity to escape.",
         "reputation": 0,
         "next": "sewer_escape_intro"

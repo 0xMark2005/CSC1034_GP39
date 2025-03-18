@@ -5,7 +5,7 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Run towards the forest",
+                "choice": "Run towards the forest",
                 "message": "The only path forward is through the dense and dangerous woods, with mysteries awaiting.",
                 "reputation": 0,
                 "next": "forest_shelter"

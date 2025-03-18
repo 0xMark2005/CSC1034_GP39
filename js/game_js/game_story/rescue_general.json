@@ -5,19 +5,19 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Stealthily enter the prison",
+                "choice": "Stealthily enter the prison",
                 "message": "You opt for stealth and slip in through a forgotten side gate, hoping to free the general unnoticed.",
                 "reputation": 0,
                 "next": "general_rescue"
             },
             {
-                "choice": "2. Try to bribe the guards",
+                "choice": "Try to bribe the guards",
                 "message": "You decide to use your remaining funds to bribe the guards. They grudgingly let you in.",
                 "reputation": -1,
                 "next": "general_bribe"
             },
             {
-                "choice": "3. Attempt a direct assault on the prison",
+                "choice": "Attempt a direct assault on the prison",
                 "message": "Throwing caution to the wind, you charge in. The guard's alarm ensures chaos, but you press forward.",
                 "reputation": -5,
                 "next": "general_assault"
@@ -30,13 +30,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Pick the lock",
+                "choice": "Pick the lock",
                 "message": "Your careful lockpicking pays off. The cell door swings open silently.",
                 "reputation": 5,
                 "next": "escape_with_general"
             },
             {
-                "choice": "2. Search for the keys",
+                "choice": "Search for the keys",
                 "message": "You spot the keys hanging nearby and carefully retrieve them.",
                 "reputation": 0,
                 "next": "escape_with_general"
@@ -49,13 +49,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Reassure the guards",
+                "choice": "Reassure the guards",
                 "message": "You convince them that helping you is the right thing to do.",
                 "reputation": 2,
                 "next": "escape_with_general"
             },
             {
-                "choice": "2. Knock them out",
+                "choice": "Knock them out",
                 "message": "You quickly overpower the corrupt guards while their guard is down.",
                 "reputation": -3,
                 "next": "escape_with_general"
@@ -68,13 +68,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Fight to the cell",
+                "choice": "Fight to the cell",
                 "message": "You battle through the opposition, finally reaching the general's cell.",
                 "reputation": -2,
                 "next": "escape_with_general"
             },
             {
-                "choice": "2. Create a diversion",
+                "choice": "Create a diversion",
                 "message": "You set fire to part of the prison, using the chaos to reach the general.",
                 "reputation": -5,
                 "next": "escape_with_general"
@@ -87,13 +87,13 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Take the sewers",
+                "choice": "Take the sewers",
                 "message": "The general knows of a sewer entrance that will lead you to safety.",
                 "reputation": 0,
                 "next": "castle_takeover_intro"
             },
             {
-                "choice": "2. Fight your way out",
+                "choice": "Fight your way out",
                 "message": "Together with the general, you battle through the remaining guards.",
                 "reputation": 5,
                 "next": "castle_takeover_intro"
