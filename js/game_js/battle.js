@@ -1,6 +1,6 @@
 import { Terminal } from "../terminal.js";
 import { gameState, getCurrentState, setCurrentState } from "./gameState.js";
-import { userCharacter } from "./character.js";
+import { userCharacter, addAlly } from "./character.js";
 import { castleEnemies } from "./data.js";
 
 // Add color constants at the top of the file
@@ -28,7 +28,7 @@ export function gameBattle(initiator, enemy) {
  * Handles the battle selection of an ally.
  * @param {number} choice - The index of the selected ally.
  */
-export function handleBattle(choice) {
+export function handleAllyBattle(choice) {
     if (choice >= 0 && choice < userCharacter.gainedAllies.length) { // Check if the ally selection is valid
         const selectedAlly = userCharacter.gainedAllies[choice]; // Get the selected ally
         if (usedAllies.includes(selectedAlly)) { // Check if the ally has already been used
@@ -224,4 +224,201 @@ export function simulateHealing(ally) {
     Terminal.outputMessage(`${ally.allyName} heals an ally!`, gameMessageColor);
     const randomAlly = userCharacter.gainedAllies[Math.floor(Math.random() * userCharacter.gainedAllies.length)];
     randomAlly.health = Math.min(randomAlly.maxHealth, randomAlly.health + 20);
+}
+
+export function handleArmyBattle(battleConfig) {
+    // Check if user has any allies
+    if (userCharacter.gainedAllies.length === 0) {
+        // Create default allies
+        const defaultAllies = [
+            {
+                allyName: "Loyal Soldier",
+                friendshipLevel: 0.5,
+                strength: 3.0,
+                defense: 2.0,
+                health: 100,
+                maxHealth: 100,
+                assignedItem: {
+                    name: "Iron Sword",
+                    durability: 1.0,
+                    strength: 1.5
+                },
+                isDefending: false
+            },
+            {
+                allyName: "Rebel Archer",
+                friendshipLevel: 0.3,
+                strength: 4.0,
+                defense: 1.5,
+                health: 80,
+                maxHealth: 80,
+                assignedItem: {
+                    name: "Longbow",
+                    durability: 1.0,
+                    strength: 2.0
+                },
+                isDefending: false
+            },
+            {
+                allyName: "Veteran Guard",
+                friendshipLevel: 0.7,
+                strength: 2.5,
+                defense: 3.0,
+                health: 120,
+                maxHealth: 120,
+                assignedItem: {
+                    name: "Steel Shield",
+                    durability: 1.0,
+                    strength: 1.0
+                },
+                isDefending: false
+            }
+        ];
+        
+        // Add all default allies
+        defaultAllies.forEach(ally => {
+            addAlly(ally);
+            Terminal.outputMessage(`${ally.allyName} joins your cause!`, "#00FF00");
+        });
+    }
+
+    const { type, enemies } = battleConfig;
+    let currentAllyIndex = 0;
+    let enemyHealth = 100;
+    
+    // Display available allies
+    Terminal.outputMessage("\n=== Select Your Forces ===", "#FFA500");
+    Terminal.outputMessage("Available allies:", "#00FF00");
+    userCharacter.gainedAllies.forEach((ally, index) => {
+        Terminal.outputMessage(`${index + 1}. ${ally.allyName} (Health: ${ally.health}/${ally.maxHealth}, Strength: ${ally.strength})`, "#00FF00");
+    });
+
+    // Initial battle state display after ally selection
+    Terminal.outputMessage(`\n=== Battle Begins ===`, "#FFA500");
+    Terminal.outputMessage(`Enemy Forces: ${enemies.join(", ")} (Health: ${enemyHealth})`, "#FF0000");
+    
+    // Start with first ally's turn
+    processTurn();
+
+    function processTurn() {
+        if (currentAllyIndex >= userCharacter.gainedAllies.length) {
+            // All allies have acted, now enemy turn
+            processEnemyTurn();
+            return;
+        }
+
+        const currentAlly = userCharacter.gainedAllies[currentAllyIndex];
+        if (currentAlly.health <= 0) {
+            // Skip dead allies
+            currentAllyIndex++;
+            processTurn();
+            return;
+        }
+
+        displayAllyOptions(currentAlly);
+
+        // Handle ally action input
+        const actionHandler = function(event) {
+            if (event.key === "Enter") {
+                const input = Terminal.getUserInput().trim().toLowerCase();
+                document.getElementById("user-input").removeEventListener("keypress", actionHandler);
+                handleAllyAction(input, currentAlly);
+            }
+        };
+
+        document.getElementById("user-input").addEventListener("keypress", actionHandler);
+    }
+
+    function displayAllyOptions(ally) {
+        // Display battle status header
+        Terminal.outputMessage("\n=== Battle Status ===", "#FFA500");
+        Terminal.outputMessage(`Enemy Health: ${enemyHealth}/100`, "#FF0000");
+        
+        // Display current ally's turn and stats
+        Terminal.outputMessage(`\n${ally.allyName}'s turn`, "#00FF00");
+        Terminal.outputMessage(`Health: ${ally.health}/${ally.maxHealth}`, "#00FF00");
+        Terminal.outputMessage(`Strength: ${ally.strength} (Weapon bonus: ${ally.assignedItem?.strength || 1}x)`, "#00FF00");
+        
+        // Display action options
+        Terminal.outputMessage("\nChoose action:", "#FFA500");
+        Terminal.outputMessage("1. Attack - Deal damage to enemy", "#00FF00");
+        Terminal.outputMessage("2. Defend - Reduce incoming damage", "#00FF00");
+        Terminal.outputMessage("3. Heal - Restore some health", "#00FF00");
+    }
+
+    function handleAllyAction(input, ally) {
+        switch(input) {
+            case "1":
+                const damage = calculateDamage(ally);
+                enemyHealth -= damage;
+                Terminal.outputMessage(`${ally.allyName} attacks for ${damage} damage!`, "#00FF00");
+                Terminal.outputMessage(`Enemy health: ${enemyHealth}/100`, "#FF0000");
+                break;
+            case "2":
+                ally.isDefending = true;
+                Terminal.outputMessage(`${ally.allyName} takes defensive stance!`, "#00FF00");
+                break;
+            case "3":
+                const healing = 20;
+                ally.health = Math.min(ally.maxHealth, ally.health + healing);
+                Terminal.outputMessage(`${ally.allyName} heals for ${healing} health!`, "#00FF00");
+                break;
+            default:
+                Terminal.outputMessage("Invalid action! Turn skipped.", "#FF0000");
+        }
+
+        currentAllyIndex++;
+        checkBattleEnd() || processTurn();
+    }
+
+    function processEnemyTurn() {
+        Terminal.outputMessage("\n=== Enemy Turn ===", "#FF0000");
+        
+        userCharacter.gainedAllies.forEach(ally => {
+            if (ally.health > 0) {
+                const damage = calculateEnemyDamage(ally);
+                ally.health -= ally.isDefending ? Math.floor(damage / 2) : damage;
+                Terminal.outputMessage(`${ally.allyName} takes ${damage} damage!`, "#FF0000");
+                ally.isDefending = false; // Reset defense
+            }
+        });
+
+        currentAllyIndex = 0;
+        checkBattleEnd() || processTurn();
+    }
+
+    function calculateDamage(ally) {
+        return Math.floor((ally.strength * (ally.assignedItem?.strength || 1)) * 
+               (Math.random() * 0.5 + 0.75));
+    }
+
+    function calculateEnemyDamage() {
+        return Math.floor(15 * (Math.random() * 0.5 + 0.75));
+    }
+
+    function checkBattleEnd() {
+        if (enemyHealth <= 0) {
+            Terminal.outputMessage("\nVictory! The enemy forces have been defeated!", "#00FF00");
+            endBattle(true);
+            return true;
+        }
+        
+        const allAlliesDead = userCharacter.gainedAllies.every(ally => ally.health <= 0);
+        if (allAlliesDead) {
+            Terminal.outputMessage("\nDefeat! All allies have fallen!", "#FF0000");
+            endBattle(false);
+            return true;
+        }
+        
+        return false;
+    }
+
+    function endBattle(victory) {
+        document.dispatchEvent(new CustomEvent('battleComplete', {
+            detail: { 
+                success: victory,
+                message: victory ? "Victory achieved!" : "Battle lost..."
+            }
+        }));
+    }
 }

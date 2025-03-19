@@ -1,20 +1,77 @@
 [
     {
         "dialogue": "slums_intro",
-        "message": "The slums are a maze of crumbling buildings, where desperation mingles with rebellious hope. Here, every face tells a story.",
+        "message": "The slums are a maze of narrow alleys and desperate people. Somewhere in this warren of poverty lies your next lead to the resistance.",
         "optionType": "number",
         "options": [
             {
-                "choice": "Ask the mysterious woman who she is",
-                "message": "She smirks and replies, 'I can make your life interesting if you're brave enough. There's a job that needs doing.'",
+                "choice": "1. Search the market",
+                "message": "You wander through the bustling market, keeping your eyes open for signs of rebel activity.",
                 "reputation": 0,
-                "next": "slums_job_offer"
+                "next": "slums_market"
             },
             {
-                "choice": "Ignore her and keep moving",
-                "message": "You decide it's best not to get involved and continue your journey deeper into the slums.",
-                "reputation": -1,
-                "next": "slums_deeper"
+                "choice": "2. Visit the tavern",
+                "message": "A smoky tavern might be the perfect place to gather information discreetly.",
+                "reputation": 0,
+                "next": "slums_tavern"
+            }
+        ]
+    },
+    {
+        "dialogue": "slums_market",
+        "message": "Vendors hawk their wares, but you notice subtle signs - certain stalls seem to be meeting points.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Approach a suspicious vendor",
+                "message": "The vendor recognizes a signal you learned in prison and directs you to a contact.",
+                "reputation": 5,
+                "next": "resistance_contact"
+            },
+            {
+                "choice": "2. Follow a messenger",
+                "message": "You notice a young messenger making unusual deliveries and decide to trail them.",
+                "reputation": 0,
+                "next": "resistance_contact"
+            }
+        ]
+    },
+    {
+        "dialogue": "slums_tavern",
+        "message": "The tavern is filled with whispered conversations and furtive glances.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Listen to conversations",
+                "message": "You overhear talk of a captured general and growing resistance.",
+                "reputation": 0,
+                "next": "resistance_contact"
+            },
+            {
+                "choice": "2. Bribe the bartender",
+                "message": "The bartender accepts your coin and points you toward a secret meeting.",
+                "reputation": -5,
+                "next": "resistance_contact"
+            }
+        ]
+    },
+    {
+        "dialogue": "resistance_contact",
+        "message": "You've found a resistance contact who tells you about an imprisoned general - a key figure in the rebellion.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Offer to help rescue the general",
+                "message": "The contact provides you with details about the prison where the general is held.",
+                "reputation": 10,
+                "next": "rescue_general_intro"
+            },
+            {
+                "choice": "2. Request more information",
+                "message": "You learn about the general's importance to the resistance movement.",
+                "reputation": 5,
+                "next": "rescue_general_intro"
             }
         ]
     },
@@ -91,6 +148,31 @@
                 "message": "You decide not to risk getting involved.",
                 "reputation": -2,
                 "next": "slums_explore"
+            }
+        ]
+    },
+    {
+        "dialogue": "slums_final",
+        "message": "A mysterious woman approaches you with information about an imprisoned general.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "Listen to her story",
+                "message": "You decide to hear what she has to say about the general.",
+                "reputation": 0,
+                "next": "rescue_general_intro"
+            }
+        ]
+    },
+    {
+        "dialogue": "slums_contact",
+        "message": "A mysterious figure approaches with information about an imprisoned general.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Listen to the information",
+                "message": "You learn about the general's location and importance to the resistance.",
+                "next": "rescue_general_intro"
             }
         ]
     }

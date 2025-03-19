@@ -1,4 +1,4 @@
-import { Terminal } from "./terminal.js";
+import { Terminal } from "../../terminal.js";
 
 export function prisonEscapeGame() {
     Terminal.outputMessage("Prison Escape minigame: Wait for the signal, then type 'escape' as fast as you can. If you type too early, you're caught.", "#FF8181");
@@ -38,6 +38,11 @@ export function prisonEscapeGame() {
     //remove custom handler
     function cleanup() {
         userInput.removeEventListener("keypress", prisonEscapeInputHandler, true);
+        
+        // Dispatch event to signal minigame completion
+        document.dispatchEvent(new CustomEvent('minigameComplete', {
+            detail: { success: true }
+        }));
     }
 
 

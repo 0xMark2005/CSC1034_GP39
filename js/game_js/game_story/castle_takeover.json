@@ -1,26 +1,20 @@
 [
   {
     "dialogue": "castle_takeover_intro",
-    "message": "After weeks of planning and gathering your allies, you finally arrive at the castle's gates. In the briefing room, the general outlines the plan for the impending takeover.",
+    "message": "After weeks of planning and gathering your allies, you finally arrive at the castle's gates.",
     "optionType": "number",
     "options": [
       {
-        "choice": "Listen to the general's plan and divide the forces accordingly",
-        "message": "You organize your allies and follow the general's strategy. Confidence surges as the plan takes shape.",
+        "choice": "1. Listen to the general's plan",
+        "message": "The general suggests a coordinated attack on multiple fronts.",
         "reputation": 0,
-        "next": "castle_briefing"
-      },
-      {
-        "choice": "Challenge the general's plan",
-        "message": "You propose an alternate strategy, and after heated discussion, the general hesitantly agrees.",
-        "reputation": 0,
-        "next": "castle_alternate"
-      },
-      {
-        "choice": "Act independently",
-        "message": "You reject the plan entirely, deciding to forge your own path.",
-        "reputation": 0,
-        "next": "castle_independent"
+        "next": "castle_briefing",
+        "startBattle": {
+          "type": "small",
+          "enemies": ["Royal Guard", "Castle Archers"],
+          "allies": ["Rebel Infantry", "Freed Prisoners"],
+          "difficulty": "medium"
+        }
       }
     ]
   },
@@ -41,6 +35,44 @@
         "reputation": 2,
         "next": "castle_charge"
       }
+    ]
+  },
+  {
+    "dialogue": "castle_assault",
+    "message": "The time has come for the final assault on the castle.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Launch full assault",
+        "message": "Your forces charge the main gate in a massive attack.",
+        "reputation": 10,
+        "startBattle": {
+          "type": "large",
+          "enemies": ["elite_guards", "royal_knights", "court_mages"],
+          "allies": ["rebel_army", "freed_prisoners", "general_forces"],
+          "difficulty": "hard"
+        },
+        "next": "castle_victory"
+      }
+    ]
+  },
+  {
+    "dialogue": "castle_victory",
+    "message": "The castle falls to your forces. Standing in the throne room, you remember your burning village and the path that led here.",
+    "optionType": "number",
+    "options": [
+        {
+            "choice": "1. Establish a new council",
+            "message": "You work with the general to form a fair government, ensuring no village suffers your fate again.",
+            "reputation": 15,
+            "gameComplete": true
+        },
+        {
+            "choice": "2. Take the crown",
+            "message": "You claim the throne, promising to rule more justly than your predecessor.",
+            "reputation": -5,
+            "gameComplete": true
+        }
     ]
   }
 ]

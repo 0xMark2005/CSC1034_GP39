@@ -1,39 +1,91 @@
 //Imports
 import { Terminal } from "../terminal.js";
 import { GameTracker } from "./game_tracker.js";
+import { prisonEscapeGame } from "./minigames/prisonescape_minigame.js";
+import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
+import { generalRescueGame } from "./minigames/generalRescue_minigame.js";
+import { handleArmyBattle } from "./battle.js";
+import { addAlly } from "./character.js";
 
-//constants & variables
+/**
+ * Handles starting and completing minigames
+ * Routes to appropriate minigame based on current area
+ * @param {Object} option - The selected game option containing minigame details
+ */
+function handleMinigame(option) {
+    allowInput = false;
+    
+    const minigameHandler = (e) => {
+        allowInput = true;
+        if (e.detail.success) {
+            Terminal.outputMessage("Minigame completed successfully!", "#00FF00");
+            if (option.next) {
+                GameTracker.currentDialogue = option.next;
+                loadDialogue();
+            }
+        } else {
+            Terminal.outputMessage("Minigame failed!", errorColor);
+            if (e.detail.nextArea) {
+                // Handle failure by transitioning to specified area
+                GameTracker.areaName = e.detail.nextArea;
+                GameTracker.setFilepath();
+                loadAreaFromJSON().then(() => {
+                    GameTracker.currentDialogue = storyProgression[e.detail.nextArea].startDialogue;
+                    loadDialogue();
+                });
+            } else {
+                allowInput = false;
+            }
+        }
+    };
+    
+    document.addEventListener('minigameComplete', minigameHandler, { once: true });
+    
+    // Route to appropriate minigame based on current area
+    switch(GameTracker.areaName) {
+        case "burning_village":
+            villageEscapeGame();
+            break;
+        case "prison":
+            prisonEscapeGame();
+            break;
+        case "rescue_general":
+            generalRescueGame();
+            break;
+        default:
+            Terminal.outputMessage("Error: No minigame found for this area", errorColor);
+            allowInput = true;
+    }
+}
+
+// Constants
 const dialogueColor = "#00FF00";
 const optionsColor = "#00FF00";
 const errorColor = "#FF0000";
 const optionResultColor = "#0000FF";
 
-let allowInput = false; //boolean stores whether user can input or not
-const options = []; //array to store the options the user currently can choose from
-let optionType = "number"; //store if input is numeric or a verb
+// Game state variables
+let allowInput = false;
+const options = [];
+let optionType = "number";
 let currentSelectionIndex = -1;
 
-document.addEventListener("DOMContentLoaded", async function(){
-
-    //Initialize terminal
+document.addEventListener("DOMContentLoaded", async function() {
+    // Initialize terminal
     let outputTerminal = document.getElementById("output-terminal");
     let userInput = document.getElementById("user-input");
     Terminal.initialize(outputTerminal, userInput);
 
-    //Load save file methods below (seperate js file)
-
-    //Game setup
+    // Set initial game state
     GameTracker.areaName = "burning_village";
     GameTracker.setFilepath();
     await loadAreaFromJSON();
 
-    GameTracker.currentDialogue = "burning_village_intro";  // Was "start"
+    // Start from the beginning
+    GameTracker.currentDialogue = "burning_village_intro";
     loadDialogue();
 
-
-    //-----
-    //Adding event listeners
-    //-----
+    // Add input handler
     userInput.addEventListener("keydown", function(event) {
         if (!allowInput) return;
         
@@ -53,18 +105,92 @@ document.addEventListener("DOMContentLoaded", async function(){
                 break;
         }
     });
-
-
-    //-----
-    //Game Loop
-    //-----
-    // let exitGame = false
-    // while(!exitGame){
-    //     //run game code
-    // }
-    
 });
 
+// Story progression map
+const storyProgression = {
+    burning_village: {
+        startDialogue: "burning_village_intro",
+        nextArea: "capital_gates"
+    },
+    capital_gates: {
+        startDialogue: "capital_gates_intro",
+        nextArea: "prison"
+    },
+    prison: {
+        startDialogue: "capital_prison_intro",
+        nextArea: "slums"
+    },
+    sewer_escape: {
+        startDialogue: "sewer_escape_intro",
+        nextArea: "slums"
+    },
+    slums: {
+        startDialogue: "slums_intro",
+        nextArea: "rescue_general"
+    },
+    rescue_general: {
+        startDialogue: "rescue_general_intro",
+        nextArea: "castle_takeover"
+    },
+    castle_takeover: {
+        startDialogue: "castle_takeover_intro",
+        nextArea: "game_complete"
+    }
+};
+
+// Update processChoice function to handle area transitions
+function processChoice(option) {
+    Terminal.outputMessage(option.message, dialogueColor);
+    
+    // Handle minigames
+    if (option.startMinigame) {
+        handleMinigame(option);
+        return;
+    }
+
+    // Handle battles
+    if (option.startBattle) {
+        handleBattle(option);
+        return;
+    }
+
+    // Handle game over
+    if (option.gameOver) {
+        Terminal.outputMessage("Game Over", errorColor);
+        allowInput = false;
+        return;
+    }
+
+    // Update reputation
+    if (option.reputation) {
+        updateReputation(option);
+    }
+
+    // Handle area transitions
+    if (option.next) {
+        handleAreaTransition(option.next);
+    }
+}
+
+function handleAreaTransition(nextDialogue) {
+    const currentArea = GameTracker.areaName;
+    const progressionEntry = storyProgression[currentArea];
+    
+    if (progressionEntry && nextDialogue.includes(progressionEntry.nextArea)) {
+        // Transition to new area
+        GameTracker.areaName = progressionEntry.nextArea;
+        GameTracker.setFilepath();
+        loadAreaFromJSON().then(() => {
+            GameTracker.currentDialogue = storyProgression[progressionEntry.nextArea].startDialogue;
+            loadDialogue();
+        });
+    } else {
+        // Stay in current area
+        GameTracker.currentDialogue = nextDialogue;
+        loadDialogue();
+    }
+}
 
 async function loadAreaFromJSON(){
     try {
@@ -165,7 +291,7 @@ function loadDialogue() {
         Terminal.outputMessage(`Enter a number: `, dialogueColor);
         for(let i=0; i < options.length; i++){
             let currentOption = options[i];
-            Terminal.outputMessage(`${i+1}. ${currentOption.choice}`, dialogueColor);
+            Terminal.outputMessage(`${currentOption.choice}`, dialogueColor);
         }
     }
     else{
@@ -256,82 +382,6 @@ function handleVerbChoice(choice) {
     
     // Process valid choice
     processChoice(selectedOption);
-}
-
-/**
- * Processes a selected game option and handles its consequences
- * 
- * Displays result messages, processes reputation changes, checks for
- * game over conditions, and manages area transitions. Handles complex
- * area change logic including loading new areas from JSON files.
- */
-function processChoice(option) {
-    // Output the result message
-    Terminal.outputMessage(option.message, dialogueColor);
-    
-     // Check for game over
-     if (option.gameOver) {
-        Terminal.outputMessage("Game Over", errorColor);
-        allowInput = false;
-        return;
-    }
-    
-    // Handle reputation changes if present
-    updateReputation(option);
-    
-    // Move to next dialogue if specified
-    if (option.next) {
-        let nextDialogue = option.next;
-        let currentArea = GameTracker.areaName;
-        
-        // Check if we're moving to a new area
-        const areaTransitions = {
-            capital_gates: "capital_gates_intro",
-            prison: "capital_prison_intro",  // Only accessible from capital gates
-            sewer_escape: "sewer_escape_intro",
-            slums: "slums_intro",
-            rescue_general: "rescue_general_intro",
-            castle_takeover: "castle_takeover_intro"
-        };
-        
-        // Check if we need to change areas
-        let areaChanged = false;
-        let newArea = null;
-        
-        // First, determine if we're changing areas
-        for (const [area, startDialogue] of Object.entries(areaTransitions)) {
-            // Only allow prison transition from capital_gates area
-            if (area === "prison" && currentArea !== "capital_gates") {
-                continue;
-            }
-            
-            if (nextDialogue.includes(area.replace('_escape', ''))) {
-                newArea = area;
-                if (currentArea !== newArea) {
-                    areaChanged = true;
-                    GameTracker.areaName = newArea;
-                    GameTracker.currentDialogue = startDialogue;
-                }
-                break;
-            }
-        }
-        
-        // If not changing areas, just update the dialogue
-        if (!areaChanged) {
-            GameTracker.currentDialogue = nextDialogue;
-            loadDialogue();
-            return;
-        }
-        
-        // If changing areas, load the new area
-        GameTracker.setFilepath();
-        loadAreaFromJSON().then(() => {
-            loadDialogue();
-        }).catch((error) => {
-            console.error("Error during area transition:", error);
-            Terminal.outputMessage("Error loading the next area.", errorColor);
-        });
-    }
 }
 
 // Add new function to handle arrow navigation

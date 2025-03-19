@@ -5,19 +5,20 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "Stealthily enter the prison",
-                "message": "You opt for stealth and slip in through a forgotten side gate, hoping to free the general unnoticed.",
+                "choice": "1. Stealthily enter the prison",
+                "message": "You opt for stealth and slip in through a forgotten side gate. You'll need to decode the guard patrol patterns.",
                 "reputation": 0,
+                "startMinigame": true,
                 "next": "general_rescue"
             },
             {
-                "choice": "Try to bribe the guards",
+                "choice": "2. Try to bribe the guards",
                 "message": "You decide to use your remaining funds to bribe the guards. They grudgingly let you in.",
                 "reputation": -1,
                 "next": "general_bribe"
             },
             {
-                "choice": "Attempt a direct assault on the prison",
+                "choice": "3. Attempt a direct assault",
                 "message": "Throwing caution to the wind, you charge in. The guard's alarm ensures chaos, but you press forward.",
                 "reputation": -5,
                 "next": "general_assault"
@@ -96,6 +97,24 @@
                 "choice": "Fight your way out",
                 "message": "Together with the general, you battle through the remaining guards.",
                 "reputation": 5,
+                "next": "castle_takeover_intro"
+            },
+            {
+                "choice": "Plan the next move",
+                "message": "The general shares his plan to retake the castle.",
+                "reputation": 5,
+                "next": "castle_takeover_intro"
+            }
+        ]
+    },
+    {
+        "dialogue": "general_rescued",
+        "message": "With the general free, it's time to take the fight to the castle.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Plan the assault",
+                "message": "The general begins outlining strategies to take the castle.",
                 "next": "castle_takeover_intro"
             }
         ]

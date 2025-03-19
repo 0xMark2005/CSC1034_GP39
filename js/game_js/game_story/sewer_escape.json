@@ -1,20 +1,20 @@
 [
     {
         "dialogue": "sewer_escape_intro",
-        "message": "You've escaped into the dark, damp sewers beneath the capital. The stench is overwhelming, and the tunnels twist in every direction.",
+        "message": "The dank sewers stretch before you, a maze of tunnels and shadows.",
         "optionType": "number",
         "options": [
             {
-                "choice": "Proceed cautiously",
-                "message": "You proceed carefully, weapon drawn, ready for whatever lurks in the shadows.",
+                "choice": "1. Follow the water flow",
+                "message": "You decide to follow the current, hoping it leads to freedom.",
                 "reputation": 0,
-                "next": "sewer_encounter"
+                "next": "sewer_navigation"
             },
             {
-                "choice": "Try to find another route",
-                "message": "You decide to avoid the immediate danger and search for an alternate path.",
-                "reputation": 0,
-                "next": "sewer_alternate"
+                "choice": "2. Search for a map",
+                "message": "You spot some old maintenance charts on the wall.",
+                "reputation": 5,
+                "next": "sewer_navigation"
             }
         ]
     },
@@ -45,6 +45,30 @@
             {
                 "choice": "Continue to the slums",
                 "message": "You emerge from the sewers into the city's poorest district.",
+                "reputation": 0,
+                "next": "slums_intro"
+            }
+        ]
+    },
+    {
+        "dialogue": "sewer_rebel_camp",
+        "message": "You stumble upon a hidden rebel camp in the sewers. They're surprised but impressed by your escape.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Share your story",
+                "message": "Your tale of the village massacre strengthens their resolve against the kingdom.",
+                "reputation": 5,
+                "addAlly": {
+                    "allyName": "Sewer Scout",
+                    "strength": 2.5,
+                    "defense": 3.0
+                },
+                "next": "slums_intro"
+            },
+            {
+                "choice": "2. Ask for directions",
+                "message": "They point you toward the slums, where more resistance members gather.",
                 "reputation": 0,
                 "next": "slums_intro"
             }

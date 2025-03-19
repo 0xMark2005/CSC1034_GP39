@@ -5,13 +5,13 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "Join the riot",
+        "choice": "1. Join the riot",
         "message": "You decide to join the prisoners' rebellion. The risk is high, but you gain valuable allies.",
         "reputation": -15,
         "next": "riot_outcome"
       },
       {
-        "choice": "Stay neutral",
+        "choice": "2. Stay neutral",
         "message": "You decide to take no sides and remain unnoticed, though you risk losing your chance at escape.",
         "reputation": 0,
         "next": "neutral_outcome"
@@ -24,13 +24,13 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "Plan a careful escape",
+        "choice": "1. Plan a careful escape",
         "message": "You notice the guards are less vigilant during shift changes.",
         "reputation": 5,
         "next": "escape_attempt"
       },
       {
-        "choice": "Look for allies",
+        "choice": "2. Look for allies",
         "message": "You spot other prisoners who seem to be planning something.",
         "reputation": 0,
         "next": "prisoner_alliance"
@@ -43,13 +43,14 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "Use the sewers",
+        "choice": "1. Use the sewers",
         "message": "You discover a loose grate leading to the sewer system.",
         "reputation": 0,
+        "startMinigame": true,
         "next": "sewer_escape_intro"
       },
       {
-        "choice": "Disguise as a guard",
+        "choice": "2. Disguise as a guard",
         "message": "You manage to acquire a guard's uniform.",
         "reputation": -5,
         "next": "sewer_escape_intro"
@@ -58,18 +59,23 @@
   },
   {
     "dialogue": "prisoner_alliance",
-    "message": "The other prisoners reveal they've been planning a coordinated escape attempt.",
+    "message": "The other prisoners reveal they're more than common criminals - they're part of a growing resistance movement.",
     "optionType": "number",
     "options": [
       {
-        "choice": "Join their plan",
-        "message": "You decide to work together, improving your chances of success.",
+        "choice": "1. Join their cause",
+        "message": "You share your village's fate, and they welcome you into their ranks.",
         "reputation": 5,
+        "addAlly": {
+          "allyName": "Prison Rebel",
+          "strength": 3.0,
+          "defense": 2.0
+        },
         "next": "riot_outcome"
       },
       {
-        "choice": "Keep to your own plan",
-        "message": "You thank them but decide to stick to your original strategy.",
+        "choice": "2. Keep your distance",
+        "message": "While sympathetic, you decide to avoid deeper involvement for now.",
         "reputation": 0,
         "next": "escape_attempt"
       }
@@ -81,13 +87,13 @@
     "optionType": "number",
     "options": [
       {
-        "choice": "Use stealth",
+        "choice": "1. Use stealth",
         "message": "You wait for the perfect moment and slip past the guards.",
         "reputation": 0,
         "next": "sewer_escape_intro"
       },
       {
-        "choice": "Create a distraction",
+        "choice": "2. Create a distraction",
         "message": "You cause chaos in another part of the prison to aid your escape.",
         "reputation": -5,
         "next": "sewer_escape_intro"
@@ -96,19 +102,83 @@
   },
   {
     "dialogue": "riot_outcome",
-    "message": "The riot erupts into chaos. Guards and prisoners clash violently throughout the prison.",
+    "message": "The riot erupts into chaos. Guards and prisoners clash violently throughout the prison. In the confusion, you notice the night guard's quarters are less protected.",
     "optionType": "number",
     "options": [
       {
-        "choice": "Lead the charge",
-        "message": "You rally the prisoners and lead an assault on the main gate.",
-        "reputation": 5,
-        "next": "sewer_escape_intro"
+        "choice": "1. Sneak through guard quarters",
+        "message": "You spot a sleeping guard in the quarters - this might be your chance.",
+        "reputation": 0,
+        "startMinigame": true,
+        "next": "guard_quarters_escape"
       },
       {
-        "choice": "Slip away in the chaos",
-        "message": "While everyone is distracted, you find an opportunity to escape.",
+        "choice": "2. Find another way",
+        "message": "You decide it's too risky and look for an alternative route.",
+        "reputation": -5,
+        "next": "alternative_escape"
+      }
+    ]
+  },
+  {
+    "dialogue": "guard_quarters_escape",
+    "message": "Successfully sneaking past the sleeping guard, you find yourself near the prison's outer wall.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Scale the wall",
+        "message": "Using the cover of darkness, you begin climbing the outer wall.",
+        "reputation": 5,
+        "next": "freedom_achieved"
+      },
+      {
+        "choice": "2. Use guard's uniform",
+        "message": "You notice a spare guard uniform that might help you walk right out.",
         "reputation": 0,
+        "next": "freedom_achieved"
+      }
+    ]
+  },
+  {
+    "dialogue": "alternative_escape",
+    "message": "Looking for another way out, you discover a maintenance door leading to the courtyard.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Rush through courtyard",
+        "message": "Taking advantage of the chaos, you make a dash for freedom.",
+        "reputation": -10,
+        "next": "freedom_achieved"
+      },
+      {
+        "choice": "2. Wait for patrol gap",
+        "message": "You patiently wait for the perfect moment between guard patrols.",
+        "reputation": 5,
+        "next": "freedom_achieved"
+      }
+    ]
+  },
+  {
+    "dialogue": "freedom_achieved",
+    "message": "You've made it out of the prison. The slums await.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Head to the slums",
+        "message": "You make your way towards the city's slums, hoping to find allies.",
+        "reputation": 0,
+        "next": "slums_intro"  
+      }
+    ]
+  },
+  {
+    "dialogue": "escape_success",
+    "message": "You've managed to break free. The sewers await.",
+    "optionType": "number",
+    "options": [
+      {
+        "choice": "1. Enter the sewers",
+        "message": "You slip into the dark tunnels beneath the prison.",
         "next": "sewer_escape_intro"
       }
     ]

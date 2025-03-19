@@ -1,33 +1,40 @@
 [
     {
         "dialogue": "burning_village_intro",
-        "message": "A group of renkown knights come to inform your village that the king had requested a larger tax of 60% of their profits after a very successful harvest. The villagers desperately pleaded for a reduction to the tax as it would mean they wouldn't be able to afford various things needed for their survival such as firewood and bread, but the knights are stubborn which led to them attacking the village as punishment for disrespecting the king. The knights laugh while destroying the village.\n\nWith nothing but a sword, a small healing potion, and some rations, you flee into the darkness, heading toward the capital in search of refuge.",
+        "message": "The peaceful evening is shattered as royal knights storm your village. Their captain declares all villagers traitors for harboring rebels. As flames engulf homes and screams fill the air, you realize the kingdom has changed.",
         "optionType": "number",
         "options": [
             {
-                "choice": "Run towards the forest",
-                "message": "The only path forward is through the dense and dangerous woods, with mysteries awaiting.",
+                "choice": "1. Run towards the forest",
+                "message": "With knights closing in, you dash toward the dense woods, knowing survival means reaching the capital.",
                 "reputation": 0,
+                "startMinigame": true,
+                "next": "forest_shelter"
+            },
+            {
+                "choice": "2. Help other villagers",
+                "message": "You risk your life helping others escape, earning their gratitude but losing precious time.",
+                "reputation": 10,
                 "next": "forest_shelter"
             }
         ]
     },
     {
         "dialogue": "forest_shelter",
-        "message": "Exhausted and alone, you must find shelter before the knights or a pack of wolves find you.",
+        "message": "Exhausted and haunted by your village's fate, you must find shelter before the knights' search parties arrive. The capital city might offer answers - and revenge.",
         "optionType": "verb",
         "options": [
             {
                 "choice": "cave",
-                "message": "You spot a small cave and take refuge inside, hoping to rest before continuing your journey.",
+                "message": "A small cave offers shelter and a chance to rest. Inside, you find scattered rebel documents revealing unrest in the capital.",
                 "reputation": 0,
-                "next": "capital_gates"
+                "next": "capital_gates_intro"
             },
             {
-                "choice": "campfire",
-                "message": "You set up a campfire, but the glow attracts a pack of wolves. You are overwhelmed and do not survive.",
-                "reputation": -5,
-                "gameOver": true
+                "choice": "climb",
+                "message": "From a tall tree, you spot the capital's walls in the distance and notice increased military activity.",
+                "reputation": 0,
+                "next": "capital_gates_intro"
             }
         ]
     }
