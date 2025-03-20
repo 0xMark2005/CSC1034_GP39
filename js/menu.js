@@ -1,7 +1,11 @@
 import { Terminal } from "./terminal.js";
+import { DBQuery } from "./dbQuery.js";
 import SettingsManager from "./settingsManager.js";
 
 document.addEventListener("DOMContentLoaded", function () {
+    
+    //ensure the user is logged in
+    checkUserLogin();
     
     //Initialize the terminal
     let outputTerminal = document.getElementById("output-terminal"); 
@@ -50,3 +54,31 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     
 });
+
+async function checkUserLogin(){
+    let loggedIn = localStorage.getItem("loggedIn");
+    let sessionToken = localStorage.getItem("sessionToken");
+    let userID = localStorage.getItem("userID");
+
+    if (loggedIn !== "true" || !sessionToken || !userID) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    // Verify the session token in the database
+    let query = `SELECT * FROM user_sessions WHERE user_id='${userID}' AND session_token='${sessionToken}' AND expires_at > NOW() LIMIT 1`;
+
+    try {
+        let result = await DBQuery.getQueryResult(query);
+        if (!(result.data && result.data.length > 0)) {
+            localStorage.removeItem("loggedIn");
+            localStorage.removeItem("userID");
+            localStorage.removeItem("sessionToken");
+            window.location.href = "index.html";
+        }
+    } catch (error) {
+        console.error("Session verification error:", error);
+        window.location.href = "index.html";
+    }
+}
+

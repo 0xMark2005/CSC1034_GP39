@@ -34,12 +34,12 @@
             <div id="menu-screen" class="screen active">
                 <h2>Log In or Sign Up</h2>
                 <div class="button-container">
-                    <button class="index-menu-button" onclick="showLoginScreen()">
+                    <button class="index-menu-button" id="login-button">
                         <img src="css/assets/images/waving guy.gif" alt="Existing User">
                         <span>Existing Users</span>
                     </button>
                     
-                    <button class="index-menu-button" onclick="showCreateAccountScreen()">
+                    <button class="index-menu-button" id="create-account-button">
                         <img src="css/assets/images/newcharacter.gif" alt="New User">
                         <span>New Users</span>
                     </button>
@@ -55,9 +55,9 @@
                 <input type="text" id="login-username" placeholder="Username">
                 <input type="password" id="login-password" placeholder="Password">
                 <!--<div class="g-recaptcha" data-sitekey="6Le7EvEqAAAAAHRHzSVEdHTJRXdmH8mXo9gNmQkm"></div> -->
-                <button class="login-button" onclick="handleLogin()">LOGIN</button>
+                <button class="login-button" id="account-login-button">LOGIN</button>
                 <p id="login-error" style="color: red; display: none;"></p>
-                <a href="#" onclick="showMenuScreen()">Go Back</a>
+                <a href="#" class="go-back-button">Go Back</a>
             </div>
 
             <!-- Create Account Screen (Initially Hidden) -->
@@ -71,16 +71,16 @@
             
                 <!-- Password Visibility Toggle -->
                 <div class="checkbox-wrapper-3">
-                    <input type="checkbox" id="cbx-register" onclick="togglePasswordVisibility('register-password')">
+                    <input type="checkbox" id="cbx-register">
                     <label for="cbx-register" class="toggle">
                         <span></span>
                     </label>
                     <span class="toggle-text">Show Password</span>
                 </div>
             
-                <button class="login-button" onclick="handleRegister()">CREATE</button>
+                <button class="login-button" id="register-account-button">CREATE</button>
                 <p id="register-error" style="color: red; display: none;"></p>
-                <a href="#" onclick="showMenuScreen()">Go Back</a>
+                <a href="#" class="go-back-button">Go Back</a>
             </div>
             
             
@@ -88,7 +88,8 @@
         </div>
     </div>
 
-    <script src="js/index.js"></script>
+    <script type="module" src="js/dbQuery.js"></script>
+    <script type="module" src="js/index.js"></script>
 
 </body>
 </html>

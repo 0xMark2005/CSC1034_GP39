@@ -1,16 +1,36 @@
+import {DBQuery} from "./dbQuery.js";
+
 // Add events after page has loaded
 document.addEventListener("DOMContentLoaded", function () {
     if (localStorage.getItem("loggedIn") === "true") {
         window.location.href = "main_menu.html";
         return;
     }
+
+
     // Button click events to open corresponding pages
     document.getElementById("login-button").onclick = function () {
-        window.location.href = "login.html";
+        showLoginScreen();
     }
 
-    document.getElementById("signup-button").onclick = function () {
-        window.location.href = "signup.html";
+    document.getElementById("create-account-button").onclick = function () {
+        showCreateAccountScreen();
+    }
+
+    document.getElementById("account-login-button").onclick = function () {
+        handleLogin();
+    }
+
+    document.getElementsByClassName("go-back-button").onclick = function() {
+        showMenuScreen();
+    }
+
+    document.getElementById("register-account-button").onclick = function() {
+        handleRegister();
+    }
+
+    document.getElementById("cbx-register").onclick = function() {
+        togglePasswordVisibility('register-password');
     }
 });
 
@@ -101,21 +121,8 @@ async function handleRegister() {
         let passwordData = await hashPassword(password);
         
         // Insert user with hash and salt in separate columns
-        let query = `INSERT INTO users (username, passwordHash, passwordSalt) VALUES ('${username}', '${passwordData.hash}', '${passwordData.salt}')`;
-
-        let params = new URLSearchParams();
-        params.append('hostname', 'localhost');
-        params.append('username', 'jdonnelly73');
-        params.append('password', 'CHZHy02qM20fcLVt');
-        params.append('database', 'CSC1034_CW_39');
-        params.append('query', query);
-
-        let response = await fetch('includes/db_connect.php', {
-            method: 'POST',
-            body: params
-        });
-
-        let result = await response.json();
+        let query = `INSERT INTO users (username, password_hash, password_salt) VALUES ('${username}', '${passwordData.hash}', '${passwordData.salt}')`;
+        let result = await DBQuery.getQueryResult(query);
         console.log("Register Response:", result);
 
         if (result.error) {
@@ -148,28 +155,17 @@ async function handleLogin() {
     // First query to get the user and their salt
     let userQuery = `SELECT * FROM users WHERE username='${username}' LIMIT 1`;
 
-    let params = new URLSearchParams();
-    params.append('hostname', 'localhost');
-    params.append('username', 'jdonnelly73');
-    params.append('password', 'CHZHy02qM20fcLVt');
-    params.append('database', 'CSC1034_CW_39');
-    params.append('query', userQuery);
-
     try {
-        let response = await fetch('includes/db_connect.php', {
-            method: 'POST',
-            body: params
-        });
-        let result = await response.json();
+        let result = await DBQuery.getQueryResult(userQuery);
 
         if (result.error) {
             document.getElementById('login-error').textContent = "Login failed: " + result.error;
             document.getElementById('login-error').style.display = "block";
         } else if (result.data && result.data.length > 0) {
             let user = result.data[0];
-            let storedHash = user.passwordHash;
-            let storedSalt = user.passwordSalt;
-            let userID = user.userID;
+            let storedHash = user.password_hash;
+            let storedSalt = user.password_salt;
+            let userID = user.user_id;
 
             // Hash the entered password with the stored salt
             let hashedPassword = await hashPasswordWithSalt(password, storedSalt);
@@ -183,19 +179,9 @@ async function handleLogin() {
                     .toISOString().slice(0, 19).replace('T', ' ');
 
                 // Create a new session
-                let sessionQuery = `INSERT INTO user_sessions (user_ID, session_token, expires_at) VALUES ('${userID}', '${sessionToken}', '${expiresAt}')`;
-                let sessionParams = new URLSearchParams();
-                sessionParams.append('hostname', 'localhost');
-                sessionParams.append('username', 'jdonnelly73');
-                sessionParams.append('password', 'CHZHy02qM20fcLVt');
-                sessionParams.append('database', 'CSC1034_CW_39');
-                sessionParams.append('query', sessionQuery);
+                let sessionQuery = `INSERT INTO user_sessions (user_id, session_token, expires_at) VALUES ('${userID}', '${sessionToken}', '${expiresAt}')`;
+                let sessionResult = await DBQuery.getQueryResult(sessionQuery);
 
-                let sessionResponse = await fetch('includes/db_connect.php', {
-                    method: 'POST',
-                    body: sessionParams
-                });
-                let sessionResult = await sessionResponse.json();
                 if (sessionResult.error) {
                     document.getElementById('login-error').textContent = "Session error: " + sessionResult.error;
                     document.getElementById('login-error').style.display = "block";

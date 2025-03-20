@@ -15,9 +15,9 @@ export class DBQuery{
 
         try {
             //send the query to the database
-            let response = await fetch(dbConnectorUrl, {
+            let response = await fetch(this.#dbConnectorUrl, {
                 method: "POST",
-                body: dbConfig
+                body: this.#dbConfig
             });
             let result = await response.json(); //stores the query result and parses it into a JavaScript object
 
