@@ -183,7 +183,7 @@ async function handleLogin() {
                     .toISOString().slice(0, 19).replace('T', ' ');
 
                 // Create a new session
-                let sessionQuery = `INSERT INTO user_sessions (userID, session_token, expires_at) VALUES ('${userID}', '${sessionToken}', '${expiresAt}')`;
+                let sessionQuery = `INSERT INTO user_sessions (user_ID, session_token, expires_at) VALUES ('${userID}', '${sessionToken}', '${expiresAt}')`;
                 let sessionParams = new URLSearchParams();
                 sessionParams.append('hostname', 'localhost');
                 sessionParams.append('username', 'jdonnelly73');
