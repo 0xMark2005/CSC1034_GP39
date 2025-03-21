@@ -2,6 +2,28 @@
 //Setting up the terminal
 //-------
 
+//Loading the audio file once.
+const typingAudio = new Audio("css/assets/sounds/computer-keyboard.mp3");
+typingAudio.volume = 1.0;  // ADDED: Increase volume to maximum for testing
+typingAudio.loop = true; //repeating until done
+
+// ADDED: Track if audio is unlocked via user interaction.
+let audioUnlocked = false;
+
+// ADDED: Unlock audio playback on first user interaction.
+document.addEventListener("click", unlockAudioOnce, { once: true });
+document.addEventListener("keydown", unlockAudioOnce, { once: true });
+function unlockAudioOnce() {
+  // Try playing and immediately pausing to unlock audio.
+  typingAudio.play().then(() => {
+    typingAudio.pause();
+    audioUnlocked = true;
+    console.log("Audio unlocked");
+  }).catch((e) => {
+    console.error("Audio unlock failed", e);
+  });
+}
+
 export class Terminal{
     static #outputTerminal;
     static #userInput;
@@ -49,6 +71,8 @@ export class Terminal{
         // If the queue is empty, mark as not processing and return
         if (this.#messageQueue.length === 0) {
             this.#isProcessing = false;
+            typingAudio.pause();
+            typingAudio.currentTime = 0;
             return;
         }
         this.#isProcessing = true;
@@ -61,16 +85,33 @@ export class Terminal{
         messageElement.style.color = color;
         this.#outputTerminal.appendChild(messageElement);
         
-        // Set up the typewriter effect
+        // ADDED: Adjusted speed for audible typing effect (50ms per character)
+        const speed = 50;
         let i = 0;
-        const speed = 0.1;
         
+        // ADDED: Only play audio if settings allow and audio has been unlocked.
+        if (window.appSettings && window.appSettings.keyboardSounds && window.appSettings.soundEnabled && audioUnlocked) {
+            typingAudio.currentTime = 0;
+            typingAudio.play().then(() => {
+              console.log("typingAudio is playing");
+            }).catch((err) => {
+              console.error("Error playing typingAudio:", err);
+            });
+        } else {
+            console.log("Not playing typingAudio (settings disabled or audio not unlocked)");
+        }
+
         function typeWriter() {
             if (i < message.length) {
                 messageElement.innerHTML += message.charAt(i);
                 i++;
                 setTimeout(typeWriter, speed);
             } else {
+                // ADDED: Log when typing finishes
+                console.log("Finished typing message; pausing sound.");
+                typingAudio.pause(); 
+                typingAudio.currentTime = 0;
+
                 // When this message is done, process the next one
                 Terminal.#processNextMessage();
                 // Scroll to the bottom after each message
@@ -90,7 +131,6 @@ export class Terminal{
     }
 
     //output the user's choice to the terminal
-
 
     //
     // Function for reading terminal input
