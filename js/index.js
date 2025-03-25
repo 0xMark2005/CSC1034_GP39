@@ -218,3 +218,5 @@ function togglePasswordVisibility(id1, id2) {
     passwordField.type = type;
     checkPasswordField.type = type;
 }
+
+window.showMenuScreen = showMenuScreen;
