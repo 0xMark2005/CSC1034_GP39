@@ -1,6 +1,8 @@
 //Imports
 import { Terminal } from "../terminal.js";
 import { GameTracker } from "./game_tracker.js";
+import * as SaveLoadGame from "./save_load_game.js";
+
 import { prisonEscapeGame } from "./minigames/prisonescape_minigame.js";
 import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
 import { generalRescueGame } from "./minigames/generalRescue_minigame.js";
@@ -76,13 +78,11 @@ document.addEventListener("DOMContentLoaded", async function() {
     let userInput = document.getElementById("user-input");
     Terminal.initialize(outputTerminal, userInput);
 
-    // Set initial game state
-    GameTracker.areaName = "burning_village";
-    GameTracker.setFilepath();
+    // Load game
+    await SaveLoadGame.loadGame();
     await loadAreaFromJSON();
 
-    // Start from the beginning
-    GameTracker.currentDialogue = "burning_village_intro";
+    // Load the dialogue
     loadDialogue();
 
     // Add input handler
@@ -415,6 +415,6 @@ function updateReputation(option){
     if (option.reputation) {
         Terminal.outputMessage(`Reputation change: ${option.reputation}`, optionResultColor);
         GameTracker.changeReputation(option.reputation);
-        document.getElementById("reputation-number").innerHTML = GameTracker.getReputation();
+        document.getElementById("reputation-number").innerHTML = GameTracker.reputation;
     }
 }
