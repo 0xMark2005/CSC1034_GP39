@@ -82,3 +82,12 @@ async function checkUserLogin(){
     }
 }
 
+//button sound effect
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const clickSound = new Audio('css/assets/sounds/button-click.mp3');
+            clickSound.play();
+        });
+    });
+});

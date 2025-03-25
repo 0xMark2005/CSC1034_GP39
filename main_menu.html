@@ -15,24 +15,43 @@
         <link rel="stylesheet" href="css/main_menu.css">
         <link rel="stylesheet" href="css/inventory.css">
         <!-- checking for logged in status-->
-            <script>
-                (function() {
-                  var settings = localStorage.getItem("appSettings");
-                  var currentTextSize = "16px"; // default size
-                  if (settings) {
-                    try {
-                      var parsed = JSON.parse(settings);
-                      if (parsed.currentTextSize) {
-                        currentTextSize = parsed.currentTextSize;
-                      }
-                    } catch(e) {
-                      console.error("Error parsing settings:", e);
-                    }
-                  }
-                  // Set the font size on the root element immediately
-                  document.documentElement.style.fontSize = currentTextSize;
-                })();
-              </script>
+        <script>
+          (function() {
+            // Retrieve settings
+            var settings = localStorage.getItem("appSettings");
+            var currentTextSize = "16px"; // default text size
+            var soundEnabled = 0;         // default sound setting
+            if (settings) {
+              try {
+                var parsed = JSON.parse(settings);
+                if (parsed.currentTextSize) {
+                  currentTextSize = parsed.currentTextSize;
+                }
+                soundEnabled = parsed.soundEnabled || 0;
+              } catch(e) {
+                console.error("Error parsing appSettings:", e);
+              }
+            }
+            document.documentElement.style.fontSize = currentTextSize;
+        
+            // Check login status
+            var loggedIn = localStorage.getItem("loggedIn") === "true";
+            // Only play sound if enabled or if user isn't logged in
+            var shouldPlaySound = (soundEnabled == 1 || !loggedIn);
+        
+            if (shouldPlaySound) {
+              document.addEventListener("DOMContentLoaded", function () {
+                document.querySelectorAll('button').forEach(function(btn) {
+                  btn.addEventListener('click', function() {
+                    new Audio('css/assets/sounds/button-click.mp3').play();
+                  });
+                });
+              });
+            }
+          })();
+        </script>
+        
+          
               
             
     </head>
