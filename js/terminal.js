@@ -86,7 +86,7 @@ export class Terminal{
         this.#outputTerminal.appendChild(messageElement);
         
         // ADDED: Adjusted speed for audible typing effect (50ms per character)
-        const speed = 50;
+        const speed = 5;
         let i = 0;
         
         // ADDED: Only play audio if settings allow and audio has been unlocked.

@@ -18,6 +18,10 @@ let gameSaves = [];
 document.addEventListener("DOMContentLoaded", async function () {
     //ensure the user is logged in
     await Util.checkUserLogin();
+
+    //remove previously loaded game
+    localStorage.removeItem("loadGame");
+    localStorage.removeItem("gameSessionId");
     
     //Initialize the terminal
     let outputTerminal = document.getElementById("output-terminal"); 
@@ -68,6 +72,7 @@ async function chooseMenuOption(choice){
         switch (choice) {
             // user selects 1 / Begin game so the menu is hidden and the header appears INSIDE terminal (this can be changed to outside if necessary)
             case "1":
+                localStorage.setItem("loadGame", false); //new game to be created
                 window.location.replace("temp_game.html");        
                 break;
             case "2":
@@ -112,6 +117,8 @@ function chooseGameSave(choice){
         //set the gameSessionId of the selected save file and open the game
         let gameSessionId = gameSaves[choice-1].game_session_id;
         localStorage.setItem("gameSessionId", gameSessionId);
+        localStorage.setItem("loadGame", true); //game to be loaded
+
         Terminal.outputMessage("Loading Game...", optionResultColor);
         window.location.href = "temp_game.html";
     }

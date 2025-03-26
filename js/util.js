@@ -17,9 +17,7 @@ export async function checkUserLogin(){
     try {
         let result = await DBQuery.getQueryResult(query);
         if (!(result.data && result.data.length > 0)) {
-            localStorage.removeItem("loggedIn");
-            localStorage.removeItem("userID");
-            localStorage.removeItem("sessionToken");
+            localStorage.clear();
             console.log("User Session Expired");
             alert("User session has expired. Please log in again.");
             window.location.href = "index.html";
