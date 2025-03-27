@@ -1,7 +1,6 @@
 export class GameTracker {
     static areaName;
     static areaFilepath;
-    static currentArea;
     static currentDialogue;
     static gameLogs = [];
 
@@ -9,6 +8,9 @@ export class GameTracker {
     static score = 0;
     static inventory = [];
     static allies = [];
+
+    static gameOver = false;
+    static gameCompleted = false;
 
     //sets the area filepath to match the new area
     static setFilepath() {

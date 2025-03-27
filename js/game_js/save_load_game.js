@@ -3,7 +3,11 @@ import {DBQuery} from "../dbQuery.js";
 import {GameTracker} from "./game_tracker.js";
 import * as Util from "../util.js";
 
-//Check for a game save
+
+
+//
+// Load a game save
+//
 export async function loadGame(){
     await Util.checkUserLogin(); //ensure a user is logged in
 
@@ -54,7 +58,8 @@ export async function loadGame(){
     //Load the player's allies
     //
     let gameSessionId = localStorage.getItem("gameSessionId");
-    let query = `SELECT ally_id, ally_name, ally_img_folder, ally_max_hp, ally_hp, ally_attack, ally_defence, ally_intelligence, ally_equipment_id, ally_alive
+    let query = `SELECT ally_id AS id, ally_name AS name, ally_img_folder AS imgFolder, ally_max_hp AS maxHp, ally_hp AS hp, ally_attack AS attack, 
+    ally_defence AS defence, ally_intelligence AS intelligence, ally_equipment_id AS equipmentId, ally_alive AS alive
     FROM game_session_allies_full_details WHERE game_session_id = ${gameSessionId}`;
     try{
         let result = await DBQuery.getQueryResult(query);
@@ -81,6 +86,11 @@ export async function loadGame(){
     GameTracker.allies = gameSessionAllies;
 }
 
+
+
+//
+// Set up a new game save
+//
 async function setupNewGame(){
     //set the new game's data (NOTE: game_session_id is not set yet as the DB creates that)
     let newGameData = {
@@ -176,4 +186,97 @@ async function setupNewGame(){
 function generateRandomReputation(){
     let randomReputation = Math.floor(40+(Math.random()*20)); //random number between 40 and 60
     return randomReputation;
+}
+
+
+
+//
+//Saving
+//
+export async function saveGame(){
+    let gameSessionId = localStorage.getItem("gameSessionId");
+    
+    //
+    //Save the game_session
+    //
+    let gameSessionQuery = `UPDATE game_sessions SET
+     current_location = '${GameTracker.areaName}', current_dialogue = '${GameTracker.currentDialogue}', reputation = ${GameTracker.reputation},
+     game_over = ${GameTracker.gameOver}, game_completed = ${GameTracker.gameCompleted}, previous_save_datetime = NOW(), score = ${GameTracker.score}
+     WHERE game_session_id = ${gameSessionId}`;
+    try{
+        let result = await DBQuery.getQueryResult(gameSessionQuery);
+
+        //checks if query was successful
+        if(!result.success){ //if unsuccessful, return to main menu
+            console.error(`Failed Query: ${gameSessionQuery}`);
+            alert("An error occured when saving game. Please try again.");
+            return;
+        }
+    }
+    catch(error){
+        console.error("Game save error: ", error);
+        alert("An error occured when saving game. Please try again.");
+        return;
+    }
+
+    //
+    //Save the player allies
+    //
+
+    //Get allies currently in database
+    let getDBAlliesQuery = `SELECT ally_id AS id FROM game_session_allies_full_details WHERE game_session_id = ${gameSessionId}`;
+    let dbAllies = [];
+    try{
+        let result = await DBQuery.getQueryResult(getDBAlliesQuery);
+
+        for(let i=0; i<result.data.length; i++){
+            dbAllies.push(result.data[i]);
+        }
+    }
+    catch(error){
+        console.error("Game save error: ", error);
+        alert("An error occured when saving game. Please try again.");
+        return;
+    }
+
+    //Check for any new allies and add if needed
+    const dbAlliesSet = new Set(dbAllies.map(dbAlly => dbAlly.id));
+    const newAllies = GameTracker.allies.filter(ally => !dbAlliesSet.has(ally.id));
+    console.log("New allies to save: ", newAllies); 
+
+    //add the new allies to the database
+    for(let i=0; i<newAllies.length; i++){
+        let addAllyQuery = `INSERT INTO game_session_allies (game_session_id, ally_id) VALUES (${gameSessionId}, ${newAllies[i].id})`
+        try{
+            let result = await DBQuery.getQueryResult(addAllyQuery);
+        }
+        catch(error){
+            console.error("Game save error: ", error);
+            alert("An error occured when saving game. Please try again.");
+            return;
+        }
+    }
+
+    //update ally details
+    try{
+        await Promise.all(
+            GameTracker.allies.map(ally => DBQuery.getQueryResult(`UPDATE game_session_allies SET ally_hp = ${ally.hp}, ally_attack = ${ally.attack}, ally_defence = ${ally.defence},
+                ally_intelligence = ${ally.intelligence}, ally_equipment_id = ${ally.equipmentId}, ally_alive = ${ally.alive}
+                WHERE game_session_id = ${gameSessionId} AND ally_id = ${ally.id}`))
+        );
+    }
+    catch(error){
+        console.error("Game save error: ", error);
+        alert("An error occured when saving game. Please try again.");
+        return;
+    }
+
+
+    //
+    // Save logs & Inventory
+    //
+
+
+    //All saving complete
+    console.log("Game successfully saved.");
 }

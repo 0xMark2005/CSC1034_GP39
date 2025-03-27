@@ -81,9 +81,11 @@ document.addEventListener("DOMContentLoaded", async function() {
     // Load game
     await SaveLoadGame.loadGame();
     await loadAreaFromJSON();
-
-    // Load the dialogue
     loadDialogue();
+
+    //Add the score and reputation to the game page
+    document.getElementById("reputation-number").innerHTML = GameTracker.reputation;
+    document.getElementById("score-number").innerHTML = GameTracker.score;
 
     // Add input handler
     userInput.addEventListener("keydown", function(event) {
@@ -325,6 +327,10 @@ function handleUserInput() {
         // Special commands
         if (choice === "Show Inventory") {
             // TODO: Implement inventory display
+            return;
+        }
+        else if(choice.toLowerCase() === "Save".toLowerCase()){
+            SaveLoadGame.saveGame();
             return;
         }
         

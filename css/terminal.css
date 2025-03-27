@@ -15,7 +15,6 @@
     box-shadow: 0 0 10px #92929240;
     overflow-y: auto;
     font-size: inherit; /* Inherit from body */
-    transition: font-size 0.3s ease;
 }
   
 #output-terminal:hover { 
@@ -57,7 +56,7 @@
     text-align: left;
     box-shadow: 0 0 10px #92929240;
     font-size: inherit; /* Inherit from body */
-    transition: font-size 0.3s ease;
+ 
 }
 
 
