@@ -436,3 +436,14 @@ button:focus {
 @media screen and (max-width: 768px) {
   html, body { font-size: calc(var(--base-font-size) * 0.9); }
 }
+
+/* Add these styles for animation control */
+.guard-container img {
+    max-width: 400px;
+    display: block;
+}
+
+.play-once {
+    animation-iteration-count: 1 !important;
+    -webkit-animation-iteration-count: 1 !important;
+}

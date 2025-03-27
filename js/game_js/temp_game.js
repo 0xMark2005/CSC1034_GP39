@@ -3,7 +3,7 @@ import { Terminal } from "../terminal.js";
 import { GameTracker } from "./game_tracker.js";
 import * as SaveLoadGame from "./save_load_game.js";
 
-import { prisonEscapeGame } from "./minigames/prisonescape_minigame.js";
+import { prisonEscapeGame } from "./minigames/prisonEscape_minigame.js";
 import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
 import { generalRescueGame } from "./minigames/generalRescue_minigame.js";
 import { handleArmyBattle } from "./battle.js";
@@ -78,14 +78,14 @@ document.addEventListener("DOMContentLoaded", async function() {
     let userInput = document.getElementById("user-input");
     Terminal.initialize(outputTerminal, userInput);
 
-    // Load game
-    await SaveLoadGame.loadGame();
+    // Set initial game state to burning village (start of game)
+    GameTracker.areaName = "burning_village";
+    GameTracker.setFilepath();
+    
+    // Load initial area and dialogue
     await loadAreaFromJSON();
+    GameTracker.currentDialogue = storyProgression.burning_village.startDialogue;
     loadDialogue();
-
-    //Add the score and reputation to the game page
-    document.getElementById("reputation-number").innerHTML = GameTracker.reputation;
-    document.getElementById("score-number").innerHTML = GameTracker.score;
 
     // Add input handler
     userInput.addEventListener("keydown", function(event) {
