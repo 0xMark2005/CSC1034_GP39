@@ -10,8 +10,9 @@
     justify-content: center;
     text-align: left;
     box-shadow: 0 0 10px #92929240;
-    height: 25%;
+    max-height: 13%;
     overflow: hidden;
+
 }
 
 .inventory-outer-container ~ #output-terminal{
