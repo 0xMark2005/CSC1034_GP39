@@ -69,57 +69,48 @@ export class Terminal{
 
     static #processNextMessage() {
         // If the queue is empty, mark as not processing and return
-        if (this.#messageQueue.length === 0) {
+        if (!this.#messageQueue || this.#messageQueue.length === 0) {
             this.#isProcessing = false;
-            typingAudio.pause();
-            typingAudio.currentTime = 0;
+            if (typingAudio) {
+                typingAudio.pause();
+                typingAudio.currentTime = 0;
+            }
             return;
         }
+
         this.#isProcessing = true;
         
         // Get the next message from the queue
-        const { message, color } = this.#messageQueue.shift();
+        const { message, color } = this.#messageQueue.shift() || { message: '', color: '#FFFFFF' };
         
-        // Create a new element for the message
-        const messageElement = document.createElement("div");
-        messageElement.style.color = color;
-        this.#outputTerminal.appendChild(messageElement);
-        
-        // ADDED: Adjusted speed for audible typing effect (50ms per character)
-        const speed = 5;
-        let i = 0;
-        
-        // ADDED: Only play audio if settings allow and audio has been unlocked.
-        if (window.appSettings && window.appSettings.keyboardSounds && window.appSettings.soundEnabled && audioUnlocked) {
-            typingAudio.currentTime = 0;
-            typingAudio.play().then(() => {
-              console.log("typingAudio is playing");
-            }).catch((err) => {
-              console.error("Error playing typingAudio:", err);
-            });
-        } else {
-            console.log("Not playing typingAudio (settings disabled or audio not unlocked)");
+        // Guard against undefined or null messages
+        if (!message) {
+            console.warn('Attempted to process undefined/null message');
+            this.#processNextMessage();
+            return;
         }
 
-        function typeWriter() {
+        // Create a new element for the message
+        const messageElement = document.createElement("div");
+        messageElement.style.color = color || '#FFFFFF';
+        this.#outputTerminal.appendChild(messageElement);
+        
+        const speed = 5; // Typing speed in milliseconds
+        let i = 0;
+        
+        const typeWriter = () => {
             if (i < message.length) {
                 messageElement.innerHTML += message.charAt(i);
                 i++;
                 setTimeout(typeWriter, speed);
             } else {
-                // ADDED: Log when typing finishes
-                console.log("Finished typing message; pausing sound.");
-                typingAudio.pause(); 
-                typingAudio.currentTime = 0;
-
-                // When this message is done, process the next one
-                Terminal.#processNextMessage();
-                // Scroll to the bottom after each message
-                Terminal.#scrollToBottom();
+                // When done typing, process next message and scroll
+                this.#processNextMessage();
+                this.#scrollToBottom();
             }
-        }
+        };
         
-        // Start the typewriter effect for this message
+        // Start the typewriter effect
         typeWriter();
     }
 

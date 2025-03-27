@@ -1,39 +1,25 @@
 [
     {
         "dialogue": "burning_village_intro",
-        "message": "The peaceful evening is shattered as royal knights storm your village. Their captain declares all villagers traitors for harboring rebels. As flames engulf homes and screams fill the air, you realize the kingdom has changed.",
+        "message": "Your peaceful village evening is shattered as royal knights storm in, torches blazing. Their commander declares everyone traitors without evidence.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Run towards the forest",
-                "message": "With knights closing in, you dash toward the dense woods, knowing survival means reaching the capital.",
-                "reputation": 0,
+                "choice": "1. Attempt escape",
+                "message": "You must act quickly to survive the raid.",
                 "startMinigame": true,
-                "next": "forest_shelter"
-            },
-            {
-                "choice": "2. Help other villagers",
-                "message": "You risk your life helping others escape, earning their gratitude but losing precious time.",
-                "reputation": 10,
-                "next": "forest_shelter"
+                "next": "village_escape_complete"
             }
         ]
     },
     {
-        "dialogue": "forest_shelter",
-        "message": "Exhausted and haunted by your village's fate, you must find shelter before the knights' search parties arrive. The capital city might offer answers - and revenge.",
-        "optionType": "verb",
+        "dialogue": "village_escape_complete",
+        "message": "With your village in flames behind you, you know you must reach the capital to seek justice.",
+        "optionType": "number",
         "options": [
             {
-                "choice": "cave",
-                "message": "A small cave offers shelter and a chance to rest. Inside, you find scattered rebel documents revealing unrest in the capital.",
-                "reputation": 0,
-                "next": "capital_gates_intro"
-            },
-            {
-                "choice": "climb",
-                "message": "From a tall tree, you spot the capital's walls in the distance and notice increased military activity.",
-                "reputation": 0,
+                "choice": "1. Journey to the capital",
+                "message": "You begin the long walk to the capital city.",
                 "next": "capital_gates_intro"
             }
         ]

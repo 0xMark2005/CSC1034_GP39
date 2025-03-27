@@ -1,4 +1,5 @@
 import { Terminal } from "../../terminal.js";
+import { displayAnimation } from "../animation_handler.js";
 
 export function prisonEscapeGame() {
     Terminal.outputMessage("Prison Escape minigame: Wait for the signal, then type 'escape' as fast as you can. If you type too early, you're caught.", "#FF8181");
@@ -8,7 +9,7 @@ export function prisonEscapeGame() {
     let startTime = null;
 
     //Getting user input 
-    const prisonEscapeInputHandler = function(event) {
+    const prisonEscapeInputHandler = async function(event) {
         if (event.key === "Enter") {
             event.stopImmediatePropagation();
             event.preventDefault();
@@ -23,6 +24,7 @@ export function prisonEscapeGame() {
             
             if (input === "escape") {
                 const reactionTime = Date.now() - startTime;
+                await displayAnimation('PrisonEscape/SleepinGuard.gif');
                 Terminal.outputMessage("You escaped! Reaction time: " + reactionTime + " ms", "#00FF00");
             } else {
                 Terminal.outputMessage("Wrong command - you failed to escape :(", "#FF8181");

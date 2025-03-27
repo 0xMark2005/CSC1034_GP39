@@ -1,204 +1,42 @@
 [
     {
         "dialogue": "capital_gates_intro",
-        "message": "After a long journey through the forest, you arrive at the capital's gates. The imposing walls loom before you, guards stationed at every post. You notice increased security - something must have the city on edge. Your simple clothing marks you as an outsider, and you know entering won't be easy.",
+        "message": "You arrive at the capital's imposing gates. Guards thoroughly inspect all who enter.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Approach the guards directly",
-                "message": "You decide to be honest with the guards about your situation. They seem sympathetic but are bound by strict orders.",
-                "reputation": 1,
-                "next": "guard_interaction"
+                "choice": "1. Report village raid",
+                "message": "Tell the guards about the unjust attack on your village.",
+                "next": "arrested_outcome"
             },
             {
-                "choice": "2. Look for another way in",
-                "message": "You circle the walls, searching for an alternative entrance.",
-                "reputation": 0,
-                "next": "alternative_entrance"
+                "choice": "2. Claim business purposes",
+                "message": "Present yourself as a merchant seeking trade opportunities.",
+                "next": "merchant_entry"
             }
         ]
     },
     {
-        "dialogue": "guard_interaction",
-        "message": "The guards listen to your story but explain that entry to the city is restricted due to recent unrest. They seem torn between duty and compassion.",
-        "optionType": "verb",
-        "options": [
-            {
-                "choice": "bribe",
-                "message": "You offer what little coins you have. The guards accept and let you through, though this depletes your resources.",
-                "reputation": -1,
-                "next": "inside_city"
-            },
-            {
-                "choice": "plead",
-                "message": "Your sincere plea moves one of the guards, who quietly helps you enter through a side gate.",
-                "reputation": 2,
-                "next": "inside_city"
-            }
-        ]
-    },
-    {
-        "dialogue": "alternative_entrance",
-        "message": "While searching the walls, you discover a partially hidden entrance near some merchant carts. Several options present themselves.",
-        "optionType": "verb",
-        "options": [
-            {
-                "choice": "sneak",
-                "message": "You wait for the right moment and slip in with a group of merchants.",
-                "reputation": 0,
-                "next": "inside_city"
-            },
-            {
-                "choice": "hide",
-                "message": "You attempt to hide in a cargo cart, but you're discovered by guards and arrested.",
-                "reputation": -5,
-                "gameOver": true
-            }
-        ]
-    },
-    {
-        "dialogue": "inside_city",
-        "message": "You've made it inside the capital. The streets are busy with people, but there's tension in the air. You need to find somewhere to gather information and plan your next move.",
+        "dialogue": "arrested_outcome",
+        "message": "The guards exchange knowing looks before declaring you 'a person of interest' and arresting you.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Head to the market district",
-                "message": "You decide the bustling market is the best place to learn about what's happening in the city.",
-                "reputation": 0,
-                "next": "market_scene"
-            },
-            {
-                "choice": "2. Search for the slums",
-                "message": "You figure the slums might be safer for someone in your situation.",
-                "reputation": 0,
-                "next": "slums_intro"
-            }
-        ]
-    },
-    {
-        "dialogue": "market_scene",
-        "message": "The market is a bustling hive of activity. Merchants hawk their wares while townspeople gossip about recent events. You notice increased guard presence and hear whispers about unrest in the city.",
-        "optionType": "number",
-        "options": [
-            {
-                "choice": "1. Listen to the gossip",
-                "message": "You overhear talk of resistance movements in the slums. Perhaps that's where you should head next.",
-                "reputation": 0,
-                "next": "slums_intro"
-            },
-            {
-                "choice": "2. Try to blend in with the crowd",
-                "message": "Your attempts to remain inconspicuous draw the attention of suspicious guards. They arrest you on the spot.",
-                "reputation": -5,
+                "choice": "1. Accept arrest",
+                "message": "You're escorted to the prison, already planning your next move.",
                 "next": "prison_intro"
             }
         ]
     },
     {
-        "dialogue": "capital_prison_intro",
-        "message": "Capital Prison is a nightmare—a crumbling fortress of despair. The air reeks of sweat, blood, and fear, and tensions have reached a boiling point. A rebellion is in the making.",
+        "dialogue": "merchant_entry",
+        "message": "Your merchant story convinces the guards. They wave you through the gates.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Join the riot",
-                "message": "You decide to join the prisoners' rebellion. The risk is high, but you gain valuable allies.",
-                "reputation": -15,
-                "next": "riot_outcome"
-            },
-            {
-                "choice": "2. Stay neutral",
-                "message": "You decide to take no sides and remain unnoticed, though you risk losing your chance at escape.",
-                "reputation": 0,
-                "next": "neutral_outcome"
-            }
-        ]
-    },
-    {
-        "dialogue": "riot_outcome",
-        "message": "The riot is chaotic and violent. Many are injured, but the prisoners manage to break through the main gate.",
-        "optionType": "number",
-        "options": [
-            {
-                "choice": "1. Escape through the gate",
-                "message": "You join the escaping prisoners and flee into the city.",
-                "reputation": -10,
-                "next": "sewer_escape_intro"
-            },
-            {
-                "choice": "2. Stay and scavenge for supplies",
-                "message": "You decide to stay behind and search for useful items amidst the chaos.",
-                "reputation": 5,
-                "next": "prison_escape"
-            }
-        ]
-    },
-    {
-        "dialogue": "neutral_outcome",
-        "message": "You manage to stay out of the riot's way, but the prison is now even more dangerous and unstable.",
-        "optionType": "number",
-        "options": [
-            {
-                "choice": "1. Attempt to escape",
-                "message": "You see an opportunity to slip away while the guards are distracted.",
-                "reputation": 0,
-                "next": "prison_escape"
-            },
-            {
-                "choice": "2. Try to find a safer place",
-                "message": "You search for a more secure location within the prison.",
-                "reputation": 0,
-                "next": "prison_escape"
-            }
-        ]
-    },
-    {
-        "dialogue": "prison_escape",
-        "message": "Locked in a grimy cell, you're faced with two desperate choices.",
-        "optionType": "number",
-        "options": [
-            {
-                "choice": "1. Reach for the keys",
-                "message": "As you attempt to grab the keys, they slip—waking the guard. You are caught and sentenced to execution.",
-                "reputation": -10,
-                "gameOver": true
-            },
-            {
-                "choice": "2. Use an electromagnet to retrieve the keys",
-                "message": "You fashion an electromagnet from scraps and carefully retrieve the keys. You unlock your cell and dash into the sewers.",
-                "reputation": 0,
-                "next": "sewer_escape_intro"
-            }
-        ]
-    },
-    {
-        "dialogue": "prison_transport",
-        "message": "The guards roughly escort you to the infamous Capital Prison. Along the way, you observe the city's layout and notice signs of brewing rebellion.",
-        "optionType": "number",
-        "options": [
-            {
-                "choice": "1. Memorize the route",
-                "message": "You carefully note landmarks and guard patterns, knowledge that might prove useful later.",
-                "reputation": 2,
-                "next": "capital_prison_intro"
-            },
-            {
-                "choice": "2. Listen to guard gossip",
-                "message": "The guards discuss recent unrest and mention a respected general who was imprisoned.",
-                "reputation": 0,
-                "next": "capital_prison_intro"
-            }
-        ]
-    },
-    {
-        "dialogue": "prison_entry",
-        "message": "The guards discover your presence. You're arrested and sent to Capital Prison.",
-        "optionType": "number",
-        "options": [
-            {
-                "choice": "1. Accept arrest",
-                "message": "You go quietly, planning your next move.",
-                "reputation": 0,
-                "next": "capital_prison_intro"
+                "choice": "1. Enter the city",
+                "message": "You make your way into the bustling capital.",
+                "next": "tavern_intro"
             }
         ]
     }

@@ -1,0 +1,52 @@
+[
+    {
+        "dialogue": "knight_rescue_intro",
+        "message": "You locate the imprisoned knight's cell. He looks weak but his eyes show determination.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Begin rescue operation",
+                "message": "Time to free the knight.",
+                "startMinigame": true,
+                "next": "knight_freed"
+            }
+        ]
+    },
+    {
+        "dialogue": "knight_freed",
+        "message": "The knight is grateful but badly wounded from his imprisonment.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Seek medical help",
+                "message": "You need to find someone to treat his wounds.",
+                "next": "find_medic"
+            }
+        ]
+    },
+    {
+        "dialogue": "find_medic",
+        "message": "You learn of a skilled medic in the slums who secretly treats resistance members.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Visit the medic",
+                "message": "The medic treats the knight and joins your cause.",
+                "addAlly": "medic",
+                "next": "castle_plan"
+            }
+        ]
+    },
+    {
+        "dialogue": "castle_plan",
+        "message": "With the knight healed and your allies gathered, it's time to end the king's tyranny.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Plan castle assault",
+                "message": "Your team begins preparing for the final battle.",
+                "next": "castle_takeover_intro"
+            }
+        ]
+    }
+]

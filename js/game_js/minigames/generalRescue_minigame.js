@@ -1,61 +1,83 @@
 import { Terminal } from "../../terminal.js";
+import { displayAnimation } from "../animation_handler.js";
 
 export function generalRescueGame() {
-    Terminal.outputMessage("GUARD PATROL DECODER: Unscramble the patrol patterns to avoid detection!", "#FF8181");
-    Terminal.outputMessage("Decode each pattern within 15 seconds. You need 3 successful decodes to reach the general.", "#FF8181");
+    Terminal.outputMessage("PRISON GUARD PATTERNS: Memorize and repeat the guard patrol sequences!", "#FF8181");
+    Terminal.outputMessage("Watch the pattern of numbers and repeat them in order.", "#FF8181");
+    Terminal.outputMessage("You need 3 successful patterns to reach the imprisoned knight.", "#FF8181");
+    Terminal.outputMessage("Take your time - you have 20 seconds per pattern.", "#ADD8E6");
 
-    const patternPairs = [
-        { scrambled: "THGNI TCWHA", original: "night watch" },
-        { scrambled: "DRAGU TORLA", original: "guard patrol" },
-        { scrambled: "LLCE CKECH", original: "cell check" },
-        { scrambled: "SFHIT GANCHE", original: "shift change" },
-        { scrambled: "RORUND OWLF", original: "round flow" }
+    const patterns = [
+        "4 2 3 1",
+        "1 3 3 2 4",
+        "2 4 1 4 3",
+        "3 1 4 2 1",
+        "4 4 2 1 3"
     ];
 
     let currentRound = 0;
     const maxRounds = 3;
     let gameActive = true;
+    let patternElement = null;
 
-    function startPattern() {
+    async function startPattern() {
         if (currentRound >= maxRounds || !gameActive) {
             cleanup(currentRound >= maxRounds);
             return;
         }
 
-        // Pick random pattern
-        const patternIndex = Math.floor(Math.random() * patternPairs.length);
-        const currentPattern = patternPairs[patternIndex];
-
-        Terminal.outputMessage(`\nDecode the patrol pattern: ${currentPattern.scrambled}`, "#00FF00");
+        const currentPattern = patterns[Math.floor(Math.random() * patterns.length)];
         
-        let timeoutId = setTimeout(() => {
-            Terminal.outputMessage("Time's up! The guards spotted you!", "#FF0000");
-            gameActive = false;
-            cleanup(false);
-        }, 15000); // 15 seconds per pattern
+        // Play sleeping guard animation
+        await displayAnimation('PrisonEscape/SleepinGuard.gif');
+        
+        Terminal.outputMessage("\nMemorize this guard patrol pattern:", "#00FF00");
+        // Store reference to pattern element
+        patternElement = document.createElement('div');
+        patternElement.textContent = currentPattern;
+        patternElement.style.color = "#FFFF00";
+        document.getElementById("output-terminal").appendChild(patternElement);
+        
+        setTimeout(() => {
+            // Remove pattern element completely
+            patternElement.remove();
+            // Play waking guard animation
+            displayAnimation('PrisonEscape/wakingUp.gif');
+            
+            Terminal.outputMessage("\n==========================================", "#00FF00");
+            Terminal.outputMessage("PATTERN HIDDEN - ENTER YOUR ANSWER BELOW", "#00FF00");
+            Terminal.outputMessage("==========================================", "#00FF00");
+            Terminal.outputMessage("Now enter the pattern you saw:", "#00FF00");
+            
+            let timeoutId = setTimeout(() => {
+                Terminal.outputMessage("Time's up! The guards spotted you!", "#FF0000");
+                gameActive = false;
+                cleanup(false);
+            }, 20000);
 
-        const patternHandler = function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                const input = Terminal.getUserInput().trim().toLowerCase();
-                
-                if (input === currentPattern.original) {
-                    clearTimeout(timeoutId);
-                    Terminal.outputMessage("Pattern decoded! You've avoided detection!", "#00FF00");
-                    currentRound++;
-                    startPattern();
-                } else {
-                    clearTimeout(timeoutId);
-                    Terminal.outputMessage(`Wrong pattern! Correct pattern was: ${currentPattern.original}`, "#FF0000");
-                    gameActive = false;
-                    cleanup(false);
+            const patternHandler = function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    const input = Terminal.getUserInput().trim().toLowerCase();
+                    
+                    if (input === currentPattern.toLowerCase()) {
+                        clearTimeout(timeoutId);
+                        Terminal.outputMessage("Pattern correct! Guards moving to next position!", "#00FF00");
+                        currentRound++;
+                        startPattern();
+                    } else {
+                        clearTimeout(timeoutId);
+                        Terminal.outputMessage(`Wrong pattern! Guards alerted! The pattern was: ${currentPattern}`, "#FF0000");
+                        gameActive = false;
+                        cleanup(false);
+                    }
                 }
-            }
-        };
+            };
 
-        const userInput = document.getElementById("user-input");
-        userInput.addEventListener("keypress", patternHandler);
-        userInput.currentHandler = patternHandler;
+            const userInput = document.getElementById("user-input");
+            userInput.addEventListener("keypress", patternHandler);
+            userInput.currentHandler = patternHandler;
+        }, 5000); // Increased to 5 seconds for better visibility
     }
 
     function cleanup(success) {
@@ -65,16 +87,16 @@ export function generalRescueGame() {
         }
 
         if (success) {
-            Terminal.outputMessage("You've successfully decoded all patrol patterns and reached the general!", "#00FF00");
+            Terminal.outputMessage("You've successfully memorized the guard patterns and reached the knight!", "#00FF00");
         } else {
-            Terminal.outputMessage("Guards have spotted you! You're forced to retreat to the slums.", "#FF0000");
+            Terminal.outputMessage("The guards caught you! You must retreat!", "#FF0000");
         }
 
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: success,
-                message: success ? "Successfully infiltrated the prison!" : "Failed to decode patrol patterns",
-                nextArea: success ? null : "slums" // Add area to return to on failure
+                message: success ? "Successfully reached the imprisoned knight!" : "Failed to memorize guard patterns",
+                nextArea: success ? null : "slums"
             }
         }));
     }

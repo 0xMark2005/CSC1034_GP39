@@ -1,20 +1,57 @@
 [
     {
-        "dialogue": "slums_intro",
-        "message": "The slums are a maze of narrow alleys and desperate people. Somewhere in this warren of poverty lies your next lead to the resistance.",
+        "dialogue": "slums_tavern_intro",
+        "message": "You arrive in the slums district. A busy tavern catches your eye, and you notice a makeshift medical clinic nearby.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Search the market",
-                "message": "You wander through the bustling market, keeping your eyes open for signs of rebel activity.",
-                "reputation": 0,
-                "next": "slums_market"
+                "choice": "1. Enter the tavern",
+                "message": "You step into the dimly lit tavern.",
+                "next": "tavern_scene"
             },
             {
-                "choice": "2. Visit the tavern",
-                "message": "A smoky tavern might be the perfect place to gather information discreetly.",
-                "reputation": 0,
-                "next": "slums_tavern"
+                "choice": "2. Visit the clinic",
+                "message": "You approach the clinic where a medic tends to the wounded.",
+                "next": "clinic_scene"
+            }
+        ]
+    },
+    {
+        "dialogue": "tavern_scene",
+        "message": "The barman eyes you carefully, seeming to gauge your intentions.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Ask about resistance",
+                "message": "He reveals he's been helping the resistance and offers to join your cause.",
+                "addAlly": "barman",
+                "reputation": 5,
+                "next": "clinic_scene"
+            }
+        ]
+    },
+    {
+        "dialogue": "clinic_scene",
+        "message": "The medic is treating wounds from the increased guard brutality.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Offer assistance",
+                "message": "After helping with supplies, the medic agrees to join your cause.",
+                "addAlly": "medic",
+                "reputation": 5,
+                "next": "resistance_contact"
+            }
+        ]
+    },
+    {
+        "dialogue": "prison_info",
+        "message": "The barman mentions a knight imprisoned for refusing to harm civilians.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Plan a prison break",
+                "next": "prison_intro"
             }
         ]
     },

@@ -1,0 +1,39 @@
+[
+    {
+        "dialogue": "tavern_intro",
+        "message": "The tavern is dimly lit and mostly empty. The barman studies you with unusual interest.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Share your story",
+                "message": "You tell him about the village raid and your desire for justice.",
+                "next": "barman_response"
+            }
+        ]
+    },
+    {
+        "dialogue": "barman_response",
+        "message": "The barman reveals he's part of a resistance against the corrupt king. He mentions a loyal knight imprisoned for refusing cruel orders.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Offer to help free the knight",
+                "message": "The barman agrees to join your cause and help rescue the knight.",
+                "addAlly": "barman",
+                "next": "knight_prison_info"
+            }
+        ]
+    },
+    {
+        "dialogue": "knight_prison_info",
+        "message": "The barman provides details about the knight's location and guard patterns.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Plan the rescue",
+                "message": "You begin preparing to infiltrate the prison.",
+                "next": "knight_rescue_intro"
+            }
+        ]
+    }
+]

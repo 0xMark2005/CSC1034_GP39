@@ -51,8 +51,8 @@ function handleMinigame(option) {
         case "prison":
             prisonEscapeGame();
             break;
-        case "rescue_general":
-            generalRescueGame();
+        case "knight_rescue":     // Changed from rescue_general to match story progression
+            generalRescueGame();  // This will now handle the knight rescue
             break;
         default:
             Terminal.outputMessage("Error: No minigame found for this area", errorColor);
@@ -118,19 +118,15 @@ const storyProgression = {
         nextArea: "prison"
     },
     prison: {
-        startDialogue: "capital_prison_intro",
-        nextArea: "slums"
+        startDialogue: "prison_intro",
+        nextArea: "tavern"
     },
-    sewer_escape: {
-        startDialogue: "sewer_escape_intro",
-        nextArea: "slums"
+    tavern: {
+        startDialogue: "tavern_intro",
+        nextArea: "knight_rescue"
     },
-    slums: {
-        startDialogue: "slums_intro",
-        nextArea: "rescue_general"
-    },
-    rescue_general: {
-        startDialogue: "rescue_general_intro",
+    knight_rescue: {
+        startDialogue: "knight_rescue_intro",
         nextArea: "castle_takeover"
     },
     castle_takeover: {
