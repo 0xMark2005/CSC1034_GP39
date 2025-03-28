@@ -89,14 +89,31 @@
     justify-content: center;
     height: 70px;
 }
+.equip-button {
+  margin-top: 5px;
+  padding: 2px 5px!important;
+  background-color: #332e0a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.3s ease;
+  width: auto !important;
+  box-sizing: border-box;
+}
+.equip-button:hover {
+  background-color: #1c1905;
+}
 
 .inventory-item-details strong {
-    font-family: 'PixelCastle', sans-serif;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 17px;
     text-align: center;
+    text-justify: center;
     display: block;
     white-space: nowrap;
-    margin-bottom: 5px; /* Add space between name and description */
+    margin-bottom: 5px; 
 }
 
 .inventory-description {
