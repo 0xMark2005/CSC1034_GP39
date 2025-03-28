@@ -275,40 +275,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function screenCalibration() {
         Terminal.outputMessage("===== SCREEN CALIBRATION =====", "#00FFFF");
-        Terminal.outputMessage("The terminal will change from white to black", "#FFFFFF");
+        Terminal.outputMessage("The terminal will change from its default background (#171717) to black", "#FFFFFF");
         let countdown = 3;
-
-        function updateBackground(color, message, nextStep) {
-            if (countdown > 0) {
-                Terminal.outputMessage(`Changing in... ${countdown}`, "#FF0000");
-                countdown--;
-                setTimeout(() => updateBackground(color, message, nextStep), 1000);
-            } else {
-                const terminalContainer = document.getElementById("output-terminal");
-                if (color === "#000000") {
-                    terminalContainer.style.backgroundColor = color;
-                    terminalContainer.style.color = "#FFFFFF";
-                } else {
-                    document.body.style.backgroundColor = color;
-                }
-                Terminal.outputMessage(message, "#FFFFFF");
-                countdown = 3;
-                setTimeout(nextStep, 1000);
+      
+        function updateBackground(element, color, message, nextStep) {
+          if (countdown > 0) {
+            Terminal.outputMessage(`Changing in... ${countdown}`, "#FF0000");
+            countdown--;
+            setTimeout(() => updateBackground(element, color, message, nextStep), 1000);
+          } else {
+            element.style.backgroundColor = color;
+            if (element.id === "output-terminal") {
+              element.style.color = "#FFFFFF";
             }
+            Terminal.outputMessage(message, "#FFFFFF");
+            countdown = 3;
+            setTimeout(nextStep, 1000);
+          }
         }
-
-        // Start calibration sequence
-        updateBackground("#000000", "Terminal background changed to black!", () => {
-            Terminal.outputMessage("Changing body background to green", "#FFFFFF");
-            updateBackground("#00FF00", "Body background changed to green!", () => {
-                Terminal.outputMessage("Changing body background to blue", "#FFFFFF");
-                updateBackground("#0000FF", "Body background changed to blue!", () => {
-                    Terminal.outputMessage("Calibration complete! Returning to main menu...", "#FFFFFF");
-                    setTimeout(() => { currentMode = "main"; displayMainMenu(); }, 2000);
-                });
+      
+        const terminalContainer = document.getElementById("output-terminal");
+      
+        updateBackground(terminalContainer, "#000000", "Terminal background changed to black!", () => {
+          Terminal.outputMessage("Changing body background to green", "#FFFFFF");
+          updateBackground(terminalContainer, "#0d400d", "Body background changed to green!", () => {
+            Terminal.outputMessage("Changing body background to blue", "#FFFFFF");
+            updateBackground(terminalContainer, "#0000FF", "Body background changed to blue!", () => {
+              Terminal.outputMessage("Calibration complete! ", "#FFFFFF");
+              updateBackground(terminalContainer, "#171717", "Body background changed to default. Please ensure all the text was visible throughout the calibration to ensure a good gameplay experience. If you did not see the text well, change your monitor settings and rerun calibration.", () => {
+                Terminal.outputMessage("Returning to menu... ", "#FFFFFF");
+                
+              setTimeout(() => { currentMode = "main"; displayMainMenu(); }, 2000);
             });
+          });
         });
-    }
+        });
+      }
+      
 
     function displayActiveSettings() {
         Terminal.outputMessage("Current Settings:", "#FFFF00");
