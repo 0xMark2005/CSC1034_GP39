@@ -426,3 +426,25 @@ outline-offset: 2px;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
+/* Custom scrollbars for terminal areas */
+::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background: #7a7a75;
+  border: 2px solid #000;
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background: #707070;
+}

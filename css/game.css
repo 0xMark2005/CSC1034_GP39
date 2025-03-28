@@ -9,18 +9,18 @@
     color: #fff; 
 }
 
-#gameBegins #gameOutputContainer::-webkit-scrollbar {
+::-webkit-scrollbar {
     width: 6px; 
 }
 
-#gameBegins #gameOutputContainer::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background: #888; 
     border-radius: 3px;
 }
 
-#gameBegins #gameOutputContainer::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
     background: #555;
-}
+}   
 
 #game-container {
     background-color: #283D2F;
