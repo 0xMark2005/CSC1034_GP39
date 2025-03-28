@@ -1,14 +1,39 @@
 [
     {
         "dialogue": "knight_rescue_intro",
-        "message": "You locate the imprisoned knight's cell. He looks weak but his eyes show determination.",
+        "message": "You arrive at the prison outskirts where a loyal knight is being held.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Begin rescue operation",
-                "message": "Time to free the knight.",
+                "choice": "1. Scout the area",
+                "message": "You observe the guards' patrol patterns around the prison tower.",
+                "next": "rescue_general_intro"
+            }
+        ]
+    },
+    {
+        "dialogue": "rescue_general_intro",
+        "message": "The prison tower is heavily guarded, but you notice a weakness in their patrol pattern.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Begin rescue attempt",
+                "message": "You prepare to rescue the imprisoned knight.",
                 "startMinigame": true,
-                "next": "knight_freed"
+                "minigameType": "generalRescue",
+                "next": "rescue_success"
+            }
+        ]
+    },
+    {
+        "dialogue": "rescue_success",
+        "message": "With the knight freed, you both make your way to the resistance headquarters.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Continue to headquarters",
+                "message": "You follow the knight's directions to the secret resistance base.",
+                "next": "resistance_hq_intro"
             }
         ]
     },

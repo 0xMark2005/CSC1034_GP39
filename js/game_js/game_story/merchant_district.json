@@ -1,0 +1,26 @@
+[
+    {
+        "dialogue": "merchant_district_intro",
+        "message": "You enter the bustling merchant district. Guards are conducting document inspections.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Continue forward",
+                "message": "A guard patrol approaches you, demanding documentation.",
+                "next": "arrest_scene"
+            }
+        ]
+    },
+    {
+        "dialogue": "arrest_scene",
+        "message": "Without proper merchant documentation, you are arrested as a potential spy.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Accept arrest",
+                "message": "The guards escort you to the prison.",
+                "next": "prison_intro"
+            }
+        ]
+    }
+]

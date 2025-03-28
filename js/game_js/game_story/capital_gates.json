@@ -6,13 +6,30 @@
         "options": [
             {
                 "choice": "1. Report village raid",
-                "message": "Tell the guards about the unjust attack on your village.",
-                "next": "arrested_outcome"
+                "message": "The guards seem suspicious of your story.",
+                "next": "guard_reaction"
             },
             {
                 "choice": "2. Claim business purposes",
                 "message": "Present yourself as a merchant seeking trade opportunities.",
                 "next": "merchant_entry"
+            }
+        ]
+    },
+    {
+        "dialogue": "guard_reaction",
+        "message": "The guards discuss your report among themselves, clearly skeptical.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Insist on the truth",
+                "message": "The guards arrest you for spreading 'false allegations against the crown'.",
+                "next": "prison_intro"
+            },
+            {
+                "choice": "2. Change your story",
+                "message": "Your attempt to change your story makes the guards even more suspicious.",
+                "next": "prison_intro"
             }
         ]
     },
@@ -36,7 +53,7 @@
             {
                 "choice": "1. Enter the city",
                 "message": "You make your way into the bustling capital.",
-                "next": "tavern_intro"
+                "next": "merchant_district_intro"
             }
         ]
     }

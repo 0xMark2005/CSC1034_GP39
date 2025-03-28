@@ -1,36 +1,30 @@
 [
   {
       "dialogue": "prison_intro",
-      "message": "In your cell block, you meet a notorious gang leader who's orchestrating a prison break.",
+      "message": "You're escorted to the prison, already planning your next move.",
+      "optionType": "number",
+      "options": [
+          {
+              "choice": "1. Observe your surroundings",
+              "message": "In your cell block, you meet a notorious gang leader who's orchestrating a prison break.",
+              "next": "prison_gang_choice"
+          }
+      ]
+  },
+  {
+      "dialogue": "prison_gang_choice",
+      "message": "The gang leader offers to include you in their escape plan.",
       "optionType": "number",
       "options": [
           {
               "choice": "1. Offer to help escape",
-              "message": "The gang leader evaluates you carefully.",
+              "message": "You decide to join forces with the gang.",
               "next": "gang_escape_plan"
           },
           {
               "choice": "2. Decline involvement",
               "message": "You decide to watch and wait.",
               "next": "prison_routine"
-          }
-      ]
-  },
-  {
-      "dialogue": "prison_routine",
-      "message": "Days pass as you observe the prison routine. Guards seem lax during shift changes.",
-      "optionType": "number",
-      "options": [
-          {
-              "choice": "1. Plan solo escape",
-              "message": "You decide to use the guard shift change to your advantage.",
-              "startMinigame": true,
-              "next": "solo_escape_attempt"
-          },
-          {
-              "choice": "2. Reconsider gang's offer",
-              "message": "Perhaps working with the gang is the better option.",
-              "next": "gang_escape_plan"
           }
       ]
   },
@@ -43,33 +37,37 @@
               "choice": "1. Begin escape",
               "message": "Time to put the plan into action.",
               "startMinigame": true,
-              "reputation": 15,
               "next": "escape_success"
           }
       ]
   },
   {
-      "dialogue": "solo_escape_attempt",
-      "message": "You prepare for your escape attempt during the next guard shift change.",
+      "dialogue": "prison_routine",
+      "message": "Days pass as you observe the prison routine. Guards seem lax during shift changes.",
       "optionType": "number",
       "options": [
           {
-              "choice": "1. Execute plan",
-              "message": "You begin your carefully timed escape.",
+              "choice": "1. Plan solo escape",
+              "message": "You decide to use the guard shift change to your advantage.",
               "startMinigame": true,
               "next": "escape_success"
+          },
+          {
+              "choice": "2. Reconsider gang's offer",
+              "message": "Perhaps working with the gang is the better option.",
+              "next": "gang_escape_plan"
           }
       ]
   },
   {
       "dialogue": "escape_success",
-      "message": "You've successfully escaped. Freedom awaits in the city.",
+      "message": "You've successfully escaped. Freedom awaits in the city slums.",
       "optionType": "number",
       "options": [
           {
-              "choice": "1. Head to tavern",
-              "message": "You make your way to a nearby tavern to gather information.",
-              "next": "tavern_intro"
+              "choice": "1. Head to the slums",
+              "message": "You make your way into the slums district.",
+              "next": "slums_tavern_intro"
           }
       ]
   }
