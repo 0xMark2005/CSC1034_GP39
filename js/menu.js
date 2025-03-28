@@ -69,28 +69,7 @@ function resetMenu(){
 async function chooseMenuOption(choice){
     // Wait 1 second before processing the input
     setTimeout(async () => {
-        switch (choice) {
-            // user selects 1 / Begin game so the menu is hidden and the header appears INSIDE terminal (this can be changed to outside if necessary)
-            case "1":
-                localStorage.setItem("loadGame", false); //new game to be created
-                window.location.replace("temp_game.html");        
-                break;
-            case "2":
-                await loadGameSaves();
-                break;
-            case "3":
-                window.location.replace("settings.html");  
-                break;
-                case "4":
-                    Terminal.outputMessage("Logging Out...", "#FF8181");
-                    localStorage.removeItem("loggedIn");
-                    localStorage.removeItem("username");
-                    window.location.replace("index.html");
-                    break;
-                
-            default:
-                Terminal.outputMessage("Invalid choice! Please enter 1, 2, 3, or 4.", "#FF8181")
-        }
+        handleMenuChoice(choice);
     }, 1000); // 1 sec delay
 }
 
@@ -170,6 +149,49 @@ async function loadGameSaves(){
     Terminal.outputMessage(`${i+1}. Return to Main Menu`);
 
     inputFor = "loadGame";
+}
+
+function handleMenuChoice(choice) {
+    switch(choice.toLowerCase()) {
+        case '1':
+            window.location.href = 'temp_game.html';
+            break;
+        case '2':
+            loadGameSaves();
+            break;
+        case '3':
+            window.location.href = 'settings.html';
+            break;
+        case '4':
+            window.location.href = 'edit_account.html';
+            break;
+        case '5':
+            handleLogout();
+            break;
+        default:
+            Terminal.outputMessage("Invalid choice. Please try again.", "#FF0000");
+    }
+}
+
+/**
+ * Handles user logout by clearing session data and redirecting to login page
+ */
+function handleLogout() {
+    try {
+        // Clear session storage
+        sessionStorage.clear();
+        // Clear local storage
+        localStorage.clear();
+        // Play logout sound if enabled
+        const clickSound = new Audio('css/assets/sounds/button-click.mp3');
+        clickSound.play();
+        // Redirect to login page
+        window.location.href = 'index.html';
+    } catch (error) {
+        console.error('Logout error:', error);
+        // Fallback redirect
+        window.location.href = 'index.html';
+    }
 }
 
 //button sound effect

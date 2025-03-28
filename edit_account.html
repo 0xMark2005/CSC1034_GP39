@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReignFall - Edit Account</title>
+    <link rel="icon" type="image/x-icon" href="css/assets/images/reignfall-logo.png">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div id="main-container" class="centered">
+        <div id="title">
+            <h1>
+                <img src="css/assets/images/reignfall-logo.png" alt="ReignFall Logo" width="40%">
+            </h1>
+        </div>
+
+        <div id="edit-account-container">
+            <h2>Edit Account</h2>
+            
+            <div class="edit-section">
+                <h3>Change Username</h3>
+                <input type="text" id="new-username" placeholder="New Username">
+                <button id="update-username">Update Username</button>
+                <p id="username-error" class="error"></p>
+            </div>
+
+            <div class="edit-section">
+                <h3>Change Password</h3>
+                <input type="password" id="current-password" placeholder="Current Password">
+                <input type="password" id="new-password" placeholder="New Password">
+                <button id="update-password">Update Password</button>
+                <p id="password-error" class="error"></p>
+            </div>
+
+            <div class="edit-section danger">
+                <h3>Delete Account</h3>
+                <p class="warning">Warning: This action cannot be undone!</p>
+                <input type="password" id="delete-confirm-password" placeholder="Enter Password to Confirm">
+                <button id="delete-account" class="danger-button">Delete Account</button>
+                <p id="delete-error" class="error"></p>
+            </div>
+
+            <button id="back-to-menu" class="back-button">Back to Menu</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/edit_account.js"></script>
+</body>
+</html>
