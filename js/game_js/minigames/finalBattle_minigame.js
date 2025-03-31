@@ -234,10 +234,32 @@ export function finalBattleGame() {
         gameActive = false;
         const victory = enemies.every(enemy => enemy.health <= 0);
         
+        // Calculate score based on performance
+        let score = 0;
+        if (victory) {
+            // Base victory bonus
+            score += 1000;
+            
+            // Surviving allies bonus
+            const survivingAllies = allies.filter(ally => ally.health > 0).length;
+            score += survivingAllies * 200;
+            
+            // Quick victory bonus
+            if (roundNumber <= 5) score += 500;
+            else if (roundNumber <= 8) score += 300;
+            else if (roundNumber <= 10) score += 100;
+            
+            // Perfect victory (all allies alive)
+            if (survivingAllies === allies.length) score += 500;
+        }
+        
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: victory,
-                message: victory ? "Victory! The corrupt king has been defeated!" : "Defeat... The revolution has failed."
+                score: score,
+                message: victory ? "Victory! The corrupt king has been defeated!" : "Defeat... The revolution has failed.",
+                rounds: roundNumber,
+                survivingAllies: allies.filter(ally => ally.health > 0).length
             }
         }));
     }
