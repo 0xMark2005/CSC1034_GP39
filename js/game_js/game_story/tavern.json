@@ -1,12 +1,29 @@
 [
     {
-        "dialogue": "tavern_intro",
-        "message": "The tavern is dimly lit and mostly empty. The barman studies you with unusual interest.",
+        "dialogue": "merchant_tavern_intro",
+        "message": "You enter the bustling tavern to gather information. Guards suddenly burst in conducting a routine inspection of merchant documentation.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Share your story",
-                "message": "You tell him about the village raid and your desire for justice.",
+                "choice": "1. Try to explain lack of papers",
+                "message": "Without proper documentation, the guards arrest you as a suspected spy.",
+                "next": "prison_intro"
+            },
+            {
+                "choice": "2. Attempt to flee",
+                "message": "You try to escape but are quickly caught. The guards drag you away to the prison.",
+                "next": "prison_intro"
+            }
+        ]
+    },
+    {
+        "dialogue": "tavern_intro",
+        "message": "The tavern is dimly lit and filled with suspicious characters.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Approach the barman",
+                "message": "You decide to talk to the barman, who seems to be watching you carefully.",
                 "next": "barman_response"
             }
         ]

@@ -7,56 +7,58 @@ import * as Inventory from "./inventory.js";
 import { prisonEscapeGame } from "./minigames/prisonEscape_minigame.js";
 import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
 import { generalRescueGame } from "./minigames/generalRescue_minigame.js";
-import { handleArmyBattle } from "./battle.js";
+import { finalBattleGame } from "./minigames/finalBattle_minigame.js";
+
 import { addAlly } from "./character.js";
+import { Battle } from './battle.js';
+import { ScoreSystem } from './score_system.js';
 
 /**
  * Handles starting and completing minigames
- * Routes to appropriate minigame based on current area
+ * Routes to appropriate minigame based on current area or type
  * @param {Object} option - The selected game option containing minigame details
  */
 function handleMinigame(option) {
     allowInput = false;
-    
-    const minigameHandler = (e) => {
-        allowInput = true;
+
+    const minigameHandler = async (e) => {
+        document.removeEventListener('minigameComplete', minigameHandler);
+        
         if (e.detail.success) {
-            Terminal.outputMessage("Minigame completed successfully!", "#00FF00");
+            await scoreSystem.handleMinigameCompletion(e);
+            Terminal.outputMessage(e.detail.message, "#00FF00");
+            
             if (option.next) {
                 GameTracker.currentDialogue = option.next;
                 loadDialogue();
             }
         } else {
-            Terminal.outputMessage("Minigame failed!", errorColor);
-            if (e.detail.nextArea) {
-                // Handle failure by transitioning to specified area
-                GameTracker.areaName = e.detail.nextArea;
-                GameTracker.setFilepath();
-                loadAreaFromJSON().then(() => {
-                    GameTracker.currentDialogue = storyProgression[e.detail.nextArea].startDialogue;
-                    loadDialogue();
-                });
-            } else {
-                allowInput = false;
-            }
+            Terminal.outputMessage(e.detail.message, errorColor);
+            GameTracker.currentDialogue = storyProgression[GameTracker.areaName].startDialogue;
+            loadDialogue();
         }
+        
+        allowInput = true;
     };
-    
-    document.addEventListener('minigameComplete', minigameHandler, { once: true });
-    
-    // Route to appropriate minigame based on current area
+
+    document.addEventListener('minigameComplete', minigameHandler);
+
+    // Start the appropriate minigame based on the current area
     switch(GameTracker.areaName) {
-        case "burning_village":
+        case 'burning_village':
             villageEscapeGame();
             break;
-        case "prison":
+        case 'prison':
             prisonEscapeGame();
             break;
-        case "knight_rescue":     // Changed from rescue_general to match story progression
-            generalRescueGame();  // This will now handle the knight rescue
+        case 'knight_rescue':
+            generalRescueGame();
+            break;
+        case 'final_battle':
+            finalBattleGame();
             break;
         default:
-            Terminal.outputMessage("Error: No minigame found for this area", errorColor);
+            console.error('No minigame found for area:', GameTracker.areaName);
             allowInput = true;
     }
 }
@@ -72,6 +74,7 @@ let allowInput = false;
 const options = [];
 let optionType = "number";
 let currentSelectionIndex = -1;
+const scoreSystem = new ScoreSystem();
 
 document.addEventListener("DOMContentLoaded", async function() {
     // Initialize terminal
@@ -122,23 +125,31 @@ const storyProgression = {
     },
     capital_gates: {
         startDialogue: "capital_gates_intro",
+        nextArea: "merchant_district"
+    },
+    merchant_district: {
+        startDialogue: "merchant_district_intro",
         nextArea: "prison"
     },
     prison: {
         startDialogue: "prison_intro",
-        nextArea: "tavern"
+        nextArea: "slums"
     },
-    tavern: {
-        startDialogue: "tavern_intro",
+    slums: {
+        startDialogue: "slums_tavern_intro",
         nextArea: "knight_rescue"
     },
     knight_rescue: {
         startDialogue: "knight_rescue_intro",
-        nextArea: "castle_takeover"
+        nextArea: "resistance_hq"
     },
-    castle_takeover: {
-        startDialogue: "castle_takeover_intro",
-        nextArea: "game_complete"
+    resistance_hq: {
+        startDialogue: "resistance_hq_intro",
+        nextArea: "final_battle"
+    },
+    final_battle: {
+        startDialogue: "final_battle_intro",
+        nextArea: null
     }
 };
 
@@ -168,6 +179,17 @@ function processChoice(option) {
     // Update reputation
     if (option.reputation) {
         updateReputation(option);
+        scoreSystem.updateReputationMultiplier(GameTracker.reputation);
+    }
+
+    // Track decision outcomes
+    if (option.isOptimal || option.preservesResources || option.unlocksSecret) {
+        scoreSystem.processDecision(option);
+    }
+
+    // Track achievements
+    if (option.achievement) {
+        scoreSystem.addAchievement(option.achievement.id, option.achievement.points);
     }
 
     // Handle area transitions
@@ -176,20 +198,44 @@ function processChoice(option) {
     }
 }
 
-function handleAreaTransition(nextDialogue) {
+async function handleAreaTransition(nextDialogue) {
     const currentArea = GameTracker.areaName;
     const progressionEntry = storyProgression[currentArea];
     
-    if (progressionEntry && nextDialogue.includes(progressionEntry.nextArea)) {
-        // Transition to new area
-        GameTracker.areaName = progressionEntry.nextArea;
+    // Check for prison_intro special case
+    if (nextDialogue === 'prison_intro') {
+        GameTracker.areaName = 'prison';
         GameTracker.setFilepath();
-        loadAreaFromJSON().then(() => {
-            GameTracker.currentDialogue = storyProgression[progressionEntry.nextArea].startDialogue;
+        
+        try {
+            await loadAreaFromJSON();
+            GameTracker.currentDialogue = 'prison_intro';
             loadDialogue();
-        });
+            return;
+        } catch (error) {
+            console.error("Prison transition failed:", error);
+            Terminal.outputMessage("Failed to load prison area.", errorColor);
+        }
+    }
+    
+    // Regular area transition logic
+    if (progressionEntry && progressionEntry.nextArea && 
+        (nextDialogue.includes(progressionEntry.nextArea) || 
+         nextDialogue === progressionEntry.nextArea + '_intro')) {
+        
+        const nextArea = progressionEntry.nextArea;
+        GameTracker.areaName = nextArea;
+        GameTracker.setFilepath();
+        
+        try {
+            await loadAreaFromJSON();
+            GameTracker.currentDialogue = storyProgression[nextArea].startDialogue;
+            loadDialogue();
+        } catch (error) {
+            console.error("Area transition failed:", error);
+            Terminal.outputMessage("Failed to load next area.", errorColor);
+        }
     } else {
-        // Stay in current area
         GameTracker.currentDialogue = nextDialogue;
         loadDialogue();
     }
@@ -208,10 +254,17 @@ async function loadAreaFromJSON(){
 
         let newAreaName = GameTracker.areaName.replace("_", " ");
         document.getElementById("area-name").innerHTML = newAreaName;
+        
+        // Verify dialogue exists
+        const dialogueExists = data.some(d => d.dialogue === storyProgression[GameTracker.areaName].startDialogue);
+        if (!dialogueExists) {
+            throw new Error(`Starting dialogue '${storyProgression[GameTracker.areaName].startDialogue}' not found in area data`);
+        }
     }
     catch(error) {
         console.error("Error loading area from JSON: ", error);
         console.log("Attempted to load from path:", GameTracker.areaFilepath);
+        Terminal.outputMessage("Error loading area data. Please check console.", errorColor);
     }
 }
 
@@ -446,4 +499,68 @@ function updateReputation(option){
         GameTracker.changeReputation(option.reputation);
         document.getElementById("reputation-number").innerHTML = GameTracker.reputation;
     }
+}
+
+// Add function to display final score
+function displayFinalScore() {
+    const scoreResult = scoreSystem.calculateFinalScore();
+    
+    Terminal.outputMessage("=== Final Score ===", "#FFA500");
+    Terminal.outputMessage(`Total Score: ${scoreResult.finalScore}`, "#00FF00");
+    Terminal.outputMessage("\nScore Breakdown:", "#FFA500");
+    Terminal.outputMessage(`Base Score: ${scoreResult.breakdown.baseScore}`, "#FFFFFF");
+    Terminal.outputMessage(`Time Bonus: ${scoreResult.breakdown.timeBonus}`, "#FFFFFF");
+    Terminal.outputMessage(`Reputation Multiplier: ${scoreResult.breakdown.reputationMultiplier.toFixed(2)}x`, "#FFFFFF");
+    Terminal.outputMessage(`Strategic Decisions: ${scoreResult.breakdown.decisionPoints}`, "#FFFFFF");
+    
+    // Add minigame performance summary
+    Terminal.outputMessage("\nMinigame Performance:", "#FFA500");
+    Object.entries(scoreResult.breakdown.minigameScores).forEach(([game, stats]) => {
+        if (stats.attempts > 0) {
+            Terminal.outputMessage(
+                `${game}: Best Score ${stats.bestScore} | Perfect Runs ${stats.perfectRuns}/${stats.attempts}`,
+                "#FFFFFF"
+            );
+        }
+    });
+    
+    if (scoreResult.breakdown.achievements.length > 0) {
+        Terminal.outputMessage("\nAchievements Unlocked:", "#FFA500");
+        scoreResult.breakdown.achievements.forEach(achievement => {
+            Terminal.outputMessage(`- ${achievement}`, "#FFFFFF");
+        });
+    }
+}
+
+// Update handleVillageEscape function to use async/await and Promise
+async function handleVillageEscape(choice, timeLeft) {
+    const points = await scoreSystem.handleStoryChoice(choice, timeLeft);
+    
+    return new Promise((resolve) => {
+        // Show score popup with context
+        let message;
+        switch(choice) {
+            case 'S':
+                message = `+${points} (Heroic Choice)`;
+                break;
+            case 'R':
+                message = `+${points} (Quick Thinking)`;
+                break;
+            case 'T':
+                message = `+${points} (Strategic Decision)`;
+                break;
+            default:
+                message = `+${points}`;
+        }
+
+        const popup = document.getElementById('score-popup');
+        popup.textContent = message;
+        popup.classList.add('animate');
+        
+        // Use Promise to ensure animation completes
+        setTimeout(() => {
+            popup.classList.remove('animate');
+            resolve();
+        }, 1000);
+    });
 }

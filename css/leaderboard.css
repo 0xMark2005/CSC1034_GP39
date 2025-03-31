@@ -1,18 +1,46 @@
-.leaderboard {
-    background-color: #2A2A2A;
-    color: #FFFFFF;
+/* Leaderboard Styling with Theme Integration */
+
+/* Background similar to settings screen */
+#main-container {
+    background: rgba(23, 23, 23, 0.85);
     width: 50%;
     max-width: 600px;
     padding: 20px;
     border-radius: 8px;
     text-align: center;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    max-height: 500px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+    max-height: 90vh;
     overflow-y: auto;
+    font-family: 'Consolas', 'Lucida Console', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Reignfall Logo */
+#title img {
+    width: 60%;
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+.leaderboard {
+    background: rgba(23, 23, 23, 0.85);
+    color: var(--high-contrast-text);
+    width: 100%;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    font-family: 'Consolas', 'Lucida Console', monospace;
 }
 
 .leaderboard h2 {
     font-size: 2rem;
+    text-transform: uppercase;
 }
 
 .leaderboard ol {
@@ -35,17 +63,11 @@
 .leaderboard .header {
     font-size: 1.5rem;
     font-weight: bold;
-    background-color: #404040;
+    background-color: #282828;
     margin-bottom: 5px;
     padding: 10px;
 }
 
-.leaderboard .header div,
-.leaderboard li div {
-    text-align: center;
-}
-
-/* Force Rank and Score to be small and Name to be large */
 .leaderboard .rank {
     flex: 0 0 50px;
     width: 50px;
@@ -64,43 +86,79 @@
 }
 
 .leaderboard li {
-    border-bottom: 1px solid rgba(153,145,105,255);
+    background: rgba(46, 46, 46, 0.8);
+    border: 1px solid rgba(153,145,105,0.8);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.leaderboard li:last-child {
-    border-bottom: none;
+.leaderboard li:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 12px rgba(255, 215, 0, 0.3);
 }
 
-.leaderboard::-webkit-scrollbar {
-    width: 8px;
-}
-
-.leaderboard::-webkit-scrollbar-track {
-    background: #595959;
-    border-radius: 10px;
-}
-
-.leaderboard::-webkit-scrollbar-thumb {
-    background: #404040;
-    border-radius: 10px;
-}
-
-.leaderboard li:nth-child(1) {
+/* Rank-based styling for first, second, and third positions */
+.leaderboard li.gold {
     background: gold;
     color: black;
     font-weight: bold;
 }
 
-.leaderboard li:nth-child(2) {
+.leaderboard li.silver {
     background: silver;
     color: black;
     font-weight: bold;
 }
 
-.leaderboard li:nth-child(3) {
+.leaderboard li.bronze {
     background: #cd7f32;
     color: black;
     font-weight: bold;
 }
 
+/* Scrollbar Styling (Matching Terminal) */
+.leaderboard::-webkit-scrollbar {
+    width: 12px;
+}
+
+.leaderboard::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+.leaderboard::-webkit-scrollbar-thumb {
+    background: #7a7a75;
+    border: 2px solid #000;
+    border-radius: 0;
+}
+
+.leaderboard::-webkit-scrollbar-thumb:hover {
+    background: #707070;
+}
+
+#search-bar {
+    display: block;
+    width: 80%;
+    max-width: 400px;
+    height: 45px; 
+    padding: 10px 15px;
+    font-size: 16px;
+    font-family: 'Consolas', 'Lucida Console', 'Courier New', monospace;
+    border: 2px solid black;
+    border-radius: 8px;
+    background-color: #1D1D1D;
+    color: white;
+    margin-bottom: 1em;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    text-align: left;
+}
+
+#search-bar:hover,
+#search-bar:focus-visible {
+    border-color: #282828;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#search-bar:focus {
+    outline: 3px solid #FFD700;
+    outline-offset: 2px;
+}
 

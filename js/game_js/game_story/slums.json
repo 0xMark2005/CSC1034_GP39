@@ -102,13 +102,13 @@
                 "choice": "1. Offer to help rescue the general",
                 "message": "The contact provides you with details about the prison where the general is held.",
                 "reputation": 10,
-                "next": "rescue_general_intro"
+                "next": "knight_rescue_intro"
             },
             {
                 "choice": "2. Request more information",
                 "message": "You learn about the general's importance to the resistance movement.",
                 "reputation": 5,
-                "next": "rescue_general_intro"
+                "next": "knight_rescue_intro"
             }
         ]
     },
@@ -121,7 +121,7 @@
                 "choice": "Accept the mission",
                 "message": "You agree to help free the general. The woman provides you with details about the prison.",
                 "reputation": 5,
-                "next": "rescue_general_intro"
+                "next": "knight_rescue_intro"
             },
             {
                 "choice": "Decline the offer",
@@ -197,7 +197,7 @@
                 "choice": "Listen to her story",
                 "message": "You decide to hear what she has to say about the general.",
                 "reputation": 0,
-                "next": "rescue_general_intro"
+                "next": "knight_rescue_intro"
             }
         ]
     },
@@ -209,7 +209,7 @@
             {
                 "choice": "1. Listen to the information",
                 "message": "You learn about the general's location and importance to the resistance.",
-                "next": "rescue_general_intro"
+                "next": "knight_rescue_intro"
             }
         ]
     }

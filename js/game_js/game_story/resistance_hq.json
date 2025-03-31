@@ -1,0 +1,26 @@
+[
+    {
+        "dialogue": "resistance_hq_intro",
+        "message": "You arrive at a hidden stronghold where resistance members gather.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Meet the resistance leaders",
+                "message": "The resistance leaders welcome you and the rescued knight.",
+                "next": "resistance_briefing"
+            }
+        ]
+    },
+    {
+        "dialogue": "resistance_briefing",
+        "message": "The leaders reveal their plan to overthrow the corrupt king.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Join the final battle",
+                "message": "You prepare to join the resistance in their assault on the castle.",
+                "next": "final_battle_intro"
+            }
+        ]
+    }
+]

@@ -147,24 +147,61 @@ export function villageEscapeGame() {
         }
     }
 
-    function cleanup(success) {
+    function cleanup(success, timeLeft = 0, choices = []) {
         gameActive = false;
         const userInput = document.getElementById("user-input");
         if (userInput.currentHandler) {
             userInput.removeEventListener("keypress", userInput.currentHandler);
         }
 
-        Terminal.outputMessage(
-            success ? "\nYou've successfully escaped the village!" : "Your journey ends here...", 
-            success ? "#00FF00" : "#FF0000"
-        );
+        // Calculate score based on performance
+        let score = 0;
+        if (success) {
+            // Base completion bonus
+            score += 500;
+            
+            // Time bonus (10 points per second left)
+            const timeBonus = timeLeft * 10;
+            
+            // Moral choice bonuses
+            const moralBonus = calculateMoralBonus(choices);
+            
+            score += timeBonus + moralBonus;
 
-        document.dispatchEvent(new CustomEvent('minigameComplete', {
-            detail: { 
-                success: success,
-                message: success ? "Village escape successful!" : "Failed to escape the village"
-            }
-        }));
+            Terminal.outputMessage(
+                `\nYou've successfully escaped the village! Score: ${score}`,
+                "#00FF00"
+            );
+
+            document.dispatchEvent(new CustomEvent('minigameComplete', {
+                detail: { 
+                    success: true,
+                    score: score,
+                    minigameId: 'villageEscape',
+                    timeBonus: timeBonus,
+                    perfect: choices.includes('s') && choices.includes('r') && choices.includes('t'),
+                    message: "Village escape successful!",
+                    choices: choices
+                }
+            }));
+        } else {
+            Terminal.outputMessage("Your journey ends here...", "#FF0000");
+            document.dispatchEvent(new CustomEvent('minigameComplete', {
+                detail: { 
+                    success: false,
+                    score: 0,
+                    minigameId: 'villageEscape',
+                    message: "Failed to escape the village"
+                }
+            }));
+        }
+    }
+
+    function calculateMoralBonus(choices) {
+        let bonus = 0;
+        if (choices.includes('s')) bonus += 200; // Saving baby bonus
+        if (choices.includes('r') && choices.includes('t')) bonus += 150; // Strategic choices
+        return bonus;
     }
 
     startScenario();

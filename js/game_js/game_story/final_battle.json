@@ -1,0 +1,28 @@
+[
+    {
+        "dialogue": "final_battle_intro",
+        "message": "You've reached the castle's throne room. The corrupt king awaits, surrounded by his elite guards.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Challenge the king",
+                "message": "You step forward to face the king in final combat.",
+                "startMinigame": true,
+                "minigameType": "finalBattle",
+                "next": "victory_scene"
+            }
+        ]
+    },
+    {
+        "dialogue": "victory_scene",
+        "message": "With the king defeated, the castle erupts in cheers. The revolution has succeeded.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Address your supporters",
+                "message": "You speak to the gathered crowd, promising a new era of justice.",
+                "gameOver": true
+            }
+        ]
+    }
+]

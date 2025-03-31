@@ -422,3 +422,59 @@ export function handleArmyBattle(battleConfig) {
         }));
     }
 }
+
+export class Battle {
+    constructor(allies, enemies) {
+        this.allies = allies.map(ally => ({
+            name: ally,
+            health: 100,
+            maxHealth: 100,
+            defense: false
+        }));
+        this.enemies = enemies.map(enemy => ({
+            name: enemy,
+            health: 100,
+            maxHealth: 100
+        }));
+        this.currentAllyIndex = 0;
+        this.turnInProgress = false;
+    }
+
+    getCurrentAlly() {
+        return this.allies[this.currentAllyIndex];
+    }
+
+    nextAlly() {
+        this.currentAllyIndex = (this.currentAllyIndex + 1) % this.allies.length;
+        return this.getCurrentAlly();
+    }
+
+    performAction(action, target) {
+        const ally = this.getCurrentAlly();
+        
+        switch(action) {
+            case 'attack':
+                const damage = Math.floor(Math.random() * 30) + 20;
+                target.health = Math.max(0, target.health - damage);
+                return `${ally.name} attacks ${target.name} for ${damage} damage!`;
+            
+            case 'defend':
+                ally.defense = true;
+                return `${ally.name} takes defensive stance!`;
+            
+            case 'heal':
+                const healing = Math.floor(Math.random() * 20) + 30;
+                target.health = Math.min(target.maxHealth, target.health + healing);
+                return `${ally.name} heals ${target.name} for ${healing} HP!`;
+        }
+    }
+
+    isAllyTurn() {
+        return !this.turnInProgress;
+    }
+
+    isGameOver() {
+        return this.allies.every(ally => ally.health <= 0) || 
+               this.enemies.every(enemy => enemy.health <= 0);
+    }
+}
