@@ -2,6 +2,7 @@
 import { Terminal } from "../terminal.js";
 import { GameTracker } from "./game_tracker.js";
 import * as SaveLoadGame from "./save_load_game.js";
+import * as Inventory from "./inventory.js";
 
 import { prisonEscapeGame } from "./minigames/prisonEscape_minigame.js";
 import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
@@ -79,13 +80,17 @@ document.addEventListener("DOMContentLoaded", async function() {
     Terminal.initialize(outputTerminal, userInput);
 
     // Set initial game state to burning village (start of game)
-    GameTracker.areaName = "burning_village";
+    //GameTracker.areaName = "burning_village";
+    await SaveLoadGame.loadGame();
     GameTracker.setFilepath();
     
     // Load initial area and dialogue
     await loadAreaFromJSON();
-    GameTracker.currentDialogue = storyProgression.burning_village.startDialogue;
+    //GameTracker.currentDialogue = storyProgression.burning_village.startDialogue;
     loadDialogue();
+
+    //TEST INVENTORY
+    await Inventory.loadInventoryItemVisuals();
 
     // Add input handler
     userInput.addEventListener("keydown", function(event) {
@@ -284,16 +289,15 @@ function loadDialogue() {
 
     //all options have now been added to options array
     //display all available options
-    let outputString = ``;
     if(optionType === "number"){
         Terminal.outputMessage(`Enter a number: `, dialogueColor);
         for(let i=0; i < options.length; i++){
             let currentOption = options[i];
-            Terminal.outputMessage(`${currentOption.choice}`, dialogueColor);
+            Terminal.outputMessage(`${currentOption.choice}`, optionsColor);
         }
     }
     else{
-        outputString = `Enter a verb: `;
+        let outputString = `Enter a verb: `;
         for(let i=0; i < options.length; i++){
             let currentOption = options[i];
             outputString += `${currentOption.choice}`;
@@ -302,9 +306,8 @@ function loadDialogue() {
                 outputString += `, `;
             }
         }
+        Terminal.outputMessage(outputString, optionsColor);
     }
-
-    Terminal.outputMessage(outputString, optionsColor);
 
     currentSelectionIndex = -1;
     Terminal.setInputValue('');
@@ -321,16 +324,26 @@ function loadDialogue() {
  * Includes a delay to improve user experience.
  */
 function handleUserInput() {
-    const choice = Terminal.getUserInput();
+    const choice = Terminal.getUserInput().toLowerCase();
     
     setTimeout(() => {
         // Special commands
-        if (choice === "Show Inventory") {
+        if (choice === "show inventory") {
             // TODO: Implement inventory display
             return;
         }
-        else if(choice.toLowerCase() === "Save".toLowerCase()){
-            SaveLoadGame.saveGame();
+        else if(choice === "save"){
+            if(SaveLoadGame.saveGame()){
+                Terminal.outputMessage("Game Saved!", optionResultColor);
+            }
+            else{
+                Terminal.outputMessage("Game failed to save.", errorColor);
+            }
+            return;
+        }
+        else if(choice === "manage inventory"){
+            allowOtherInput();
+            Inventory.openInventoryManager();
             return;
         }
         
@@ -341,6 +354,20 @@ function handleUserInput() {
             handleVerbChoice(choice.toLowerCase());
         }
     }, 1000);
+}
+
+//method disables input from this file and waits for a 'disableOtehrInput' event to trigger before input is returned to this file
+function allowOtherInput(){
+    allowInput = false; //disable input for this file
+
+    //event that will enable input for this again
+    const enableInputAgain = (event) => {
+        allowInput = true;
+        console.log("Input changed back to main game.");
+        loadDialogue();
+    }
+
+    document.addEventListener("disableOtherInput", enableInputAgain, {once: true});
 }
 
 /**

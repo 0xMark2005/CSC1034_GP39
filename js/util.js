@@ -8,7 +8,7 @@ export async function checkUserLogin(){
     if (loggedIn !== "true" || !sessionToken || !userID) {
         alert("Please log in to play the game.");
         window.location.href = "index.html";
-        return;
+        return false;
     }
 
     // Verify the session token in the database
@@ -21,9 +21,13 @@ export async function checkUserLogin(){
             console.log("User Session Expired");
             alert("User session has expired. Please log in again.");
             window.location.href = "index.html";
+            return false;
         }
     } catch (error) {
         console.error("Session verification error:", error);
         window.location.href = "index.html";
+        return false;
     }
+
+    return true;
 }

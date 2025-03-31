@@ -138,7 +138,11 @@ export class Terminal{
 
         // Clear input field
         this.#userInput.value = "";
-
+        
         return inputValue;
+    }
+
+    static getUserInputObject(){
+        return this.#userInput;
     }
 }
