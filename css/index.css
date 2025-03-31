@@ -25,6 +25,25 @@
     transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
+#index-main-container {
+    width: 70%;
+    height: 100%;
+    color: white;
+    padding: 10px;
+    display: flex!important; /* Ensure visibility */
+    
+    flex-direction: column;
+    position: relative;
+    background: linear-gradient(to bottom, #1e1e1eed, #000000);
+    overflow: hidden;
+  }
+  
+  #index-main-container.centered {
+    align-items: center;
+    min-width: auto;
+  }
+  
+
 /* Only the active screen is visible */
 .screen.active {
     display: flex;
@@ -57,7 +76,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     width: 90%;
-    max-width: 320px;
+    max-width: 350px;
     text-align: left;
 }
 
@@ -124,37 +143,36 @@ a {
     text-decoration: none;
 }
 
-@media (max-width: 600px) {
-    #index-options-container {
-        width: 100%;  /* Full width on smaller screens */
-        max-width: none;
-        border-radius: 0; 
+@media (max-width: 768px) {
+    body {
+      justify-content: flex-start;
+      align-items: center;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    #index-main-container {
+      width: 100%;
+      height: auto;
+      padding: 0;
+      margin: 0;
     }
     
-    .index-menu-button {
-        max-width: 250px;
-        font-size: 16px;
-        padding: 12px 20px;
-    }
-
-    .index-menu-button img {
-        width: 90px;
-    }
-}
-
-@media (max-width: 400px) {
+    /* Make the options container full-width with no border-radius */
     #index-options-container {
-        width: 100%; 
-        padding: 15px; 
+      width: 100%;
+      max-width: none;
+      border-radius: 0;
+      margin: 0;
     }
-
+    /* Adjust menu buttons if needed */
     .index-menu-button {
-        max-width: 200px;
-        font-size: 14px;
-        padding: 10px 15px;
+      width: 100% !important;
+      font-size: 16px;
+      padding: 12px 20px;
     }
-
     .index-menu-button img {
-        width: 70px;
+      width: 90px;
     }
-}
+  }
+  
+
