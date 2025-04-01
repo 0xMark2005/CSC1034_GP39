@@ -171,6 +171,7 @@ export async function loadGame(){
     GameTracker.allyEquipment = gameSessionAllyItems;
     GameTracker.inventory = gameSessionInventory;
 
+    localStorage.setItem("loadGame", true); //sets loadGame to true (page refresh wont create new saves)
     console.log("Game loaded.");
 }
 

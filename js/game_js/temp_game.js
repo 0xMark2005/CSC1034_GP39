@@ -193,8 +193,10 @@ function processChoice(option) {
         scoreSystem.addAchievement(option.achievement.id, option.achievement.points);
     }
 
-    // Handle area transitions
-    if (option.next) {
+    if(option.item){
+        awardItem(option);
+    }
+    else if(option.next) { // Handle area transitions 
         handleAreaTransition(option.next);
     }
 }
@@ -418,7 +420,9 @@ function allowOtherInput(){
     const enableInputAgain = (event) => {
         allowInput = true;
         console.log("Input changed back to main game.");
-        loadDialogue();
+        if(event.detail.displayDialogue){
+            loadDialogue();
+        }
     }
 
     document.addEventListener("disableOtherInput", enableInputAgain, {once: true});
@@ -512,12 +516,12 @@ async function awardItem(option){
 
     //get the item from the database
     let newItem = {}; //holds data of new item
-    let getItemQuery = `SELECT * FROM items WHERE item_name = ${option.item}`;
+    let getItemQuery = `SELECT * FROM items WHERE item_name = '${option.item.trim()}'`;
     try{
-        let result = DBQuery.getQueryResult(getItemQuery);
+        let result = await DBQuery.getQueryResult(getItemQuery);
 
         //if no matching items were found
-        if(!result.success && result.data.length == 0){
+        if(!result.success || result.data.length == 0){
             console.error(`Item ${option.item} could not be found in DB.`);
             return;
         }
@@ -537,7 +541,25 @@ async function awardItem(option){
         return;
     }
 
-    
+    //try to add to inventory
+    if(await Inventory.addItem(newItem)){
+        return;
+    }
+
+    //if addItem didnt work (inventory was full)
+    allowOtherInput();
+    let confirmMessage = `Would you like to remove an item from your inventory to collect ${newItem.name}`;
+    await Inventory.chooseItemToReplaceOutsideManager(confirmMessage, newItem);
+
+    const afterDecision = function(){
+        if(option.next){
+            handleAreaTransition(option.next);
+        }
+        else{
+            Terminal.outputMessage("Next area could not be found.", errorColor);
+        }
+    }
+    document.addEventListener("itemAddChoiceComplete", afterDecision, {once: true});
 }
 
 // Add function to display final score
