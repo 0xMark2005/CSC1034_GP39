@@ -1,6 +1,7 @@
 //Imports
 import { Terminal } from "../terminal.js";
 import { GameTracker } from "./game_tracker.js";
+import { AllyManager  } from "./ally_manager.js";
 import * as SaveLoadGame from "./save_load_game.js";
 import * as Inventory from "./inventory.js";
 
@@ -83,12 +84,16 @@ document.addEventListener("DOMContentLoaded", async function() {
     let userInput = document.getElementById("user-input");
     Terminal.initialize(outputTerminal, userInput);
 
+
+   
+
+
     // Set initial game state to burning village (start of game)
     //GameTracker.areaName = "burning_village";
     await SaveLoadGame.loadGame();
     GameTracker.setFilepath();
-    
-    // Load initial area and dialogue
+     // load allies
+    await AllyManager.loadAlliesFromGameTracker();     // Load initial area and dialogue
     await loadAreaFromJSON();
     //GameTracker.currentDialogue = storyProgression.burning_village.startDialogue;
     loadDialogue();
@@ -117,6 +122,10 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     });
 });
+
+
+
+
 
 // Story progression map
 const storyProgression = {
