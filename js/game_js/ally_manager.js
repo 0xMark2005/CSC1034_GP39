@@ -5,7 +5,7 @@ import * as Inventory from "./inventory.js";
 export class AllyManager{
 
     //allies
-    static async  loadAlliesFromGameTracker() {
+    static async loadAlliesFromGameTracker() {
         const alliesData = GameTracker.allies; // Retrieve allies from GameTracker.allies
     
         if (!alliesData || alliesData.length === 0) {
@@ -13,16 +13,21 @@ export class AllyManager{
             return;
         }
     
+        console.log('Allies Data:', alliesData);
+    
         // Loop through and check the number of character divs
         const characterDivs = document.querySelectorAll('.character');
+        
+        console.log(`Found ${characterDivs.length} character divs, expecting ${alliesData.length}`);
         
         // If the number of character divs is less than the number of allies, generate new divs
         if (characterDivs.length < alliesData.length) {
             console.warn(`Not enough .character divs in HTML. Expected ${alliesData.length}, found ${characterDivs.length}.`);
-            generateCharacterDivs(alliesData.length - characterDivs.length);
+            AllyManager.generateCharacterDivs(alliesData.length - characterDivs.length);  // Call generateCharacterDivs statically
         }
     
         const updatedCharacterDivs = document.querySelectorAll('.character');
+        console.log('Updated Character Divs:', updatedCharacterDivs);
     
         // Hide all characters initially
         updatedCharacterDivs.forEach(characterDiv => {
@@ -40,7 +45,7 @@ export class AllyManager{
             }
     
             // Show the div for this ally if it is unlocked
-            characterDiv.classList.remove('hidden');  
+            characterDiv.classList.remove('hidden');
     
             const leftDiv = characterDiv.querySelector('.cleft');
             const rightDiv = characterDiv.querySelector('.cright');
@@ -58,6 +63,7 @@ export class AllyManager{
             }
         }
     }
+    
     
     // Function to generate character divs dynamically
     static async generateCharacterDivs(missingDivs) {
