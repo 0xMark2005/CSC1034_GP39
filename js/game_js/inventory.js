@@ -100,29 +100,39 @@ function openInventoryModal(item) {
   });
   modal.appendChild(closeButton);
 
-  // Optional: Display the item image
+  // Item image centered on its own line
   const itemImage = document.createElement('img');
   itemImage.src = item.image;
   itemImage.alt = item.name;
   itemImage.style.width = "60px";
   itemImage.style.height = "60px";
+  itemImage.style.display = "block";
+  itemImage.style.margin = "0 auto";
   modal.appendChild(itemImage);
 
-  // Item name
+  // Title centered on its own line
   const nameElement = document.createElement('strong');
   nameElement.textContent = item.name;
+  nameElement.style.display = "block";
+  nameElement.style.textAlign = "center";
+  nameElement.style.marginTop = "10px";
   modal.appendChild(nameElement);
 
-  // Item description
+  // Description centered on its own line
   const descriptionElement = document.createElement('p');
   descriptionElement.textContent = item.description || 'No description available';
+  descriptionElement.style.textAlign = "center";
+  descriptionElement.style.marginTop = "10px";
   modal.appendChild(descriptionElement);
 
-  // Action button for equipment or consumable items
+  // Action button on new line, full width and centered
   if (item.equipment || item.consumable) {
     const actionBtn = document.createElement('button');
     actionBtn.textContent = item.equipment ? "EQUIP" : "USE";
     actionBtn.classList.add('item-action-button');
+    actionBtn.style.width = "100%";
+    actionBtn.style.display = "block";
+    actionBtn.style.marginTop = "10px";
     actionBtn.addEventListener('click', async (e) => {
       e.stopPropagation(); // Prevent modal background click
       // Play sound if enabled
@@ -167,9 +177,9 @@ function openInventoryModal(item) {
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
-  // Collapse modal if overlay (grey background) is clicked
+  // Collapse modal if the overlay (grey background) is clicked
   overlay.addEventListener('click', (e) => {
-    if(e.target === overlay) {
+    if(e.target === overlay){
       document.body.removeChild(overlay);
     }
   });

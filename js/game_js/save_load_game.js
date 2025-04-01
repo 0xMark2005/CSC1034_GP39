@@ -1,7 +1,6 @@
 //Imports
 import {DBQuery} from "../dbQuery.js";
 import {GameTracker} from "./game_tracker.js";
-import * as Inventory from "./inventory.js";
 import * as Util from "../util.js";
 
 //
@@ -173,7 +172,6 @@ export async function loadGame(){
     GameTracker.inventory = gameSessionInventory;
 
     localStorage.setItem("loadGame", true); //sets loadGame to true (page refresh wont create new saves)
-    await Inventory.loadInventoryItemVisuals(); //load inventory visually
     console.log("Game loaded.");
 }
 
