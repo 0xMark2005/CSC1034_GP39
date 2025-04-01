@@ -1,0 +1,49 @@
+#stats-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #1d1d1d;
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 0 15px #FFD700;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+h1 {
+    text-align: center;
+    color: #FFD700;
+    margin-bottom: 30px;
+}
+
+.stat-group {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+}
+
+.stat-label {
+    font-weight: bold;
+}
+
+.stat-value {
+    color: #FFD700;
+}
+
+.back-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #333;
+    color: #FFD700;
+    border: 1px solid #FFD700;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #444;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+}
