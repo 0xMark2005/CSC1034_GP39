@@ -59,7 +59,8 @@ function resetMenu(){
             <li>1. New Game</li>
             <li>2. Load Game</li>
             <li>3. Settings</li>
-            <li>4. Log Out</li>
+            <li>4. Edit Account</li>
+            <li>5. Log Out</li>
         </ol>`;
 }
 
@@ -74,29 +75,39 @@ async function chooseMenuOption(choice){
 }
 
 function chooseGameSave(choice){
-    //if game saves weren't loaded correctly, return to menu input
     if(!gameSaves || gameSaves.length < 1){
         inputFor = "menu";
+        window.location.reload(); // Reload page instead of resetMenu
         return;
     }
 
     try{
-        if(choice === gameSaves.length+1){
-            let inputFor = "menu";
-            Terminal.outputMessage("Retruning to main menu...", optionResultColor);
-            resetMenu();
+        // Check for delete command (e.g., "1D")
+        if(choice.toString().toLowerCase().endsWith('d')){
+            let index = parseInt(choice) - 1;
+            if(index >= 0 && index < gameSaves.length){
+                deleteGameSave(index);
+            }
             return;
         }
 
-        if(choice < 1 || choice > gameSaves.length){
+        // Check for return to menu
+        if(parseInt(choice) === gameSaves.length + 1){
+            inputFor = "menu";
+            window.location.reload(); // Reload page instead of resetMenu
+            return;
+        }
+
+        // Handle loading game
+        let choiceNum = parseInt(choice);
+        if(choiceNum < 1 || choiceNum > gameSaves.length){
             Terminal.outputMessage(`Invalid choice, please enter the number of the save file you wish to load (1-${gameSaves.length}).`, errorColor);
             return;
         }
 
-        //set the gameSessionId of the selected save file and open the game
-        let gameSessionId = gameSaves[choice-1].game_session_id;
+        let gameSessionId = gameSaves[choiceNum-1].game_session_id;
         localStorage.setItem("gameSessionId", gameSessionId);
-        localStorage.setItem("loadGame", true); //game to be loaded
+        localStorage.setItem("loadGame", true);
 
         Terminal.outputMessage("Loading Game...", optionResultColor);
         window.location.href = "temp_game.html";
@@ -107,10 +118,25 @@ function chooseGameSave(choice){
     }
 }
 
+// Add this new function to handle save deletion
+async function deleteGameSave(index) {
+    try {
+        let query = `DELETE FROM game_sessions WHERE game_session_id = ${gameSaves[index].game_session_id}`;
+        await DBQuery.executeQuery(query);
+        Terminal.outputMessage("Save file deleted successfully.", optionResultColor);
+        loadGameSaves(); // Refresh the list
+    } catch(error) {
+        Terminal.outputMessage("Error deleting save file.", errorColor);
+    }
+}
+
 //function allowing user to select a game save
 async function loadGameSaves(){
-    //Get all the user's save files
-    let query = `SELECT * FROM game_sessions WHERE user_id = ${localStorage.getItem("userID")} ORDER BY game_session_id ASC`;
+    //Get all the user's save files, ordered by most recent first
+    let query = `SELECT * FROM game_sessions 
+                 WHERE user_id = ${localStorage.getItem("userID")} 
+                 ORDER BY previous_save_datetime DESC 
+                 LIMIT 5`;
     try{
         let result = await DBQuery.getQueryResult(query);
         gameSaves = result.data;
@@ -120,16 +146,15 @@ async function loadGameSaves(){
         return;
     }
 
-    console.log(gameSaves);
     if(!gameSaves || gameSaves.length < 1){
         Terminal.outputMessage("There are no save files for this account.", optionResultColor);
         return;
     }
 
     Terminal.outputMessage("Choose a Game Save File:");
-    let i = 0;
-    for(i; i<gameSaves.length; i++){
-        //capitalize first letter of location name
+    
+    // Show only up to 5 most recent saves
+    for(let i = 0; i < gameSaves.length; i++){
         let gameLocation = "";
         let gameLocationParts = gameSaves[i].current_location.split("_");
         if(gameLocationParts.length > 1){
@@ -143,10 +168,10 @@ async function loadGameSaves(){
             gameLocation = gameLocationParts[0];
         }
 
-        //output game save file
-        Terminal.outputMessage(`${i+1}. ${gameLocation} \u00a0 \u00a0 \u00a0 Updated: ${gameSaves[i].previous_save_datetime}`);
+        //output game save file with delete option
+        Terminal.outputMessage(`${i+1}. ${gameLocation} \u00a0 \u00a0 \u00a0 Updated: ${gameSaves[i].previous_save_datetime} [D]elete`);
     }
-    Terminal.outputMessage(`${i+1}. Return to Main Menu`);
+    Terminal.outputMessage(`${gameSaves.length + 1}. Return to Main Menu`);
 
     inputFor = "loadGame";
 }
@@ -154,6 +179,7 @@ async function loadGameSaves(){
 function handleMenuChoice(choice) {
     switch(choice.toLowerCase()) {
         case '1':
+            localStorage.setItem("loadGame", false); // Indicate this is a new game
             window.location.href = 'temp_game.html';
             break;
         case '2':
@@ -165,11 +191,14 @@ function handleMenuChoice(choice) {
         case '4':
             window.location.href = 'edit_account.html';
             break;
-        case '5':
+        case "5":
+             window.location.href = "player_stats.html";
+            break;
+        case '6':
             handleLogout();
             break;
         default:
-            Terminal.outputMessage("Invalid choice. Please try again.", "#FF0000");
+            Terminal.outputMessage("Invalid choice. Please try again.", errorColor);
     }
 }
 
