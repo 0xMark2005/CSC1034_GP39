@@ -1,12 +1,53 @@
 [
     {
         "dialogue": "burning_village_intro",
-        "message": "Your peaceful village evening is shattered as royal knights storm in, torches blazing. Their commander declares everyone traitors without evidence.",
+        "message": "Your village is under attack! Flames engulf your home.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Attempt escape",
-                "message": "You must act quickly to survive the raid.",
+                "choice": "1. Search your home quickly",
+                "message": "You spot some useful items through the smoke.",
+                "next": "search_home"
+            },
+            {
+                "choice": "2. Escape immediately",
+                "message": "No time to waste!",
+                "next": "escape_start"
+            }
+        ]
+    },
+    {
+        "dialogue": "search_home",
+        "message": "Through the smoke, you spot: [1] Family Sword [2] Healing Potion [3] Leave Now",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Take family sword",
+                "message": "You grab the ancestral blade.",
+                "next": "escape_start",
+                "item": "family_sword"
+            },
+            {
+                "choice": "2. Take healing potion",
+                "message": "You pocket the medicinal brew.",
+                "next": "escape_start",
+                "item": "healing_potion"
+            },
+            {
+                "choice": "3. Leave immediately",
+                "message": "Better safe than sorry.",
+                "next": "escape_start"
+            }
+        ]
+    },
+    {
+        "dialogue": "escape_start",
+        "message": "The village burns around you. Time to escape!",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Begin escape",
+                "message": "You prepare to make your escape.",
                 "startMinigame": true,
                 "minigameType": "villageEscape",
                 "next": "escape_success"
@@ -15,12 +56,12 @@
     },
     {
         "dialogue": "escape_success",
-        "message": "You successfully escape the burning village. The capital city lies ahead.",
+        "message": "You've escaped the burning village!",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Journey to the capital",
-                "message": "You begin the long walk to the capital city.",
+                "choice": "1. Head to the capital",
+                "message": "You make your way towards the capital city.",
                 "next": "capital_gates_intro"
             }
         ]

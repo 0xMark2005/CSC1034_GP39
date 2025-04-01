@@ -24,5 +24,23 @@
                 "gameOver": true
             }
         ]
+    },
+    {
+        "dialogue": "ancient_altar",
+        "message": "You discover an ancient amulet glowing with power.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Take the amulet",
+                "message": "The amulet pulses with protective energy.",
+                "next": "final_approach",
+                "item": "guardian_amulet"
+            },
+            {
+                "choice": "2. Leave it",
+                "message": "Best not to disturb ancient artifacts.",
+                "next": "final_approach"
+            }
+        ]
     }
 ]

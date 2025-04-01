@@ -70,5 +70,23 @@
               "next": "slums_tavern_intro"
           }
       ]
+  },
+  {
+      "dialogue": "guard_unconscious",
+      "message": "The guard lies unconscious. His armor could be useful.",
+      "optionType": "number",
+      "options": [
+          {
+              "choice": "1. Take guard's armor",
+              "message": "You quickly don the guard's armor.",
+              "next": "prison_escape",
+              "item": "guard_armor"
+          },
+          {
+              "choice": "2. Leave it",
+              "message": "Better to stay stealthy.",
+              "next": "prison_escape"
+          }
+      ]
   }
 ]

@@ -32,6 +32,10 @@ function handleMinigame(option) {
             if (option.next) {
                 GameTracker.currentDialogue = option.next;
                 loadDialogue();
+            } else {
+                console.error('No next dialogue specified for successful minigame completion');
+                GameTracker.currentDialogue = storyProgression[GameTracker.areaName].startDialogue;
+                loadDialogue();
             }
         } else {
             Terminal.outputMessage(e.detail.message, errorColor);
@@ -180,7 +184,10 @@ function processChoice(option) {
     // Update reputation
     if (option.reputation) {
         updateReputation(option);
-        scoreSystem.updateReputationMultiplier(GameTracker.reputation);
+        // Update multiplier after reputation changes
+        if (GameTracker.reputation !== undefined) {
+            scoreSystem.updateReputationMultiplier(GameTracker.reputation);
+        }
     }
 
     // Track decision outcomes
