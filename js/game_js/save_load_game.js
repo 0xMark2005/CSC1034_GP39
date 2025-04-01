@@ -226,7 +226,7 @@ async function setupNewGame(){
     }
 
     //
-    //Inserts the new game data into the database
+    // Inserts the new game data into the database
     //
     let createNewGameQuery = `INSERT INTO game_sessions(user_id, current_location, current_dialogue, reputation, game_over, game_completed, previous_save_datetime, score)
     VALUES (${newGameData.user_id}, '${newGameData.current_location}', '${newGameData.current_dialogue}', ${newGameData.reputation}, ${newGameData.game_over}, ${newGameData.game_completed}, NOW(), ${newGameData.score});`;
