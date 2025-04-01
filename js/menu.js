@@ -154,6 +154,7 @@ async function loadGameSaves(){
 function handleMenuChoice(choice) {
     switch(choice.toLowerCase()) {
         case '1':
+            localStorage.setItem("loadGame", false);
             window.location.href = 'temp_game.html';
             break;
         case '2':

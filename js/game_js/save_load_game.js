@@ -15,6 +15,7 @@ export async function loadGame(){
 
     //ensure the user came from the main menu
     if(localStorage.getItem("loadGame") === null){
+        console.error("loadGame was null");
         window.alert("Please use the main menu to create a new game or load an existing game.");
         window.location.href = "main_menu.html";
         return;

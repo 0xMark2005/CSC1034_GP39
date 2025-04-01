@@ -12,6 +12,7 @@ import { finalBattleGame } from "./minigames/finalBattle_minigame.js";
 import { addAlly } from "./character.js";
 import { Battle } from './battle.js';
 import { ScoreSystem } from './score_system.js';
+import { DBQuery } from "../dbQuery.js";
 
 /**
  * Handles starting and completing minigames
@@ -493,12 +494,50 @@ function handleArrowNavigation(direction) {
 // Methods for updating game tracker based on selected option
 //-----
 
+//updates the player's reputation by the given amount in the option if the option includes it
 function updateReputation(option){
     if (option.reputation) {
         Terminal.outputMessage(`Reputation change: ${option.reputation}`, optionResultColor);
         GameTracker.changeReputation(option.reputation);
         document.getElementById("reputation-number").innerHTML = GameTracker.reputation;
     }
+}
+
+//if the option includes an item to award, gives it to the player
+async function awardItem(option){
+    //if option doesnt award any item
+    if(!option.item){
+        return;
+    }
+
+    //get the item from the database
+    let newItem = {}; //holds data of new item
+    let getItemQuery = `SELECT * FROM items WHERE item_name = ${option.item}`;
+    try{
+        let result = DBQuery.getQueryResult(getItemQuery);
+
+        //if no matching items were found
+        if(!result.success && result.data.length == 0){
+            console.error(`Item ${option.item} could not be found in DB.`);
+            return;
+        }
+
+        //formats the new item correctly
+        newItem.id = Number(result.data[0].item_id);
+        newItem.name = result.data[0].item_name;
+        newItem.description = result.data[0].item_description;
+        newItem.image = result.data[0].item_image;
+        newItem.consumable = result.data[0].is_consumable === "1";
+        newItem.equipment = result.data[0].is_equipment === "1";
+        newItem.keyItem = result.data[0].is_key_item === "1";
+        newItem.effect = result.data[0].item_effect !== "" ? JSON.parse(result.data[0].item_effect) : {};
+    }
+    catch(error){
+        console.error("Error getting item from DB: ", error);
+        return;
+    }
+
+    
 }
 
 // Add function to display final score
