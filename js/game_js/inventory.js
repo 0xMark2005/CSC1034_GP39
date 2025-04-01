@@ -14,6 +14,8 @@ const optionResultColor = "#0000FF";
 export const maxInventorySpace = 4;
 
 //Variables
+let cancelMethod;
+let completeMethod;
 let currentInventoryClickHandlers = [];
 let userInput;
 let chosenAlly = null;
@@ -28,17 +30,8 @@ export async function loadInventoryItemVisuals(){
   // Use soundEnabled instead of keyboardSounds
   const shouldPlaySound = settings.soundEnabled; 
 
-  // Attach sound event to every button if enabled
-  // if (shouldPlaySound) {
-  //   document.querySelectorAll('button').forEach(btn => {
-  //     btn.addEventListener('click', () => {
-  //       new Audio('css/assets/sounds/button-click.mp3').play();
-  //     });
-  //   });
-  // }
-
   //clear current inventory
-  for(let i=maxInventorySpace; i>0; i--){
+  for(let i = maxInventorySpace; i > 0; i--){
     //Grab html inventory slot
     let inventorySpaceId = `inventory-space-${i}`;
     let inventorySpace = document.getElementById(inventorySpaceId);
@@ -48,7 +41,7 @@ export async function loadInventoryItemVisuals(){
     
     //remove other classes
     inventorySpace.classList.remove(...inventorySpace.classList);
-    inventorySpace.classList.add("inventory-item-container")
+    inventorySpace.classList.add("inventory-item-container");
 
     //remove current click handler
     if(currentInventoryClickHandlers[i-1]){
@@ -58,7 +51,7 @@ export async function loadInventoryItemVisuals(){
   }
 
   //set new inventory
-  for(let i=0; i<GameTracker.inventory.length; i++){
+  for(let i = 0; i < GameTracker.inventory.length; i++){
     //Grab html inventory slot
     let inventorySpaceId = `inventory-space-${i+1}`;
     let inventorySpace = document.getElementById(inventorySpaceId);
@@ -69,108 +62,155 @@ export async function loadInventoryItemVisuals(){
     const img = document.createElement('img');
     img.src = currentItem.image;
     img.alt = currentItem.name;
-    img.title = currentItem.title;
+    img.title = currentItem.title || currentItem.name;
     inventorySpace.appendChild(img);
 
-    //Create expanded details element
-    //div to hold details
-    const detailsDiv = document.createElement('div');
-    detailsDiv.classList.add('inventory-item-details');
-
-    //name of item
-    const nameElement = document.createElement('strong');
-    nameElement.textContent = currentItem.name;
-
-    //item description
-    const descriptionElement = document.createElement('p');
-    descriptionElement.classList.add('inventory-description');
-    descriptionElement.textContent =  currentItem.description != "" ? currentItem.description : 'No description available';
-
-    //add to inventory space
-    inventorySpace.appendChild(detailsDiv);
-    detailsDiv.appendChild(nameElement);
-    detailsDiv.appendChild(descriptionElement);
-
     //
-    // Expand inventory space when clicked
+    // Open modal when clicked instead of inline expansion
     //
-    const inventorySpaceHandler = () => {
+    const inventorySpaceHandler = (event) => {
       //play sound when clicked
       if (shouldPlaySound) {
         new Audio('css/assets/sounds/button-click.mp3').play();
       }
-
-      //close other expanded div
-      document.querySelectorAll('.inventory-item-container').forEach(item => {
-        if (item !== inventorySpace) {
-          item.classList.remove('expanded');
-          const desc = item.querySelector('.inventory-description');
-          if (desc) {
-            desc.classList.remove('show', 'marquee');
-          }
-          const equipBtn = item.querySelector('.equip-button');
-          if (equipBtn) {
-            equipBtn.remove();
-          }
-        }
-      });
-
-      //toggle the expansion
-      inventorySpace.classList.toggle('expanded');
-
-      //if selected space was already expanded, close it
-      if (!inventorySpace.classList.contains('expanded')) {
-        descriptionElement.classList.remove('show', 'marquee');
-        const equipBtn = inventorySpace.querySelector('.equip-button');
-        if (equipBtn) {
-          equipBtn.remove();
-        }
-      } 
-      else {
-        setTimeout(() => {
-          descriptionElement.classList.add('show');
-
-          setTimeout(() => {
-            const descWidth = descriptionElement.scrollWidth;
-            const containerWidth = descriptionElement.clientWidth;
-            if (descWidth > containerWidth) {
-              descriptionElement.classList.add('marquee');
-            } else {
-              descriptionElement.classList.remove('marquee');
-            }
-          }, 50);
-
-          if (currentItem.equipment) {
-            const equipBtn = document.createElement('button');
-            equipBtn.textContent = "EQUIP";
-            equipBtn.classList.add('equip-button');
-            equipBtn.style.opacity = 0;
-
-            inventorySpace.appendChild(equipBtn);
-
-            setTimeout(() => {
-              equipBtn.style.transition = "opacity 0.5s ease";
-              equipBtn.style.opacity = 1;
-            }, 50);
-          }
-        }, 500);
-      }
+      openInventoryModal(currentItem);
     };
+    
     inventorySpace.addEventListener('click', inventorySpaceHandler);
     currentInventoryClickHandlers.push(inventorySpaceHandler);
-
   }
 }
 
+// New function to open the modal overlay for an inventory item
+function openInventoryModal(item) {
+  // Create overlay div
+  const overlay = document.createElement('div');
+  overlay.classList.add('inventory-modal-overlay');
 
+  // Create modal content div with expanding animation
+  const modal = document.createElement('div');
+  modal.classList.add('inventory-modal-content');
 
-//
-// Functions affecting inventory
-//
+  // Close button (×)
+  const closeButton = document.createElement('button');
+  closeButton.classList.add('inventory-modal-close');
+  closeButton.textContent = '×';
+  closeButton.addEventListener('click', () => {
+    document.body.removeChild(overlay);
+  });
+  modal.appendChild(closeButton);
+
+  // Item image centered on its own line
+  const itemImage = document.createElement('img');
+  itemImage.src = item.image;
+  itemImage.alt = item.name;
+  itemImage.style.width = "60px";
+  itemImage.style.height = "60px";
+  itemImage.style.display = "block";
+  itemImage.style.margin = "0 auto";
+  modal.appendChild(itemImage);
+
+  // Title centered on its own line
+  const nameElement = document.createElement('strong');
+  nameElement.textContent = item.name;
+  nameElement.style.display = "block";
+  nameElement.style.textAlign = "center";
+  nameElement.style.marginTop = "10px";
+  modal.appendChild(nameElement);
+
+  // Description centered on its own line
+  const descriptionElement = document.createElement('p');
+  descriptionElement.textContent = item.description || 'No description available';
+  descriptionElement.style.textAlign = "center";
+  descriptionElement.style.marginTop = "10px";
+  modal.appendChild(descriptionElement);
+
+  // Action button on new line, full width and centered
+  if (item.equipment || item.consumable) {
+    const actionBtn = document.createElement('button');
+    actionBtn.textContent = item.equipment ? "EQUIP" : "USE";
+    actionBtn.classList.add('item-action-button');
+    actionBtn.style.width = "100%";
+    actionBtn.style.display = "block";
+    actionBtn.style.marginTop = "10px";
+    actionBtn.addEventListener('click', async (e) => {
+      e.stopPropagation(); // Prevent modal background click
+      // Play sound if enabled
+      const settings = await SettingsManager.getSettings();
+      if (settings.soundEnabled) {
+        new Audio('css/assets/sounds/button-click.mp3').play();
+      }
+      // Show waterfall animation effect
+      createItemUseAnimation(item.image);
+      
+      if (item.equipment) {
+        // Open ally selection for equipping
+        chosenItem = item;
+        let allies = AllyManager.getAllAliveAllies();
+        
+        Terminal.outputMessage(`Choose an ally to equip ${item.name}:`, systemColor);
+        for(let i = 0; i < allies.length; i++){
+          Terminal.outputMessage(`${i+1}. ${allies[i].name}`, optionsColor);
+        }
+        
+        // For demo purposes, close modal after 1 second
+        setTimeout(() => {
+          if(document.body.contains(overlay)){
+            document.body.removeChild(overlay);
+          }
+        }, 1000);
+        
+      } else if (item.consumable) {
+        // Handle consumable item usage
+        Terminal.outputMessage(`Using ${item.name}...`, optionResultColor);
+        setTimeout(() => {
+          if(document.body.contains(overlay)){
+            document.body.removeChild(overlay);
+          }
+        }, 1000);
+      }
+    });
+    modal.appendChild(actionBtn);
+  }
+
+  // Append modal to overlay and overlay to body
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  // Collapse modal if the overlay (grey background) is clicked
+  overlay.addEventListener('click', (e) => {
+    if(e.target === overlay){
+      document.body.removeChild(overlay);
+    }
+  });
+}
+
+// New function to create the waterfall animation effect when using items
+function createItemUseAnimation(imageSrc) {
+  // Create multiple copies for waterfall effect
+  for (let i = 1; i <= 5; i++) {
+    const animDiv = document.createElement('div');
+    animDiv.classList.add('item-use-animation', `item-path-${i}`);
+    
+    const imgClone = document.createElement('img');
+    imgClone.src = imageSrc;
+    imgClone.alt = "Used item";
+    
+    animDiv.appendChild(imgClone);
+    document.body.appendChild(animDiv);
+    
+    // Remove the element after animation completes
+    setTimeout(() => {
+      animDiv.remove();
+    }, 1500);
+  }
+}
+
+// The rest of your inventory management functions remain the same...
 export async function addItem(item){
   //if inventory is full
   if(GameTracker.inventory.length >= maxInventorySpace){
-    Terminal.outputMessage("Cannot add item as inventory is full.", errorColor);
+    Terminal.outputMessage(`Cannot add ${item.name} to inventory as inventory is full.`, errorColor);
     return false;
   }
 
@@ -183,8 +223,7 @@ export async function addItem(item){
 
 export async function removeItem(item){
   //check if the item is in the inventory
-  for(let i=0; i<GameTracker.inventory.length; i++){
-
+  for(let i = 0; i < GameTracker.inventory.length; i++){
     //if found in the inventory
     if(GameTracker.inventory[i] === item){
       //get index of item, remove it, and change index of proceeding items by -1
@@ -200,10 +239,11 @@ export async function removeItem(item){
   }
 
   //if item could not be found in inventory
-  console.log("Item could not be found in inventory.")
+  console.log(`${item.name} could not be found in inventory.`)
   return false;
 }
 
+// Rest of your existing code continues...
 
 //
 // Methods to set / clear the chosenAlly and chosenItem variables
@@ -221,27 +261,9 @@ export function setChosenItem(item){
   chosenItem = item;
 }
 
-
-
 //
 // Confirmation method
 //
-function confirmChoice(confirmMessage){
-
-  //method to go when confirmation is made
-  const confirmation = function(event){
-    //if confirmed
-    if(event.detail.confirm){
-      return true;
-    }
-    
-    //if cancelled
-    return false;
-  }
-
-  document.addEventListener("confirmationMade", itemChosen, {once: true});
-  letUserConfirm(confirmMessage);
-}
 
 //function to take input for user confirmation
 function letUserConfirm(message){
@@ -273,6 +295,52 @@ function letUserConfirm(message){
 }
 
 
+//
+// Replace item (outside of Inventory Manager)
+//
+export async function chooseItemToReplaceOutsideManager(confirmMessage, item){
+  userInput = Terminal.getUserInputObject(); //set user input
+  cancelMethod = () => cancelItemReplacement(); //set the method when user cancels
+  completeMethod = async () => await replaceItemBeforeReturn(item);
+
+  //method to go when confirmation is made
+  const confirmation = function(event){
+    //if confirmed
+    if(event.detail.confirm){
+      removeItemFromInventory();
+      return;
+    }
+    
+    //if cancelled
+    cancelMethod();
+  }
+
+  document.addEventListener("confirmationMade", confirmation, {once: true});
+  letUserConfirm(confirmMessage);
+}
+
+async function replaceItemBeforeReturn(item){
+  await addItem(item);
+  returnToMainInput(false);
+  document.dispatchEvent(new CustomEvent("itemAddChoiceComplete"));
+}
+
+async function cancelItemReplacement(){
+  returnToMainInput(false);
+  document.dispatchEvent(new CustomEvent("itemAddChoiceComplete"));
+}
+
+
+//
+// Function to return to main game input
+//
+function returnToMainInput(displayDialogueAgain){
+  clearChoices();
+  removeInputHandler();
+  document.dispatchEvent(new CustomEvent("disableOtherInput", {detail: {displayDialogue: displayDialogueAgain}}));
+}
+
+
 
 //
 // Inventory manager
@@ -296,6 +364,10 @@ function setInputHandler(handler){
 export function openInventoryManager(){
   userInput = Terminal.getUserInputObject(); //set the user input
 
+  //set method to run when another method is cancelled / completed
+  cancelMethod = openInventoryManager;
+  completeMethod = openInventoryManager;
+
   //clear current item and ally
   clearChoices();
 
@@ -303,7 +375,7 @@ export function openInventoryManager(){
   //Output management options
   Terminal.outputMessage("--- Inventory Manager ---", systemColor);
   let managementOptions = ["Equip item", "Unequip item", "Use item", "Remove item", "Exit"];
-  for(let i=0; i<managementOptions.length; i++){
+  for(let i = 0; i < managementOptions.length; i++){
     Terminal.outputMessage(`${i+1}. ${managementOptions[i]}`, optionsColor);
   }
 
@@ -325,18 +397,16 @@ export function openInventoryManager(){
       }
       catch(error){
         console.log(error);
-        Terminal.outputMessage("Please choose a valid option", errorColor)
+        Terminal.outputMessage("Please choose a valid option", errorColor);
       }
     }
   }
   setInputHandler(inventoryManagementInput);
 }
 
-
 //
 // Input methods for choosing items / allies 
 //
-
 
 /**
  * Method lets user choose an item from an array and sets chosenItem equal to this
@@ -357,7 +427,7 @@ function letUserChooseItem(items, emptyArrayMessage, message){
 
   //output all items in array
   Terminal.outputMessage(message, systemColor);
-  for(let i=0; i<items.length; i++){
+  for(let i = 0; i < items.length; i++){
     Terminal.outputMessage(`${i+1}. ${items[i].name}`, optionsColor);
   }
   Terminal.outputMessage(`${items.length + 1}. Cancel`, optionsColor);
@@ -369,7 +439,7 @@ function letUserChooseItem(items, emptyArrayMessage, message){
       const input = Terminal.getUserInput().toLowerCase();
 
       //if a valid item is selected, move to letting a user select an ally to equip it to
-      for(let i=0; i<items.length; i++){
+      for(let i = 0; i < items.length; i++){
         if(input == i+1){
           chosenItem = items[i];
           document.dispatchEvent(new CustomEvent("itemChosenOrCancelled"));
@@ -411,19 +481,19 @@ function letUserChooseAlly(allies, emptyArrayMessage, message){
 
   //output all allies in array
   Terminal.outputMessage(message, systemColor);
-  for(let i=0; i<allies.length; i++){
+  for(let i = 0; i < allies.length; i++){
     Terminal.outputMessage(`${i+1}. ${allies[i].name}`, optionsColor);
   }
   Terminal.outputMessage(`${allies.length + 1}. Cancel`, optionsColor);
 
-  //set input so user can choose an item to equip
+  //set input so user can choose an ally to equip
   const chooseAllyInput = function(event){
     if (!Terminal.getInputValue()) { return; } //return if no input is given
     if(event.key === "Enter"){
       const input = Terminal.getUserInput().toLowerCase();
 
       //if a valid item is selected, move to letting a user select an ally to equip it to
-      for(let i=0; i<allies.length; i++){
+      for(let i = 0; i < allies.length; i++){
         if(input == i+1){
           chosenAlly = allies[i];
           document.dispatchEvent(new CustomEvent("allyChosenOrCancelled"));
@@ -446,23 +516,18 @@ function letUserChooseAlly(allies, emptyArrayMessage, message){
   setInputHandler(chooseAllyInput);
 }
 
-
-
 //
 // From main management options
 //
-
 
 //
 // Exit
 //
 function exitInventoryManager(){
   //remove inventory management input
-  removeInputHandler();
+  returnToMainInput(true);
   Terminal.outputMessage("Closing inventory manager...", optionResultColor);
-  document.dispatchEvent(new CustomEvent("disableOtherInput"));
 }
-
 
 //
 // Equip Item
@@ -487,13 +552,12 @@ function equipItem(){
     let allyMessage = `Choose an ally to equip ${chosenItem.name}`;
 
     //method to go when an ally is chosen
-    const  allyChosen = function(){
+    const allyChosen = function(){
       //if no ally was chosen
       if(chosenAlly === null){
         openInventoryManager();
         return;
       }
-
       //if ally was chosen, move to equipping the item
       equipItemOnAlly();
     }
@@ -518,7 +582,7 @@ async function equipItemOnAlly(){
   //equip to ally
   if(await AllyManager.equipItem(chosenAlly, chosenItem)){
     Terminal.outputMessage(`${chosenAlly.name} equipped ${chosenItem.name}`, optionResultColor);
-
+    showWaterfallEffect(chosenItem);
     openInventoryManager();
     return;
   }
@@ -528,7 +592,6 @@ async function equipItemOnAlly(){
   Terminal.outputMessage("An error occurred when attempting to equip the item, please try again. (You may need to re-launch your save file)", errorColor);
   openInventoryManager();
 }
-
 
 //
 // Unequip item
@@ -540,14 +603,13 @@ function unequipItem(){
   let allyMessage = "Choose the ally you would like to unequip an item from";
 
   //method to go when an ally is chosen
-  const  allyChosen = function(){
+  const allyChosen = function(){
     //if no ally was chosen
     if(chosenAlly === null){
       openInventoryManager();
       return;
     }
-
-    //if ally was chosen, move to equipping the item
+    //if ally was chosen, move to unequipping the item
     unequipItemFromAlly();
   }
 
@@ -567,7 +629,6 @@ async function unequipItemFromAlly(){
   //unequip from ally
   if(await AllyManager.unequipItem(chosenAlly)){
     Terminal.outputMessage(`${chosenAlly.name} unequipped their item.`, optionResultColor);
-
     openInventoryManager();
     return;
   }
@@ -578,12 +639,11 @@ async function unequipItemFromAlly(){
   openInventoryManager();
 }
 
-
 //
 // Use Item
 //
 function useItem(){
-  //let user choose an item from the list of items that can be equipped
+  //let user choose an item from the list of items that can be used
   let useableItems = GameTracker.inventory.filter(item => item.consumable);
   let itemArrayEmptyMessage = "You have no items that can be used.";
   let itemMessage = "Choose an item to use: ";
@@ -595,20 +655,18 @@ function useItem(){
       openInventoryManager();
       return;
     }
-
     //if item was chosen move to choose an ally
     let allies = AllyManager.getAllAliveAllies();//get all alive allies
     let allyArrayEmptyMessage = "No alive allies were found.";
     let allyMessage = `Choose an ally to use ${chosenItem.name}:`;
 
     //method to go when an ally is chosen
-    const  allyChosen = function(){
+    const allyChosen = function(){
       //if no ally was chosen
       if(chosenAlly === null){
         openInventoryManager();
         return;
       }
-
       //if ally was chosen, move to using the item
       useItemOnAlly();
     }
@@ -637,18 +695,17 @@ async function useItemOnAlly(){
     return;
   }
 
-  //if the item could not be equipped
+  //if the item could not be used
   console.log(`Could not use item: ${chosenItem} on ally: ${chosenAlly}.`);
   Terminal.outputMessage("This item cannot be used on this ally!", errorColor);
   openInventoryManager();
 }
 
-
 //
 // Remove item
 //
 function removeItemFromInventory(){
-  //let user choose an item from the list of items that can be equipped
+  //let user choose an item from the list of items that can be removed
   let removableItems = GameTracker.inventory.filter(item => !item.keyItem);
   let itemArrayEmptyMessage = "You have no items that can be removed.";
   let itemMessage = "Choose an item to remove: ";
@@ -657,43 +714,49 @@ function removeItemFromInventory(){
   const itemChosen = function(){
     //if no item was chosen
     if(chosenItem === null){
-      openInventoryManager();
+      cancelMethod();
       return;
     }
 
-    //if user confirms
-    if(confirmChoice(`Are you sure you want to remove ${chosenItem.name} from your inventory?`)){
-      removeChosenItem();
-      return;
+    //method to go when confirmation is made
+    const confirmation = function(event){
+      //if confirmed
+      if(event.detail.confirm){
+        removeChosenItem();
+        return;
+      }
+      
+      //if cancelled
+      Terminal.outputMessage(`Cancelled.`, optionResultColor);
+      cancelMethod();
     }
 
-    //if cancelled
-    Terminal.outputMessage(`Cancelled.`, optionResultColor);
-    openInventoryManager();
+    document.addEventListener("confirmationMade", confirmation, {once: true});
+    letUserConfirm(`Are you sure you want to remove ${chosenItem.name} from your inventory?`);
+
   }
 
   document.addEventListener("itemChosenOrCancelled", itemChosen, {once: true});
   letUserChooseItem(removableItems, itemArrayEmptyMessage, itemMessage);
 }
 
-//Remove he chosenItem from the inventory
+//Remove the chosen item from the inventory
 async function removeChosenItem(){
   //if chosenItem or chosenAlly are not found
   if(!chosenItem){
     Terminal.outputMessage("Chosen item could not be found, pelase try again.", errorColor);
-    openInventoryManager();
+    cancelMethod();
     return;
   }
 
   //remove from inventory
-  if(await AllyManager.useItem(chosenAlly, chosenItem)){
-    Terminal.outputMessage(`Removed ${chosenItem.name} from inventory.`, optionResultColor);
-    openInventoryManager();
+  if(await removeItem(chosenItem)){
+    completeMethod();
     return;
   }
 
   //if the item could not be removed
   console.error(`Error when removing item: ${chosenItem}.`);
   Terminal.outputMessage("Item could not be removed from inventory.", errorColor);
-  openInventoryManager();
+  cancelMethod();
 }

@@ -220,3 +220,27 @@ export function handleIntroduction(choice) {
         Terminal.outputMessage("Invalid choice! Please choose '1' or '2'.", systemMessageColor);
     }
 }
+
+export function recruitAlly(allyId, allyData = {}) {
+    if (!ProgressManager.progress.allies.includes(allyId)) {
+        ProgressManager.progress.allies.push(allyId);
+
+        ProgressManager.progress.decisions.push({
+            id: `recruit_${allyId}`,
+            outcome: true
+        });
+
+        ProgressManager.progress.allyDetails[allyId] = {
+            name: allyData.name || allyId,
+            attack: allyData.attack || 0,
+            defense: allyData.defense || 0,
+            hp: allyData.hp || 100,
+            joinedAt: ProgressManager.progress.currentScene || "unknown"
+        };
+
+        console.log(`Ally "${allyId}" recruited.`);
+        ProgressManager.saveProgress();
+    } else {
+        console.log(`ℹAlly "${allyId}" already recruited.`);
+    }
+}
