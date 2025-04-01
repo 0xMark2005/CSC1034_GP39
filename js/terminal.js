@@ -138,7 +138,35 @@ export class Terminal{
 
         // Clear input field
         this.#userInput.value = "";
-
+        
         return inputValue;
+    }
+
+    static getUserInputObject(){
+        return this.#userInput;
+    }
+    
+
+    static displayGif(gifPath) {
+        const overlay = document.getElementById('gif-overlay');
+        const container = document.getElementById('gif-container');
+        
+        // Clear any existing GIFs
+        container.innerHTML = '';
+        
+        // Create and display new GIF
+        const gifElement = document.createElement('img');
+        gifElement.src = gifPath;
+        gifElement.alt = 'Game Animation';
+        
+        // Show overlay and GIF
+        overlay.style.display = 'flex';
+        container.appendChild(gifElement);
+
+        // Remove GIF after animation
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            container.innerHTML = '';
+        }, 3000); // Adjust timing based on your GIF duration
     }
 }

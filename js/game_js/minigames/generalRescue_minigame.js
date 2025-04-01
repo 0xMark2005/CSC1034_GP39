@@ -72,16 +72,32 @@ export function generalRescueGame() {
             codeElement.remove();
         }
         
+        // Calculate score based on performance
+        let score = 0;
         if (success) {
-            Terminal.outputMessage("\nCell unlocked! The knight is free!", "#00FF00");
-        } else {
-            Terminal.outputMessage("\nFailed to unlock the cell. Guards are alerted!", "#FF0000");
+            // Base completion bonus
+            score += 400;
+            
+            // Perfect memory bonus
+            if (successfulAttempts === totalAttempts) {
+                score += 300;
+            }
+            
+            // Additional points per correct code
+            score += successfulAttempts * 100;
         }
+        
+        Terminal.outputMessage(
+            success ? `\nCell unlocked! The knight is free! Score: ${score}` : "\nFailed to unlock the cell. Guards are alerted!", 
+            success ? "#00FF00" : "#FF0000"
+        );
 
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: success,
-                message: success ? "Knight rescued successfully!" : "Failed to rescue the knight"
+                score: score,
+                message: success ? "Knight rescued successfully!" : "Failed to rescue the knight",
+                perfectMemory: successfulAttempts === totalAttempts
             }
         }));
     }

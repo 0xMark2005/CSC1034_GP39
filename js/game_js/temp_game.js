@@ -2,6 +2,7 @@
 import { Terminal } from "../terminal.js";
 import { GameTracker } from "./game_tracker.js";
 import * as SaveLoadGame from "./save_load_game.js";
+import * as Inventory from "./inventory.js";
 
 import { prisonEscapeGame } from "./minigames/prisonEscape_minigame.js";
 import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
@@ -10,6 +11,8 @@ import { finalBattleGame } from "./minigames/finalBattle_minigame.js";
 
 import { addAlly } from "./character.js";
 import { Battle } from './battle.js';
+import { ScoreSystem } from './score_system.js';
+import { DBQuery } from "../dbQuery.js";
 
 /**
  * Handles starting and completing minigames
@@ -17,61 +20,47 @@ import { Battle } from './battle.js';
  * @param {Object} option - The selected game option containing minigame details
  */
 function handleMinigame(option) {
-    // Disable input while minigame is active
     allowInput = false;
-    
-    const minigameHandler = (e) => {
-        // Remove event listener immediately
+
+    const minigameHandler = async (e) => {
         document.removeEventListener('minigameComplete', minigameHandler);
         
-        // Re-enable input
-        allowInput = true;
-        
         if (e.detail.success) {
+            await scoreSystem.handleMinigameCompletion(e);
             Terminal.outputMessage(e.detail.message, "#00FF00");
+            
             if (option.next) {
                 GameTracker.currentDialogue = option.next;
                 loadDialogue();
             }
         } else {
             Terminal.outputMessage(e.detail.message, errorColor);
-            // On failure, restart current area dialogue
             GameTracker.currentDialogue = storyProgression[GameTracker.areaName].startDialogue;
             loadDialogue();
         }
+        
+        allowInput = true;
     };
 
-    // Add event listener for minigame completion
-    document.addEventListener('minigameComplete', minigameHandler, { once: true });
+    document.addEventListener('minigameComplete', minigameHandler);
 
-    // Start minigame based on type or area
-    if (option.minigameType) {
-        switch(option.minigameType) {
-            case "villageEscape":
-                villageEscapeGame();
-                break;
-            case "generalRescue":
-                generalRescueGame();
-                break;
-            case "finalBattle":
-                finalBattleGame();
-                break;
-            default:
-                console.error("Unknown minigame type:", option.minigameType);
-                allowInput = true;
-        }
-    } else {
-        switch(GameTracker.areaName) {
-            case "burning_village":
-                villageEscapeGame();
-                break;
-            case "prison":
-                prisonEscapeGame();
-                break;
-            default:
-                console.error("No minigame found for area:", GameTracker.areaName);
-                allowInput = true;
-        }
+    // Start the appropriate minigame based on the current area
+    switch(GameTracker.areaName) {
+        case 'burning_village':
+            villageEscapeGame();
+            break;
+        case 'prison':
+            prisonEscapeGame();
+            break;
+        case 'knight_rescue':
+            generalRescueGame();
+            break;
+        case 'final_battle':
+            finalBattleGame();
+            break;
+        default:
+            console.error('No minigame found for area:', GameTracker.areaName);
+            allowInput = true;
     }
 }
 
@@ -86,6 +75,7 @@ let allowInput = false;
 const options = [];
 let optionType = "number";
 let currentSelectionIndex = -1;
+const scoreSystem = new ScoreSystem();
 
 document.addEventListener("DOMContentLoaded", async function() {
     // Initialize terminal
@@ -93,14 +83,18 @@ document.addEventListener("DOMContentLoaded", async function() {
     let userInput = document.getElementById("user-input");
     Terminal.initialize(outputTerminal, userInput);
 
-    // Set initial game state to resistance HQ for testing
-    GameTracker.areaName = "resistance_hq";
+    // Set initial game state to burning village (start of game)
+    //GameTracker.areaName = "burning_village";
+    await SaveLoadGame.loadGame();
     GameTracker.setFilepath();
     
     // Load initial area and dialogue
     await loadAreaFromJSON();
-    GameTracker.currentDialogue = storyProgression.resistance_hq.startDialogue;
+    //GameTracker.currentDialogue = storyProgression.burning_village.startDialogue;
     loadDialogue();
+
+    //TEST INVENTORY
+    await Inventory.loadInventoryItemVisuals();
 
     // Add input handler
     userInput.addEventListener("keydown", function(event) {
@@ -186,6 +180,17 @@ function processChoice(option) {
     // Update reputation
     if (option.reputation) {
         updateReputation(option);
+        scoreSystem.updateReputationMultiplier(GameTracker.reputation);
+    }
+
+    // Track decision outcomes
+    if (option.isOptimal || option.preservesResources || option.unlocksSecret) {
+        scoreSystem.processDecision(option);
+    }
+
+    // Track achievements
+    if (option.achievement) {
+        scoreSystem.addAchievement(option.achievement.id, option.achievement.points);
     }
 
     // Handle area transitions
@@ -194,26 +199,44 @@ function processChoice(option) {
     }
 }
 
-function handleAreaTransition(nextDialogue) {
+async function handleAreaTransition(nextDialogue) {
     const currentArea = GameTracker.areaName;
     const progressionEntry = storyProgression[currentArea];
     
-    // Check if we need to transition to a new area
+    // Check for prison_intro special case
+    if (nextDialogue === 'prison_intro') {
+        GameTracker.areaName = 'prison';
+        GameTracker.setFilepath();
+        
+        try {
+            await loadAreaFromJSON();
+            GameTracker.currentDialogue = 'prison_intro';
+            loadDialogue();
+            return;
+        } catch (error) {
+            console.error("Prison transition failed:", error);
+            Terminal.outputMessage("Failed to load prison area.", errorColor);
+        }
+    }
+    
+    // Regular area transition logic
     if (progressionEntry && progressionEntry.nextArea && 
         (nextDialogue.includes(progressionEntry.nextArea) || 
          nextDialogue === progressionEntry.nextArea + '_intro')) {
         
-        // Transition to new area
         const nextArea = progressionEntry.nextArea;
         GameTracker.areaName = nextArea;
         GameTracker.setFilepath();
         
-        loadAreaFromJSON().then(() => {
+        try {
+            await loadAreaFromJSON();
             GameTracker.currentDialogue = storyProgression[nextArea].startDialogue;
             loadDialogue();
-        });
+        } catch (error) {
+            console.error("Area transition failed:", error);
+            Terminal.outputMessage("Failed to load next area.", errorColor);
+        }
     } else {
-        // Stay in current area, just update dialogue
         GameTracker.currentDialogue = nextDialogue;
         loadDialogue();
     }
@@ -232,10 +255,17 @@ async function loadAreaFromJSON(){
 
         let newAreaName = GameTracker.areaName.replace("_", " ");
         document.getElementById("area-name").innerHTML = newAreaName;
+        
+        // Verify dialogue exists
+        const dialogueExists = data.some(d => d.dialogue === storyProgression[GameTracker.areaName].startDialogue);
+        if (!dialogueExists) {
+            throw new Error(`Starting dialogue '${storyProgression[GameTracker.areaName].startDialogue}' not found in area data`);
+        }
     }
     catch(error) {
         console.error("Error loading area from JSON: ", error);
         console.log("Attempted to load from path:", GameTracker.areaFilepath);
+        Terminal.outputMessage("Error loading area data. Please check console.", errorColor);
     }
 }
 
@@ -313,16 +343,15 @@ function loadDialogue() {
 
     //all options have now been added to options array
     //display all available options
-    let outputString = ``;
     if(optionType === "number"){
         Terminal.outputMessage(`Enter a number: `, dialogueColor);
         for(let i=0; i < options.length; i++){
             let currentOption = options[i];
-            Terminal.outputMessage(`${currentOption.choice}`, dialogueColor);
+            Terminal.outputMessage(`${currentOption.choice}`, optionsColor);
         }
     }
     else{
-        outputString = `Enter a verb: `;
+        let outputString = `Enter a verb: `;
         for(let i=0; i < options.length; i++){
             let currentOption = options[i];
             outputString += `${currentOption.choice}`;
@@ -331,9 +360,8 @@ function loadDialogue() {
                 outputString += `, `;
             }
         }
+        Terminal.outputMessage(outputString, optionsColor);
     }
-
-    Terminal.outputMessage(outputString, optionsColor);
 
     currentSelectionIndex = -1;
     Terminal.setInputValue('');
@@ -350,16 +378,26 @@ function loadDialogue() {
  * Includes a delay to improve user experience.
  */
 function handleUserInput() {
-    const choice = Terminal.getUserInput();
+    const choice = Terminal.getUserInput().toLowerCase();
     
     setTimeout(() => {
         // Special commands
-        if (choice === "Show Inventory") {
+        if (choice === "show inventory") {
             // TODO: Implement inventory display
             return;
         }
-        else if(choice.toLowerCase() === "Save".toLowerCase()){
-            SaveLoadGame.saveGame();
+        else if(choice === "save"){
+            if(SaveLoadGame.saveGame()){
+                Terminal.outputMessage("Game Saved!", optionResultColor);
+            }
+            else{
+                Terminal.outputMessage("Game failed to save.", errorColor);
+            }
+            return;
+        }
+        else if(choice === "manage inventory"){
+            allowOtherInput();
+            Inventory.openInventoryManager();
             return;
         }
         
@@ -370,6 +408,20 @@ function handleUserInput() {
             handleVerbChoice(choice.toLowerCase());
         }
     }, 1000);
+}
+
+//method disables input from this file and waits for a 'disableOtehrInput' event to trigger before input is returned to this file
+function allowOtherInput(){
+    allowInput = false; //disable input for this file
+
+    //event that will enable input for this again
+    const enableInputAgain = (event) => {
+        allowInput = true;
+        console.log("Input changed back to main game.");
+        loadDialogue();
+    }
+
+    document.addEventListener("disableOtherInput", enableInputAgain, {once: true});
 }
 
 /**
@@ -442,10 +494,112 @@ function handleArrowNavigation(direction) {
 // Methods for updating game tracker based on selected option
 //-----
 
+//updates the player's reputation by the given amount in the option if the option includes it
 function updateReputation(option){
     if (option.reputation) {
         Terminal.outputMessage(`Reputation change: ${option.reputation}`, optionResultColor);
         GameTracker.changeReputation(option.reputation);
         document.getElementById("reputation-number").innerHTML = GameTracker.reputation;
     }
+}
+
+//if the option includes an item to award, gives it to the player
+async function awardItem(option){
+    //if option doesnt award any item
+    if(!option.item){
+        return;
+    }
+
+    //get the item from the database
+    let newItem = {}; //holds data of new item
+    let getItemQuery = `SELECT * FROM items WHERE item_name = ${option.item}`;
+    try{
+        let result = DBQuery.getQueryResult(getItemQuery);
+
+        //if no matching items were found
+        if(!result.success && result.data.length == 0){
+            console.error(`Item ${option.item} could not be found in DB.`);
+            return;
+        }
+
+        //formats the new item correctly
+        newItem.id = Number(result.data[0].item_id);
+        newItem.name = result.data[0].item_name;
+        newItem.description = result.data[0].item_description;
+        newItem.image = result.data[0].item_image;
+        newItem.consumable = result.data[0].is_consumable === "1";
+        newItem.equipment = result.data[0].is_equipment === "1";
+        newItem.keyItem = result.data[0].is_key_item === "1";
+        newItem.effect = result.data[0].item_effect !== "" ? JSON.parse(result.data[0].item_effect) : {};
+    }
+    catch(error){
+        console.error("Error getting item from DB: ", error);
+        return;
+    }
+
+    
+}
+
+// Add function to display final score
+function displayFinalScore() {
+    const scoreResult = scoreSystem.calculateFinalScore();
+    
+    Terminal.outputMessage("=== Final Score ===", "#FFA500");
+    Terminal.outputMessage(`Total Score: ${scoreResult.finalScore}`, "#00FF00");
+    Terminal.outputMessage("\nScore Breakdown:", "#FFA500");
+    Terminal.outputMessage(`Base Score: ${scoreResult.breakdown.baseScore}`, "#FFFFFF");
+    Terminal.outputMessage(`Time Bonus: ${scoreResult.breakdown.timeBonus}`, "#FFFFFF");
+    Terminal.outputMessage(`Reputation Multiplier: ${scoreResult.breakdown.reputationMultiplier.toFixed(2)}x`, "#FFFFFF");
+    Terminal.outputMessage(`Strategic Decisions: ${scoreResult.breakdown.decisionPoints}`, "#FFFFFF");
+    
+    // Add minigame performance summary
+    Terminal.outputMessage("\nMinigame Performance:", "#FFA500");
+    Object.entries(scoreResult.breakdown.minigameScores).forEach(([game, stats]) => {
+        if (stats.attempts > 0) {
+            Terminal.outputMessage(
+                `${game}: Best Score ${stats.bestScore} | Perfect Runs ${stats.perfectRuns}/${stats.attempts}`,
+                "#FFFFFF"
+            );
+        }
+    });
+    
+    if (scoreResult.breakdown.achievements.length > 0) {
+        Terminal.outputMessage("\nAchievements Unlocked:", "#FFA500");
+        scoreResult.breakdown.achievements.forEach(achievement => {
+            Terminal.outputMessage(`- ${achievement}`, "#FFFFFF");
+        });
+    }
+}
+
+// Update handleVillageEscape function to use async/await and Promise
+async function handleVillageEscape(choice, timeLeft) {
+    const points = await scoreSystem.handleStoryChoice(choice, timeLeft);
+    
+    return new Promise((resolve) => {
+        // Show score popup with context
+        let message;
+        switch(choice) {
+            case 'S':
+                message = `+${points} (Heroic Choice)`;
+                break;
+            case 'R':
+                message = `+${points} (Quick Thinking)`;
+                break;
+            case 'T':
+                message = `+${points} (Strategic Decision)`;
+                break;
+            default:
+                message = `+${points}`;
+        }
+
+        const popup = document.getElementById('score-popup');
+        popup.textContent = message;
+        popup.classList.add('animate');
+        
+        // Use Promise to ensure animation completes
+        setTimeout(() => {
+            popup.classList.remove('animate');
+            resolve();
+        }, 1000);
+    });
 }

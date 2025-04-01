@@ -1,4 +1,5 @@
 export class GameTracker {
+    static currentArea = [];
     static areaName;
     static areaFilepath;
     static currentDialogue;
@@ -8,6 +9,7 @@ export class GameTracker {
     static score = 0;
     static inventory = [];
     static allies = [];
+    static allyEquipment = [];
 
     static gameOver = false;
     static gameCompleted = false;

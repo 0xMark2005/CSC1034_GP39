@@ -175,11 +175,10 @@ async function handleLogin() {
                 // Generate a session token
                 let sessionToken = btoa(userID + ":" + Date.now() + ":" + Math.random());
                 // Expiration time set to 1 hour from now
-                let expiresAt = new Date(Date.now() + 60 * 60 * 1000)
-                    .toISOString().slice(0, 19).replace('T', ' ');
+                let expiresAt = "NOW() + INTERVAL 1 HOUR";
 
                 // Create a new session
-                let sessionQuery = `INSERT INTO user_sessions (user_id, session_token, expires_at) VALUES ('${userID}', '${sessionToken}', '${expiresAt}')`;
+                let sessionQuery = `INSERT INTO user_sessions (user_id, session_token, expires_at) VALUES ('${userID}', '${sessionToken}', ${expiresAt})`;
                 let sessionResult = await DBQuery.getQueryResult(sessionQuery);
 
                 if (sessionResult.error) {
