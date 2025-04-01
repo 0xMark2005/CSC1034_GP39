@@ -9,35 +9,60 @@
 <body>
     <div id="stats-container">
         <h1>Player Statistics</h1>
+        
         <div class="stat-group">
             <div class="stat-label">Score:</div>
             <div class="stat-value" id="stat-score">0</div>
         </div>
+        
         <div class="stat-group">
             <div class="stat-label">Gold Collected:</div>
             <div class="stat-value" id="stat-gold">0</div>
         </div>
+        
         <div class="stat-group">
             <div class="stat-label">Allies Recruited:</div>
             <div class="stat-value" id="stat-allies">0</div>
         </div>
+        
         <div class="stat-group">
             <div class="stat-label">Battles Fought:</div>
             <div class="stat-value" id="stat-battles">0</div>
         </div>
+        
         <div class="stat-group">
-            <div class="stat-label">Avg HP Remaining (Boss Fights):</div>
+            <div class="stat-label">Avg Boss HP Left:</div>
             <div class="stat-value" id="stat-bossHP">—</div>
         </div>
+        
         <div class="stat-group">
-            <div class="stat-label">Avg Rounds per Battle :</div>
+            <div class="stat-label">Avg Rounds per Battle:</div>
             <div class="stat-value" id="stat-rounds">—</div>
         </div>
     </div>
+
     <div style="text-align: center; margin-top: 20px;">
         <a href="main_menu.html">
-          <button class="back-button">← Back to Menu</button>
+            <button class="back-button">← Back to Menu</button>
         </a>
-      </div>
+    </div>
+
+    <!-- JS Script to pull stats -->
+    <script type="module">
+        import { GameTracker } from './js/modules/game_tracker.js';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("stat-score").textContent = GameTracker.score;
+            document.getElementById("stat-gold").textContent = GameTracker.gold;
+            document.getElementById("stat-allies").textContent = GameTracker.alliesRecruited;
+            document.getElementById("stat-battles").textContent = GameTracker.battlesFought;
+
+            const avgHP = GameTracker.getAverageBossHPLeft();
+            const avgRounds = GameTracker.getAverageRoundsPerBattle();
+
+            document.getElementById("stat-bossHP").textContent = isNaN(avgHP) ? "—" : `${avgHP.toFixed(1)}%`;
+            document.getElementById("stat-rounds").textContent = isNaN(avgRounds) ? "—" : avgRounds.toFixed(1);
+        });
+    </script>
 </body>
 </html>

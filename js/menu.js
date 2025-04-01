@@ -223,6 +223,10 @@ function handleLogout() {
     }
 }
 
+if (userInput === "exit" || userInput === "menu") {
+    window.location.href = "main_menu.html";  
+}
+
 //button sound effect
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('button').forEach(btn => {

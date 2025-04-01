@@ -29,4 +29,28 @@ export class GameTracker {
             this.reputation = 100;
         }
     }
+
+    // === Statistics Tracking ===
+static battlesFought = 0;
+static bossHpLogs = [];
+static battleRounds = [];
+
+static logBattleOutcome(bossHpLeft, roundsTaken) {
+    this.bossHpLogs.push(bossHpLeft);
+    this.battleRounds.push(roundsTaken);
+    this.battlesFought++;
+}
+
+static get bossHpAverage() {
+    if (this.bossHpLogs.length === 0) return "-";
+    const sum = this.bossHpLogs.reduce((a, b) => a + b, 0);
+    return Math.round(sum / this.bossHpLogs.length);
+}
+
+static get roundsInBattleAvg() {
+    if (this.battleRounds.length === 0) return "-";
+    const sum = this.battleRounds.reduce((a, b) => a + b, 0);
+    return Math.round(sum / this.battleRounds.length);
+}
+
 }
