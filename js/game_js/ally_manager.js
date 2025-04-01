@@ -4,8 +4,11 @@ import * as Inventory from "./inventory.js";
 
 export class AllyManager{
 
+    //Variables
+    static optionResultColor = "#0000FF";
+
     //allies
-    static async loadAlliesFromGameTracker() {
+    static async loadAllyVisuals() {
         const alliesData = GameTracker.allies; // Retrieve allies from GameTracker.allies
     
         if (!alliesData || alliesData.length === 0) {
@@ -36,7 +39,7 @@ export class AllyManager{
     
         for (let i = 0; i < alliesData.length; i++) {
             let ally = alliesData[i];
-    
+            console.log(ally);
             const characterDiv = updatedCharacterDivs[i];
     
             if (!characterDiv) {
@@ -49,15 +52,40 @@ export class AllyManager{
     
             const leftDiv = characterDiv.querySelector('.cleft');
             const rightDiv = characterDiv.querySelector('.cright');
-    
+
+            //if the ally has an item equipped
+            let itemSrc = "";
+            let itemAlt = "";
+            if(ally.equipmentId){
+                let item = GameTracker.allyEquipment.find(item => item.id === ally.equipmentId); //gets the item for that ally
+
+                //if the item was not found in array
+                if(!item){
+                    console.error(`Error: item id ${ally.equipmentId} for ally ${ally.name} was not found in allyequipment array`);
+                }
+
+                itemSrc = item.image;
+                itemAlt = `${item.name} \n ${item.description}`;
+            }
+
             if (leftDiv && rightDiv) {
-                leftDiv.querySelector('img').src = `css/assets/images/characters/${ally.imgFolder}/character.png`;
+                const characterImg = leftDiv.querySelector('img');
+                const itemImg = leftDiv.querySelector('.tool img');
+
+                //adds character and equipment images
+                characterImg.src = `${ally.imgFolder}/character.png`;
+                characterImg.alt = `${ally.name}`;
+                itemImg.src = itemSrc;
+                itemImg.alt = itemAlt;
+
+                itemSrc === "" ? itemImg.style.display = "none" : itemImg.style.display = "block"; //hides image if character doesnt have an item
+
                 rightDiv.querySelector('h1').textContent = ally.name;
                 rightDiv.querySelector('.hp-bar-fill').style.width = `${(ally.hp / ally.maxHp) * 100}%`;  
-                rightDiv.querySelector('.stat-row .stat-value:nth-child(2)').textContent = ally.attack || '0'; 
-                rightDiv.querySelector('.stat-row .stat-value:nth-child(4)').textContent = ally.defence || '0';
-                rightDiv.querySelector('.stat-row .stat-value:nth-child(6)').textContent = ally.intelligence || '0';
-                rightDiv.querySelector('.stat-row .stat-value:nth-child(8)').textContent = ally.maxHp || '0'; 
+                rightDiv.querySelector('.stat-row:nth-child(1) .stat-value').textContent = ally.attack || '0'; 
+                rightDiv.querySelector('.stat-row:nth-child(2) .stat-value').textContent = ally.defence || '0';
+                rightDiv.querySelector('.stat-row:nth-child(3) .stat-value').textContent = ally.intelligence || '0';
+                //rightDiv.querySelector('.stat-row:nth-child(4) .stat-value').textContent = ally.maxHp || '0'; 
             } else {
                 console.error('Error: Missing .cleft or .cright divs for ally', ally.name);
             }
@@ -77,8 +105,8 @@ export class AllyManager{
             
             characterDiv.innerHTML = `
                 <div class="cleft">
-                    <img src="" alt="Character" />
-                    <div class="tool"> <img src="css/assets/images/icons/icon-sword.png" alt="Sword" /> </div>
+                    <img src="" alt="" />
+                    <div class="tool"> <img src="" alt="" /> </div>
                 </div>
                 <div class="cright">
                     <h1></h1>
@@ -135,9 +163,9 @@ export class AllyManager{
         }
 
         //use the item on the ally
-        if(!this.#changeStatsForItemEffect(ally, item)){
+        if(!this.#changeStatsForItemEffect(ally, item, true)){
             //if ally already had max hp (and thus cant use the item)
-            Terminal.outputMessage(`Item: ${item.name} will not be used as ally ${ally.name} already has full hp.`);
+            Terminal.outputMessage(`Item: ${item.name} will not be used as ally ${ally.name} already has full hp.`, this.optionResultColor);
             return false;
         }
 
@@ -148,6 +176,8 @@ export class AllyManager{
         }
 
         await Inventory.loadInventoryItemVisuals();
+        await this.loadAllyVisuals();
+        return true;
     }
 
 
@@ -199,6 +229,7 @@ export class AllyManager{
         console.log(item.id);
         GameTracker.allyEquipment.push(item);
 
+        await this.loadAllyVisuals();
         return true;
     }
 
@@ -246,6 +277,7 @@ export class AllyManager{
         ally.equipmentId = null;
         GameTracker.allyEquipment.splice(equipmentIndex, 1);
 
+        await this.loadAllyVisuals();
         return true;
     }
 
@@ -254,8 +286,11 @@ export class AllyManager{
     static #changeStatsForItemEffect(ally, item, givingItem){
         //change stats if item effect includes hp
         if(item.effect.hp){
+            console.log("Max HP:", ally.maxHp);
+            console.log("HP:", ally.hp);
             //if ally already at half health return false
-            if(ally.hp == ally.maxHp){
+            if(ally.hp >= ally.maxHp){
+                console.log("Here");
                 return false;
             }
 

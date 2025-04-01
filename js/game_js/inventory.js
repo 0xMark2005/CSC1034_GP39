@@ -3,6 +3,7 @@ import SettingsManager from "../settingsManager.js";
 import { GameTracker } from "./game_tracker.js";
 import { Terminal } from "../terminal.js";
 import { AllyManager } from "./ally_manager.js";
+import * as MainGame from "./temp_game.js";
 
 //Output color
 const systemColor = "#00FF00";
@@ -20,6 +21,7 @@ let currentInventoryClickHandlers = [];
 let userInput;
 let chosenAlly = null;
 let chosenItem = null;
+
 
 //
 //Function to load inventory items to the html
@@ -81,6 +83,8 @@ export async function loadInventoryItemVisuals(){
   }
 }
 
+
+
 // New function to open the modal overlay for an inventory item
 function openInventoryModal(item) {
   // Create overlay div
@@ -123,36 +127,80 @@ function openInventoryModal(item) {
     const actionBtn = document.createElement('button');
     actionBtn.textContent = item.equipment ? "EQUIP" : "USE";
     actionBtn.classList.add('item-action-button');
+
+    //Event for button click
     actionBtn.addEventListener('click', async (e) => {
+
+      //set the user input
+      userInput = Terminal.getUserInputObject();
+      MainGame.allowOtherInput();
       e.stopPropagation(); // Prevent modal background click
+
       // Play sound if enabled
       const settings = await SettingsManager.getSettings();
       if (settings.soundEnabled) {
         new Audio('css/assets/sounds/button-click.mp3').play();
       }
+
       // Show waterfall animation effect
       createItemUseAnimation(item.image);
-      
+
+      //set the method to continue to if complete or cancelled
+      completeMethod = () => returnToMainInput(true);
+      cancelMethod = () => returnToMainInput(true);
+
+      //set the item and the list of available allies
+      chosenItem = item; //set the chosen item
+      let allies = AllyManager.getAllAliveAllies();//get all alive allies
+
       if (item.equipment) {
-        // Open ally selection for equipping
-        chosenItem = item;
-        let allies = AllyManager.getAllAliveAllies();
-        
-        Terminal.outputMessage(`Choose an ally to equip ${item.name}:`, systemColor);
-        for(let i = 0; i < allies.length; i++){
-          Terminal.outputMessage(`${i+1}. ${allies[i].name}`, optionsColor);
-        }
-        
         // For demo purposes, close modal after 1 second
         setTimeout(() => {
           if(document.body.contains(overlay)){
             document.body.removeChild(overlay);
           }
         }, 1000);
+
+        //if item was chosen move to choose an ally
+        let allyArrayEmptyMessage = "No alive allies were found";
+        let allyMessage = `Choose an ally to equip ${chosenItem.name}`;
+
+        //method to go when an ally is chosen
+        const allyChosen = function(){
+          //if no ally was chosen
+          if(chosenAlly === null){
+            cancelMethod();
+            return;
+          }
+
+          //if ally was chosen, move to equipping the item
+          equipItemOnAlly();
+        }
+        document.addEventListener("allyChosenOrCancelled", allyChosen, {once: true});
+        letUserChooseAlly(allies, allyArrayEmptyMessage, allyMessage);
         
-      } else if (item.consumable) {
+      } 
+      else {
+        //if item was chosen move to choose an ally
+        let allyArrayEmptyMessage = "No alive allies were found";
+        let allyMessage = `Choose an ally to use ${chosenItem.name}`;
+
+        //method to go when an ally is chosen
+        const allyChosen = function(){
+          //if no ally was chosen
+          if(chosenAlly === null){
+            cancelMethod();
+            return;
+          }
+          
+          //if ally was chosen, move to equipping the item
+          useItemOnAlly();
+        }
+        document.addEventListener("allyChosenOrCancelled", allyChosen, {once: true});
+        letUserChooseAlly(allies, allyArrayEmptyMessage, allyMessage);
+
         // Handle consumable item usage
-        Terminal.outputMessage(`Using ${item.name}...`, optionResultColor);
+        //Terminal.outputMessage(`Using ${item.name}...`, optionResultColor);
         setTimeout(() => {
           if(document.body.contains(overlay)){
             document.body.removeChild(overlay);
@@ -195,6 +243,12 @@ function createItemUseAnimation(imageSrc) {
     }, 1500);
   }
 }
+
+
+//
+// Function when item button is clicked from the inventory display
+//
+
 
 // The rest of your inventory management functions remain the same...
 export async function addItem(item){
@@ -532,7 +586,7 @@ function equipItem(){
   const itemChosen = function(){
     //if no item was chosen
     if(chosenItem === null){
-      openInventoryManager();
+      cancelMethod();
       return;
     }
 
@@ -545,7 +599,7 @@ function equipItem(){
     const allyChosen = function(){
       //if no ally was chosen
       if(chosenAlly === null){
-        openInventoryManager();
+        cancelMethod();
         return;
       }
       //if ally was chosen, move to equipping the item
@@ -565,22 +619,22 @@ async function equipItemOnAlly(){
   //if chosenItem or chosenAlly are not found
   if(!chosenItem || !chosenAlly){
     Terminal.outputMessage("Chosen item and ally could not be found, pelase try again.", errorColor);
-    openInventoryManager();
+    cancelMethod();
     return;
   }
 
   //equip to ally
   if(await AllyManager.equipItem(chosenAlly, chosenItem)){
     Terminal.outputMessage(`${chosenAlly.name} equipped ${chosenItem.name}`, optionResultColor);
-    showWaterfallEffect(chosenItem);
-    openInventoryManager();
+    createItemUseAnimation(chosenItem.image);
+    completeMethod();
     return;
   }
 
   //if the item could not be equipped
   console.error(`Error when equipping item: ${chosenItem} to ally: ${chosenAlly}`);
   Terminal.outputMessage("An error occurred when attempting to equip the item, please try again. (You may need to re-launch your save file)", errorColor);
-  openInventoryManager();
+  cancelMethod();
 }
 
 //
@@ -596,7 +650,7 @@ function unequipItem(){
   const allyChosen = function(){
     //if no ally was chosen
     if(chosenAlly === null){
-      openInventoryManager();
+      cancelMethod();
       return;
     }
     //if ally was chosen, move to unequipping the item
@@ -612,21 +666,21 @@ async function unequipItemFromAlly(){
   //if chosenItem or chosenAlly are not found
   if(!chosenAlly){
     Terminal.outputMessage("Chosen ally could not be found, pelase try again.", errorColor);
-    openInventoryManager();
+    cancelMethod();
     return;
   }
 
   //unequip from ally
   if(await AllyManager.unequipItem(chosenAlly)){
     Terminal.outputMessage(`${chosenAlly.name} unequipped their item.`, optionResultColor);
-    openInventoryManager();
+    completeMethod();
     return;
   }
 
   //if item could not be unequipped
   console.error(`Error when unequipping from ally: ${chosenAlly}`);
   Terminal.outputMessage("An error occurred when attempting to equip the item, please try again. (You may need to re-launch your save file)", errorColor);
-  openInventoryManager();
+  cancelMethod();
 }
 
 //
@@ -642,7 +696,7 @@ function useItem(){
   const itemChosen = function(){
     //if no item was chosen
     if(chosenItem === null){
-      openInventoryManager();
+      cancelMethod();
       return;
     }
     //if item was chosen move to choose an ally
@@ -654,7 +708,7 @@ function useItem(){
     const allyChosen = function(){
       //if no ally was chosen
       if(chosenAlly === null){
-        openInventoryManager();
+        cancelMethod();
         return;
       }
       //if ally was chosen, move to using the item
@@ -674,21 +728,21 @@ async function useItemOnAlly(){
   //if chosenItem or chosenAlly are not found
   if(!chosenItem || !chosenAlly){
     Terminal.outputMessage("Chosen item and ally could not be found, pelase try again.", errorColor);
-    openInventoryManager();
+    cancelMethod();
     return;
   }
 
   //use on ally
   if(await AllyManager.useItem(chosenAlly, chosenItem)){
     Terminal.outputMessage(`${chosenAlly.name} used ${chosenItem.name}.`, optionResultColor);
-    openInventoryManager();
+    completeMethod();
     return;
   }
 
   //if the item could not be used
   console.log(`Could not use item: ${chosenItem} on ally: ${chosenAlly}.`);
   Terminal.outputMessage("This item cannot be used on this ally!", errorColor);
-  openInventoryManager();
+  cancelMethod();
 }
 
 //

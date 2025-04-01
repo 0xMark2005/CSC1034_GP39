@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     await SaveLoadGame.loadGame();
     GameTracker.setFilepath();
      // load allies
-    await AllyManager.loadAlliesFromGameTracker();     // Load initial area and dialogue
+    await AllyManager.loadAllyVisuals();     // Load initial area and dialogue
     await loadAreaFromJSON();
     //GameTracker.currentDialogue = storyProgression.burning_village.startDialogue;
     loadDialogue();
@@ -431,7 +431,7 @@ function handleUserInput() {
 }
 
 //method disables input from this file and waits for a 'disableOtehrInput' event to trigger before input is returned to this file
-function allowOtherInput(){
+export function allowOtherInput(){
     allowInput = false; //disable input for this file
 
     //event that will enable input for this again
