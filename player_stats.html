@@ -50,18 +50,16 @@
     <!-- JS Script to pull stats -->
     <script type="module">
         import { GameTracker } from './js/modules/game_tracker.js';
-
+    
         document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("stat-score").textContent = GameTracker.score;
-            document.getElementById("stat-gold").textContent = GameTracker.gold;
-            document.getElementById("stat-allies").textContent = GameTracker.alliesRecruited;
-            document.getElementById("stat-battles").textContent = GameTracker.battlesFought;
-
-            const avgHP = GameTracker.getAverageBossHPLeft();
-            const avgRounds = GameTracker.getAverageRoundsPerBattle();
-
-            document.getElementById("stat-bossHP").textContent = isNaN(avgHP) ? "—" : `${avgHP.toFixed(1)}%`;
-            document.getElementById("stat-rounds").textContent = isNaN(avgRounds) ? "—" : avgRounds.toFixed(1);
+            const stats = GameTracker.getStats();
+    
+            document.getElementById("stat-score").textContent = stats.score;
+            document.getElementById("stat-gold").textContent = stats.gold;
+            document.getElementById("stat-allies").textContent = stats.allies;
+            document.getElementById("stat-battles").textContent = stats.battles;
+            document.getElementById("stat-bossHP").textContent = isNaN(stats.avgBossHP) ? "—" : `${stats.avgBossHP}%`;
+            document.getElementById("stat-rounds").textContent = isNaN(stats.avgRounds) ? "—" : stats.avgRounds;
         });
     </script>
 </body>

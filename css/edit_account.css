@@ -1,0 +1,140 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #121212;
+    color: #FFD700;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  
+  .edit-shell {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 40px 25px;
+    background-color: #1e1e1e;
+    box-shadow: 0 0 20px #FFD70055;
+    border-radius: 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .terminal-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .menu-btn {
+    background-color: #FFD700;
+    color: #000;
+    padding: 12px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 0 10px #FFD70066;
+  }
+  
+  .menu-btn:hover {
+    background-color: #e6c200;
+  }
+  
+  .panel {
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  .panel input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    background-color: #1a1a1a;
+    color: white;
+  }
+  
+  button.danger-button {
+    background-color: #a60000;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+    width: 100%;
+    max-width: 250px;
+    box-shadow: 0 0 10px #ff000066;
+  }
+  
+  button.danger-button:hover {
+    background-color: #e60000;
+  }
+  
+  button:hover {
+    background-color: #e6c200;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .back-button {
+    margin-top: 40px;
+    text-align: center;
+    display: block;
+    color: #FFD700;
+    font-family: 'Courier New', Courier, monospace;
+    text-decoration: underline;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .back-button:hover {
+    color: #ffffff;
+  }
+  
+  .warning {
+    color: red;
+    font-size: 0.9rem;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  
+  @media (max-width: 480px) {
+    .edit-shell {
+      width: 90%;
+      padding: 20px;
+      margin: 20px auto;
+    }
+  
+    .panel input,
+    .menu-btn,
+    .danger-button {
+      font-size: 0.95rem;
+    }
+  }
