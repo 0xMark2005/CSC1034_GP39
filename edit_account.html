@@ -1,51 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReignFall - Edit Account</title>
-    <link rel="icon" type="image/x-icon" href="css/assets/images/reignfall-logo.png">
-    <link rel="stylesheet" href="css/theme.css">
-    <link rel="stylesheet" href="css/index.css">
+  <meta charset="UTF-8">
+  <title>ReignFall | Edit Account</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/edit_account.css">
 </head>
 <body>
-    <div id="main-container" class="centered">
-        <div id="title">
-            <h1>
-                <img src="css/assets/images/reignfall-logo.png" alt="ReignFall Logo" width="40%">
-            </h1>
-        </div>
+  <div class="edit-shell">
+    <h1>Edit Account</h1>
 
-        <div id="edit-account-container">
-            <h2>Edit Account</h2>
-            
-            <div class="edit-section">
-                <h3>Change Username</h3>
-                <input type="text" id="new-username" placeholder="New Username">
-                <button id="update-username">Update Username</button>
-                <p id="username-error" class="error"></p>
-            </div>
-
-            <div class="edit-section">
-                <h3>Change Password</h3>
-                <input type="password" id="current-password" placeholder="Current Password">
-                <input type="password" id="new-password" placeholder="New Password">
-                <button id="update-password">Update Password</button>
-                <p id="password-error" class="error"></p>
-            </div>
-
-            <div class="edit-section danger">
-                <h3>Delete Account</h3>
-                <p class="warning">Warning: This action cannot be undone!</p>
-                <input type="password" id="delete-confirm-password" placeholder="Enter Password to Confirm">
-                <button id="delete-account" class="danger-button">Delete Account</button>
-                <p id="delete-error" class="error"></p>
-            </div>
-
-            <button id="back-to-menu" class="back-button">Back to Menu</button>
-        </div>
+    <div class="terminal-menu">
+      <button class="menu-btn" data-target="username-panel">▶ Change Username</button>
+      <button class="menu-btn" data-target="password-panel">▶ Change Password</button>
+      <button class="menu-btn" data-target="delete-panel">▶ Delete Account</button>
     </div>
 
-    <script type="module" src="js/edit_account.js"></script>
+    <div id="username-panel" class="panel hidden">
+      <h2>Update Username</h2>
+      <input type="text" id="new-username" placeholder="Enter new username">
+      <button id="confirm-username">Update Username</button>
+      <p id="username-error" class="error"></p>
+    </div>
+
+    <div id="password-panel" class="panel hidden">
+      <h2>Update Password</h2>
+      <input type="password" id="current-password" placeholder="Current Password">
+      <input type="password" id="new-password" placeholder="New Password">
+      <button id="confirm-password">Update Password</button>
+      <p id="password-error" class="error"></p>
+    </div>
+
+    <div id="delete-panel" class="panel hidden">
+      <h2>Delete Account</h2>
+      <p class="warning">Warning: This action cannot be undone!</p>
+      <input type="password" id="delete-confirm-password" placeholder="Enter password to confirm">
+      <button id="confirm-delete" class="danger-button">Delete Account</button>
+      <p id="delete-error" class="error"></p>
+    </div>
+
+    <a href="main_menu.html" class="back-button">← Back to Menu</a>
+  </div>
+
+  <script type="module" src="js/edit_account.js"></script>
 </body>
 </html>

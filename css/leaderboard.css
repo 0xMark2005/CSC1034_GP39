@@ -41,12 +41,14 @@
 .leaderboard h2 {
     font-size: 2rem;
     text-transform: uppercase;
+    font-family: 'Consolas', 'Lucida Console', 'Courier New', monospace;
 }
 
 .leaderboard ol {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    font-family: 'Consolas', 'Lucida Console', 'Courier New', monospace;
 }
 
 .leaderboard .header,
@@ -66,6 +68,10 @@
     background-color: #282828;
     margin-bottom: 5px;
     padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
 .leaderboard .rank {
@@ -77,6 +83,10 @@
 .leaderboard .name {
     flex: 1;
     text-align: center;
+    display: flex;
+    justify-content: center; /* Center username */
+    align-items: center; /* Align items vertically */
+    padding-left: 10px; /* Space between medal and username */
 }
 
 .leaderboard .score {
@@ -113,6 +123,28 @@
     background: #cd7f32;
     color: black;
     font-weight: bold;
+}
+
+/* Medal Styling for Gold, Silver, Bronze */
+.medal {
+    width: 30px; /* Set the size of the medal without affecting list item size */
+    height: 30px;
+    margin-right: 10px; /* Space between medal and username */
+    vertical-align: middle;
+    display: none; /* Hide all medals by default */
+}
+
+/* Show the appropriate medal based on the rank */
+.leaderboard li.gold .medal.gold {
+    display: inline-block;
+}
+
+.leaderboard li.silver .medal.silver {
+    display: inline-block;
+}
+
+.leaderboard li.bronze .medal.bronze {
+    display: inline-block;
 }
 
 /* Scrollbar Styling (Matching Terminal) */
@@ -161,4 +193,40 @@
     outline: 3px solid #FFD700;
     outline-offset: 2px;
 }
+
+#leaderboard-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px; /* Space between nav and leaderboard */
+}
+
+.leaderboard-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    position: absolute;
+}
+
+.arrow {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#left-arrow {
+    left: 10px;
+}
+
+#right-arrow {
+    right: 10px;
+}
+
+
+
 

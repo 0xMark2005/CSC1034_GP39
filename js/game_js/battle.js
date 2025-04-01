@@ -2,6 +2,7 @@ import { Terminal } from "../terminal.js";
 import { gameState, getCurrentState, setCurrentState } from "./gameState.js";
 import { userCharacter, addAlly } from "./character.js";
 import { castleEnemies } from "./data.js";
+import { GameTracker } from "./game_tracker.js";
 
 // Add color constants at the top of the file
 const systemMessageColor = `#FF81811`;
@@ -285,6 +286,7 @@ export function handleArmyBattle(battleConfig) {
     const { type, enemies } = battleConfig;
     let currentAllyIndex = 0;
     let enemyHealth = 100;
+    let battleRoundCount = 1;
     
     // Display available allies
     Terminal.outputMessage("\n=== Select Your Forces ===", "#FFA500");
@@ -384,6 +386,7 @@ export function handleArmyBattle(battleConfig) {
         });
 
         currentAllyIndex = 0;
+        battleRoundCount++;
         checkBattleEnd() || processTurn();
     }
 
@@ -414,6 +417,11 @@ export function handleArmyBattle(battleConfig) {
     }
 
     function endBattle(victory) {
+
+        GameTracker.logBattleOutcome(enemyHealth, battleRoundCount);
+        if (victory) {
+          GameTracker.score += 100;
+}
         document.dispatchEvent(new CustomEvent('battleComplete', {
             detail: { 
                 success: victory,
