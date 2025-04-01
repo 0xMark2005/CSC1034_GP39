@@ -14,6 +14,8 @@ const optionResultColor = "#0000FF";
 export const maxInventorySpace = 4;
 
 //Variables
+let cancelMethod;
+let completeMethod;
 let currentInventoryClickHandlers = [];
 let userInput;
 let chosenAlly = null;
@@ -198,7 +200,7 @@ function createItemUseAnimation(imageSrc) {
 export async function addItem(item){
   //if inventory is full
   if(GameTracker.inventory.length >= maxInventorySpace){
-    Terminal.outputMessage("Cannot add item as inventory is full.", errorColor);
+    Terminal.outputMessage(`Cannot add ${item.name} to inventory as inventory is full.`, errorColor);
     return false;
   }
 
@@ -227,7 +229,7 @@ export async function removeItem(item){
   }
 
   //if item could not be found in inventory
-  console.log("Item could not be found in inventory.");
+  console.log(`${item.name} could not be found in inventory.`)
   return false;
 }
 
@@ -252,20 +254,6 @@ export function setChosenItem(item){
 //
 // Confirmation method
 //
-function confirmChoice(confirmMessage){
-  //method to go when confirmation is made
-  const confirmation = function(event){
-    //if confirmed
-    if(event.detail.confirm){
-      return true;
-    }
-    //if cancelled
-    return false;
-  }
-
-  document.addEventListener("confirmationMade", itemChosen, {once: true});
-  letUserConfirm(confirmMessage);
-}
 
 //function to take input for user confirmation
 function letUserConfirm(message){
@@ -296,6 +284,54 @@ function letUserConfirm(message){
   setInputHandler(confirmInput);
 }
 
+
+//
+// Replace item (outside of Inventory Manager)
+//
+export async function chooseItemToReplaceOutsideManager(confirmMessage, item){
+  userInput = Terminal.getUserInputObject(); //set user input
+  cancelMethod = () => cancelItemReplacement(); //set the method when user cancels
+  completeMethod = async () => await replaceItemBeforeReturn(item);
+
+  //method to go when confirmation is made
+  const confirmation = function(event){
+    //if confirmed
+    if(event.detail.confirm){
+      removeItemFromInventory();
+      return;
+    }
+    
+    //if cancelled
+    cancelMethod();
+  }
+
+  document.addEventListener("confirmationMade", confirmation, {once: true});
+  letUserConfirm(confirmMessage);
+}
+
+async function replaceItemBeforeReturn(item){
+  await addItem(item);
+  returnToMainInput(false);
+  document.dispatchEvent(new CustomEvent("itemAddChoiceComplete"));
+}
+
+async function cancelItemReplacement(){
+  returnToMainInput(false);
+  document.dispatchEvent(new CustomEvent("itemAddChoiceComplete"));
+}
+
+
+//
+// Function to return to main game input
+//
+function returnToMainInput(displayDialogueAgain){
+  clearChoices();
+  removeInputHandler();
+  document.dispatchEvent(new CustomEvent("disableOtherInput", {detail: {displayDialogue: displayDialogueAgain}}));
+}
+
+
+
 //
 // Inventory manager
 //
@@ -317,6 +353,10 @@ function setInputHandler(handler){
 // Function to open the inventory management menu
 export function openInventoryManager(){
   userInput = Terminal.getUserInputObject(); //set the user input
+
+  //set method to run when another method is cancelled / completed
+  cancelMethod = openInventoryManager;
+  completeMethod = openInventoryManager;
 
   //clear current item and ally
   clearChoices();
@@ -475,9 +515,8 @@ function letUserChooseAlly(allies, emptyArrayMessage, message){
 //
 function exitInventoryManager(){
   //remove inventory management input
-  removeInputHandler();
+  returnToMainInput(true);
   Terminal.outputMessage("Closing inventory manager...", optionResultColor);
-  document.dispatchEvent(new CustomEvent("disableOtherInput"));
 }
 
 //
@@ -665,17 +704,26 @@ function removeItemFromInventory(){
   const itemChosen = function(){
     //if no item was chosen
     if(chosenItem === null){
-      openInventoryManager();
+      cancelMethod();
       return;
     }
-    //if user confirms
-    if(confirmChoice(`Are you sure you want to remove ${chosenItem.name} from your inventory?`)){
-      removeChosenItem();
-      return;
+
+    //method to go when confirmation is made
+    const confirmation = function(event){
+      //if confirmed
+      if(event.detail.confirm){
+        removeChosenItem();
+        return;
+      }
+      
+      //if cancelled
+      Terminal.outputMessage(`Cancelled.`, optionResultColor);
+      cancelMethod();
     }
-    //if cancelled
-    Terminal.outputMessage(`Cancelled.`, optionResultColor);
-    openInventoryManager();
+
+    document.addEventListener("confirmationMade", confirmation, {once: true});
+    letUserConfirm(`Are you sure you want to remove ${chosenItem.name} from your inventory?`);
+
   }
 
   document.addEventListener("itemChosenOrCancelled", itemChosen, {once: true});
@@ -687,19 +735,18 @@ async function removeChosenItem(){
   //if chosenItem or chosenAlly are not found
   if(!chosenItem){
     Terminal.outputMessage("Chosen item could not be found, pelase try again.", errorColor);
-    openInventoryManager();
+    cancelMethod();
     return;
   }
 
   //remove from inventory
-  if(await AllyManager.useItem(chosenAlly, chosenItem)){
-    Terminal.outputMessage(`Removed ${chosenItem.name} from inventory.`, optionResultColor);
-    openInventoryManager();
+  if(await removeItem(chosenItem)){
+    completeMethod();
     return;
   }
 
   //if the item could not be removed
   console.error(`Error when removing item: ${chosenItem}.`);
   Terminal.outputMessage("Item could not be removed from inventory.", errorColor);
-  openInventoryManager();
+  cancelMethod();
 }

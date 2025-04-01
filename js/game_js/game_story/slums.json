@@ -212,5 +212,23 @@
                 "next": "knight_rescue_intro"
             }
         ]
+    },
+    {
+        "dialogue": "blacksmith_shop",
+        "message": "In an abandoned blacksmith's shop, you find a sturdy shield.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Take the shield",
+                "message": "The shield is heavy but well-crafted.",
+                "next": "slums_continue",
+                "item": "steel_shield"
+            },
+            {
+                "choice": "2. Leave it",
+                "message": "Better to stay mobile.",
+                "next": "slums_continue"
+            }
+        ]
     }
 ]

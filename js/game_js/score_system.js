@@ -2,9 +2,9 @@ export class ScoreSystem {
     constructor() {
         this.baseScore = 0;
         this.displayedScore = 0;
+        this.reputationMultiplier = 1.0;
         this.metrics = {
             timeBonus: 0,
-            reputationMultiplier: 1.0,
             decisionPoints: 0,
             minigameScores: {
                 villageEscape: { bestScore: 0, attempts: 0, perfectRuns: 0 },
@@ -12,6 +12,7 @@ export class ScoreSystem {
                 generalRescue: { bestScore: 0, attempts: 0, perfectRuns: 0 },
                 finalBattle: { bestScore: 0, attempts: 0, perfectRuns: 0 }
             },
+            achievements: [],
             specialAchievements: new Set()
         };
         
@@ -134,15 +135,20 @@ export class ScoreSystem {
     }
 
     calculateFinalScore() {
-        const timeBonus = this.calculateTimeBonus();
+        const finalScore = Math.floor(
+            (this.baseScore + this.metrics.timeBonus + this.metrics.decisionPoints) 
+            * this.reputationMultiplier
+        );
+
         return {
-            finalScore: Math.round(this.baseScore * this.metrics.reputationMultiplier + timeBonus),
+            finalScore,
             breakdown: {
                 baseScore: this.baseScore,
-                timeBonus: timeBonus,
-                reputationMultiplier: this.metrics.reputationMultiplier,
+                timeBonus: this.metrics.timeBonus,
+                decisionPoints: this.metrics.decisionPoints,
+                reputationMultiplier: this.reputationMultiplier,
                 minigameScores: this.metrics.minigameScores,
-                achievements: Array.from(this.metrics.specialAchievements)
+                achievements: this.metrics.achievements
             }
         };
     }
@@ -174,5 +180,11 @@ export class ScoreSystem {
         this.baseScore += points;
         this.animateScoreChange(points);
         return points;
+    }
+
+    updateReputationMultiplier(reputation) {
+        // Convert reputation (0-100) to multiplier (0.5x - 2.0x)
+        this.reputationMultiplier = Math.max(0.5, Math.min(2.0, reputation / 50));
+        return this.reputationMultiplier;
     }
 }
