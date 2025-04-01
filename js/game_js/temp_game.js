@@ -97,9 +97,6 @@ document.addEventListener("DOMContentLoaded", async function() {
     //GameTracker.currentDialogue = storyProgression.burning_village.startDialogue;
     loadDialogue();
 
-    //TEST INVENTORY
-    await Inventory.loadInventoryItemVisuals();
-
     // Add input handler
     userInput.addEventListener("keydown", function(event) {
         if (!allowInput) return;
@@ -188,6 +185,11 @@ function processChoice(option) {
         if (GameTracker.reputation !== undefined) {
             scoreSystem.updateReputationMultiplier(GameTracker.reputation);
         }
+    }
+
+    //Add any logs
+    if(option.log){
+        addLog(option.log);
     }
 
     // Track decision outcomes
@@ -548,6 +550,9 @@ async function awardItem(option){
         return;
     }
 
+    //log that an item was found
+    addLog("found_item");
+
     //try to add to inventory
     if(await Inventory.addItem(newItem)){
         return;
@@ -567,6 +572,48 @@ async function awardItem(option){
         }
     }
     document.addEventListener("itemAddChoiceComplete", afterDecision, {once: true});
+}
+
+
+//method to add any given log by the log's name (DONT PASS OPTION, PASS option.log)
+async function addLog(logName){
+    //get the log from the database
+    let newLog = {}; //holds data of new log
+    let getLogQuery = `SELECT * FROM game_logs WHERE log_name = '${logName.trim()}'`;
+    try{
+        let result = await DBQuery.getQueryResult(getLogQuery);
+
+        //if no matching logs were found
+        if(!result.success || result.data.length == 0){
+            console.error(`Log ${logName} could not be found in DB.`);
+            return;
+        }
+
+        //formats the new log correctly
+        newLog.id = Number(result.data[0].log_id);
+        newLog.name = result.data[0].log_name;
+        newLog.routeLog = result.data[0].route_log === "1";
+        newLog.quantity = 1;
+    }
+    catch(error){
+        console.error("Error getting log from DB: ", error);
+        return;
+    }
+
+    //if the player already has 1 of these logs, increase quantity
+    for(let i=0; i<GameTracker.gameLogs.length; i++){
+        let currentLog = GameTracker.gameLogs[i];
+        if(currentLog.id === newLog.id){
+            currentLog.quantity += 1;
+            console.log(`Another ${newLog.name} log was added. Player now has ${currentLogs.quantity}.`);
+            return;
+        }
+    }
+
+    //if player does not have one of the logs, add the new log to the logs array
+    GameTracker.gameLogs.push(newLog);
+
+    console.log(GameTracker.gameLogs);
 }
 
 // Add function to display final score
