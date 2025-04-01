@@ -138,14 +138,16 @@ const storyProgression = {
     },
     prison: {
         startDialogue: "prison_intro",
-        nextArea: "slums"
+        nextArea: "slums",  // Changed from knight_rescue
+        transitionDialogue: "proceed_to_slums"
     },
     slums: {
         startDialogue: "slums_tavern_intro",
-        nextArea: "knight_rescue"
+        nextArea: "knight_rescue",
+        transitionDialogue: "knight_rescue_intro"
     },
     knight_rescue: {
-        startDialogue: "knight_rescue_intro",
+        startDialogue: "knight_rescue_intro", 
         nextArea: "resistance_hq"
     },
     resistance_hq: {
@@ -159,51 +161,18 @@ const storyProgression = {
 };
 
 // Update processChoice function to handle area transitions
-function processChoice(option) {
+async function processChoice(option) {
     Terminal.outputMessage(option.message, dialogueColor);
     
-    // Handle minigames
+    // Handle item acquisition first
+    if (option.item) {
+        await awardItem(option);
+    }
+    
+    // Then handle next dialogue or minigame
     if (option.startMinigame) {
         handleMinigame(option);
-        return;
-    }
-
-    // Handle battles
-    if (option.startBattle) {
-        handleBattle(option);
-        return;
-    }
-
-    // Handle game over
-    if (option.gameOver) {
-        Terminal.outputMessage("Game Over", errorColor);
-        allowInput = false;
-        return;
-    }
-
-    // Update reputation
-    if (option.reputation) {
-        updateReputation(option);
-        // Update multiplier after reputation changes
-        if (GameTracker.reputation !== undefined) {
-            scoreSystem.updateReputationMultiplier(GameTracker.reputation);
-        }
-    }
-
-    // Track decision outcomes
-    if (option.isOptimal || option.preservesResources || option.unlocksSecret) {
-        scoreSystem.processDecision(option);
-    }
-
-    // Track achievements
-    if (option.achievement) {
-        scoreSystem.addAchievement(option.achievement.id, option.achievement.points);
-    }
-
-    if(option.item){
-        awardItem(option);
-    }
-    else if(option.next) { // Handle area transitions 
+    } else if (option.next) {
         handleAreaTransition(option.next);
     }
 }
@@ -211,6 +180,47 @@ function processChoice(option) {
 async function handleAreaTransition(nextDialogue) {
     const currentArea = GameTracker.areaName;
     const progressionEntry = storyProgression[currentArea];
+    
+    console.log("Transitioning from", currentArea, "to dialogue:", nextDialogue);
+    
+    // Handle transition to slums
+    if (nextDialogue === 'slums_tavern_intro') {
+        GameTracker.areaName = 'slums';
+        GameTracker.setFilepath();
+        
+        try {
+            await loadAreaFromJSON();
+            GameTracker.currentDialogue = 'slums_tavern_intro';
+            loadDialogue();
+            return;
+        } catch (error) {
+            console.error("Slums transition failed:", error);
+            Terminal.outputMessage("Failed to load slums area.", errorColor);
+        }
+    }
+    
+    // Handle transition to knight rescue
+    if (nextDialogue === 'knight_rescue_intro') {
+        GameTracker.areaName = 'knight_rescue';
+        GameTracker.setFilepath();
+        
+        try {
+            await loadAreaFromJSON();
+            GameTracker.currentDialogue = 'knight_rescue_intro';
+            loadDialogue();
+            return;
+        } catch (error) {
+            console.error("Knight rescue transition failed:", error);
+            Terminal.outputMessage("Failed to load knight rescue area.", errorColor);
+        }
+    }
+    
+    // Add check for transition dialogue
+    if (progressionEntry && progressionEntry.transitionDialogue === nextDialogue) {
+        GameTracker.currentDialogue = nextDialogue;
+        loadDialogue();
+        return;
+    }
     
     // Check for prison_intro special case
     if (nextDialogue === 'prison_intro') {
@@ -251,27 +261,33 @@ async function handleAreaTransition(nextDialogue) {
     }
 }
 
-async function loadAreaFromJSON(){
+async function loadAreaFromJSON() {
     try {
+        console.log("Loading area:", GameTracker.areaName);
+        console.log("File path:", GameTracker.areaFilepath);
+
         const response = await fetch(GameTracker.areaFilepath);
-        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
+        console.log("Loaded data:", data); // Log the entire data
+
         GameTracker.currentArea = data;
 
         let newAreaName = GameTracker.areaName.replace("_", " ");
         document.getElementById("area-name").innerHTML = newAreaName;
-        
+
         // Verify dialogue exists
-        const dialogueExists = data.some(d => d.dialogue === storyProgression[GameTracker.areaName].startDialogue);
+        const startDialogue = storyProgression[GameTracker.areaName].startDialogue;
+        console.log("Looking for dialogue:", startDialogue);
+
+        const dialogueExists = data.some(d => d.dialogue === startDialogue);
         if (!dialogueExists) {
-            throw new Error(`Starting dialogue '${storyProgression[GameTracker.areaName].startDialogue}' not found in area data`);
+            throw new Error(`Starting dialogue '${startDialogue}' not found in area data`);
         }
-    }
-    catch(error) {
+    } catch (error) {
         console.error("Error loading area from JSON: ", error);
         console.log("Attempted to load from path:", GameTracker.areaFilepath);
         Terminal.outputMessage("Error loading area data. Please check console.", errorColor);

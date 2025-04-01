@@ -18,20 +18,20 @@
     },
     {
         "dialogue": "search_home",
-        "message": "Through the smoke, you spot: [1] Family Sword [2] Healing Potion [3] Leave Now",
+        "message": "Through the smoke, you spot: [1] Royal Sword [2] Full Potion [3] Leave Now",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Take family sword",
+                "choice": "1. Take Royal Sword",
                 "message": "You grab the ancestral blade.",
-                "next": "escape_start",
-                "item": "family_sword"
+                "item": "Royal Sword",
+                "next": "escape_start"
             },
             {
                 "choice": "2. Take healing potion",
                 "message": "You pocket the medicinal brew.",
-                "next": "escape_start",
-                "item": "healing_potion"
+                "item": "Full Potion",
+                "next": "escape_start"
             },
             {
                 "choice": "3. Leave immediately",

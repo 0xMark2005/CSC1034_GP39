@@ -38,10 +38,16 @@ export function generalRescueGame() {
         codeElement.style.color = "#FFFF00";
         document.getElementById("output-terminal").appendChild(codeElement);
 
-        // Hide code after 5 seconds and ask for input
-        setTimeout(() => {
-            // Remove code element completely
-            codeElement.remove();
+        // Clear any existing timeouts
+        if (window.codeTimeout) {
+            clearTimeout(window.codeTimeout);
+        }
+
+        // Show code for exactly 5 seconds
+        window.codeTimeout = setTimeout(() => {
+            if (codeElement && codeElement.parentNode) {
+                codeElement.remove();
+            }
             Terminal.outputMessage("\nEnter the code you saw:", "#00FF00");
             inputEnabled = true;
             
@@ -58,11 +64,23 @@ export function generalRescueGame() {
                     Terminal.outputMessage(`Wrong! The code was: ${currentCode}`, "#FF0000");
                 }
                 
-                startCode();
+                // Add small delay before next code
+                setTimeout(() => startCode(), 1000);
             };
 
             document.getElementById("user-input").addEventListener("keypress", codeHandler);
-        }, 5000);
+
+            // Add 10 second timeout for input
+            setTimeout(() => {
+                if (inputEnabled) {
+                    inputEnabled = false;
+                    document.getElementById("user-input").removeEventListener("keypress", codeHandler);
+                    Terminal.outputMessage(`Time's up! The code was: ${currentCode}`, "#FF0000");
+                    setTimeout(() => startCode(), 1000);
+                }
+            }, 10000);
+
+        }, 5000); // Exact 5 second delay
     }
 
     function cleanup(success) {
