@@ -3,6 +3,7 @@ import { Terminal } from "../terminal.js";
 import { GameTracker } from "./game_tracker.js";
 import * as SaveLoadGame from "./save_load_game.js";
 import * as Inventory from "./inventory.js";
+import {AllyManager} from "./ally_manager.js";
 
 import { prisonEscapeGame } from "./minigames/prisonEscape_minigame.js";
 import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
@@ -87,18 +88,12 @@ document.addEventListener("DOMContentLoaded", async function() {
     let userInput = document.getElementById("user-input");
     Terminal.initialize(outputTerminal, userInput);
 
-    // Set initial game state to burning village (start of game)
-    //GameTracker.areaName = "burning_village";
+    //Load the game
     await SaveLoadGame.loadGame();
-    GameTracker.setFilepath();
-     // load allies
-    await AllyManager.loadAllyVisuals();     // Load initial area and dialogue
-    await loadAreaFromJSON();
-    //GameTracker.currentDialogue = storyProgression.burning_village.startDialogue;
-    loadDialogue();
 
-    //TEST INVENTORY
-    await Inventory.loadInventoryItemVisuals();
+    // Load initial area and dialogue
+    await loadAreaFromJSON();
+    loadDialogue();
 
     // Add input handler
     userInput.addEventListener("keydown", function(event) {
@@ -164,6 +159,11 @@ const storyProgression = {
 async function processChoice(option) {
     Terminal.outputMessage(option.message, dialogueColor);
     
+    //Add any logs
+    if(option.log){
+        addLog(option.log);
+    }
+
     // Handle item acquisition first
     if (option.item) {
         await awardItem(option);
@@ -564,6 +564,9 @@ async function awardItem(option){
         return;
     }
 
+    //add log
+    addLog("found_item");
+
     //try to add to inventory
     if(await Inventory.addItem(newItem)){
         return;
@@ -584,6 +587,46 @@ async function awardItem(option){
     }
     document.addEventListener("itemAddChoiceComplete", afterDecision, {once: true});
 }
+
+//method to add any given log by the log's name (DONT PASS OPTION, PASS option.log)
+async function addLog(logName){
+    //get the log from the database
+    let newLog = {}; //holds data of new log
+    let getLogQuery = `SELECT * FROM game_logs WHERE log_name = '${logName.trim()}'`;
+    try{
+        let result = await DBQuery.getQueryResult(getLogQuery);
+
+        //if no matching logs were found
+        if(!result.success || result.data.length == 0){
+            console.error(`Log ${logName} could not be found in DB.`);
+            return;
+        }
+
+        //formats the new log correctly
+        newLog.id = Number(result.data[0].log_id);
+        newLog.name = result.data[0].log_name;
+        newLog.routeLog = result.data[0].route_log === "1";
+        newLog.quantity = 1;
+    }
+    catch(error){
+        console.error("Error getting log from DB: ", error);
+        return;
+    }
+
+    //if the player already has 1 of these logs, increase quantity
+    for(let i=0; i<GameTracker.gameLogs.length; i++){
+        let currentLog = GameTracker.gameLogs[i];
+        if(currentLog.id === newLog.id){
+            currentLog.quantity += 1;
+            console.log(`Another ${newLog.name} log was added. Player now has ${currentLogs.quantity}.`);
+            return;
+        }
+    }
+
+    //if player does not have one of the logs, add the new log to the logs array
+    GameTracker.gameLogs.push(newLog);
+}
+
 
 // Add function to display final score
 function displayFinalScore() {
