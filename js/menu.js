@@ -59,7 +59,8 @@ function resetMenu(){
             <li>1. New Game</li>
             <li>2. Load Game</li>
             <li>3. Settings</li>
-            <li>4. Log Out</li>
+            <li>4. Edit Account</li>
+            <li>5. Log Out</li>
         </ol>`;
 }
 
@@ -178,7 +179,7 @@ async function loadGameSaves(){
 function handleMenuChoice(choice) {
     switch(choice.toLowerCase()) {
         case '1':
-            localStorage.setItem("loadGame", false);
+            localStorage.setItem("loadGame", false); // Indicate this is a new game
             window.location.href = 'temp_game.html';
             break;
         case '2':
@@ -194,7 +195,7 @@ function handleMenuChoice(choice) {
             handleLogout();
             break;
         default:
-            Terminal.outputMessage("Invalid choice. Please try again.", "#FF0000");
+            Terminal.outputMessage("Invalid choice. Please try again.", errorColor);
     }
 }
 
