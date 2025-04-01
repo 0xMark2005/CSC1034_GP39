@@ -165,7 +165,10 @@ function handleMenuChoice(choice) {
         case '4':
             window.location.href = 'edit_account.html';
             break;
-        case '5':
+        case "5":
+             window.location.href = "player_stats.html";
+            break;
+        case '6':
             handleLogout();
             break;
         default:

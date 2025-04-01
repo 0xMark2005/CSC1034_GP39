@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", async function() {
           if (shouldPlaySound) {
             new Audio('css/assets/sounds/button-click.mp3').play();
           }
+          // Expand/collapse logic
           document.querySelectorAll('.inventory-item-container').forEach(item => {
             if (item !== toolDiv) {
               item.classList.remove('expanded');
@@ -76,19 +77,11 @@ document.addEventListener("DOMContentLoaded", async function() {
               if (desc) {
                 desc.classList.remove('show', 'marquee');
               }
-              const equipBtn = item.querySelector('.equip-button');
-              if (equipBtn) {
-                equipBtn.remove();
-              }
             }
           });
           toolDiv.classList.toggle('expanded');
           if (!toolDiv.classList.contains('expanded')) {
             descriptionElement.classList.remove('show', 'marquee');
-            const equipBtn = toolDiv.querySelector('.equip-button');
-            if (equipBtn) {
-              equipBtn.remove();
-            }
           } else {
             setTimeout(() => {
               if (toolDiv.classList.contains('expanded')) {
@@ -102,19 +95,6 @@ document.addEventListener("DOMContentLoaded", async function() {
                     descriptionElement.classList.remove('marquee');
                   }
                 }, 50);
-                if (!toolDiv.querySelector('.equip-button')) {
-                  const equipBtn = document.createElement('button');
-                  equipBtn.textContent = "EQUIP";
-                  equipBtn.classList.add('equip-button');
-                  equipBtn.style.opacity = 0;
-
-                  toolDiv.appendChild(equipBtn);
-
-                  setTimeout(() => {
-                    equipBtn.style.transition = "opacity 0.5s ease";
-                    equipBtn.style.opacity = 1;
-                  }, 50);
-                }
               }
             }, 500);
           }
