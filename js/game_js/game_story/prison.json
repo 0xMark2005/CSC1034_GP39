@@ -61,12 +61,36 @@
   },
   {
       "dialogue": "escape_success",
-      "message": "You've successfully escaped. Freedom awaits in the city slums.",
+      "message": "You've successfully escaped! In your haste, you notice some useful items left behind.",
+      "optionType": "number",
+      "options": [
+          {
+              "choice": "1. Take Prison Key",
+              "message": "This master key could be useful later.",
+              "item": "Prison Key",
+              "next": "proceed_to_slums"
+          },
+          {
+              "choice": "2. Take Guard's Dagger",
+              "message": "A small but effective weapon.",
+              "item": "Guard Dagger",
+              "next": "proceed_to_slums"
+          },
+          {
+              "choice": "3. Leave immediately",
+              "message": "Better not risk getting caught.",
+              "next": "proceed_to_slums"
+          }
+      ]
+  },
+  {
+      "dialogue": "proceed_to_slums",
+      "message": "With your escape complete, you make your way into the city slums.",
       "optionType": "number",
       "options": [
           {
               "choice": "1. Head to the slums",
-              "message": "You make your way into the slums district.",
+              "message": "You carefully navigate towards the slums district.",
               "next": "slums_tavern_intro"
           }
       ]
