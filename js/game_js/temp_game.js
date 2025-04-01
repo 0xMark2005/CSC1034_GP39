@@ -3,6 +3,7 @@ import { Terminal } from "../terminal.js";
 import { GameTracker } from "./game_tracker.js";
 import * as SaveLoadGame from "./save_load_game.js";
 import * as Inventory from "./inventory.js";
+import {AllyManager} from "./ally_manager.js";
 
 import { prisonEscapeGame } from "./minigames/prisonEscape_minigame.js";
 import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
@@ -31,6 +32,10 @@ function handleMinigame(option) {
             
             if (option.next) {
                 GameTracker.currentDialogue = option.next;
+                loadDialogue();
+            } else {
+                console.error('No next dialogue specified for successful minigame completion');
+                GameTracker.currentDialogue = storyProgression[GameTracker.areaName].startDialogue;
                 loadDialogue();
             }
         } else {
@@ -83,18 +88,12 @@ document.addEventListener("DOMContentLoaded", async function() {
     let userInput = document.getElementById("user-input");
     Terminal.initialize(outputTerminal, userInput);
 
-    // Set initial game state to burning village (start of game)
-    //GameTracker.areaName = "burning_village";
+    //Load the game
     await SaveLoadGame.loadGame();
-    GameTracker.setFilepath();
-    
+
     // Load initial area and dialogue
     await loadAreaFromJSON();
-    //GameTracker.currentDialogue = storyProgression.burning_village.startDialogue;
     loadDialogue();
-
-    //TEST INVENTORY
-    await Inventory.loadInventoryItemVisuals();
 
     // Add input handler
     userInput.addEventListener("keydown", function(event) {
@@ -134,14 +133,16 @@ const storyProgression = {
     },
     prison: {
         startDialogue: "prison_intro",
-        nextArea: "slums"
+        nextArea: "slums",  // Changed from knight_rescue
+        transitionDialogue: "proceed_to_slums"
     },
     slums: {
         startDialogue: "slums_tavern_intro",
-        nextArea: "knight_rescue"
+        nextArea: "knight_rescue",
+        transitionDialogue: "knight_rescue_intro"
     },
     knight_rescue: {
-        startDialogue: "knight_rescue_intro",
+        startDialogue: "knight_rescue_intro", 
         nextArea: "resistance_hq"
     },
     resistance_hq: {
@@ -155,46 +156,23 @@ const storyProgression = {
 };
 
 // Update processChoice function to handle area transitions
-function processChoice(option) {
+async function processChoice(option) {
     Terminal.outputMessage(option.message, dialogueColor);
     
-    // Handle minigames
+    //Add any logs
+    if(option.log){
+        addLog(option.log);
+    }
+
+    // Handle item acquisition first
+    if (option.item) {
+        await awardItem(option);
+    }
+    
+    // Then handle next dialogue or minigame
     if (option.startMinigame) {
         handleMinigame(option);
-        return;
-    }
-
-    // Handle battles
-    if (option.startBattle) {
-        handleBattle(option);
-        return;
-    }
-
-    // Handle game over
-    if (option.gameOver) {
-        Terminal.outputMessage("Game Over", errorColor);
-        allowInput = false;
-        return;
-    }
-
-    // Update reputation
-    if (option.reputation) {
-        updateReputation(option);
-        scoreSystem.updateReputationMultiplier(GameTracker.reputation);
-    }
-
-    // Track decision outcomes
-    if (option.isOptimal || option.preservesResources || option.unlocksSecret) {
-        scoreSystem.processDecision(option);
-    }
-
-    // Track achievements
-    if (option.achievement) {
-        scoreSystem.addAchievement(option.achievement.id, option.achievement.points);
-    }
-
-    // Handle area transitions
-    if (option.next) {
+    } else if (option.next) {
         handleAreaTransition(option.next);
     }
 }
@@ -202,6 +180,47 @@ function processChoice(option) {
 async function handleAreaTransition(nextDialogue) {
     const currentArea = GameTracker.areaName;
     const progressionEntry = storyProgression[currentArea];
+    
+    console.log("Transitioning from", currentArea, "to dialogue:", nextDialogue);
+    
+    // Handle transition to slums
+    if (nextDialogue === 'slums_tavern_intro') {
+        GameTracker.areaName = 'slums';
+        GameTracker.setFilepath();
+        
+        try {
+            await loadAreaFromJSON();
+            GameTracker.currentDialogue = 'slums_tavern_intro';
+            loadDialogue();
+            return;
+        } catch (error) {
+            console.error("Slums transition failed:", error);
+            Terminal.outputMessage("Failed to load slums area.", errorColor);
+        }
+    }
+    
+    // Handle transition to knight rescue
+    if (nextDialogue === 'knight_rescue_intro') {
+        GameTracker.areaName = 'knight_rescue';
+        GameTracker.setFilepath();
+        
+        try {
+            await loadAreaFromJSON();
+            GameTracker.currentDialogue = 'knight_rescue_intro';
+            loadDialogue();
+            return;
+        } catch (error) {
+            console.error("Knight rescue transition failed:", error);
+            Terminal.outputMessage("Failed to load knight rescue area.", errorColor);
+        }
+    }
+    
+    // Add check for transition dialogue
+    if (progressionEntry && progressionEntry.transitionDialogue === nextDialogue) {
+        GameTracker.currentDialogue = nextDialogue;
+        loadDialogue();
+        return;
+    }
     
     // Check for prison_intro special case
     if (nextDialogue === 'prison_intro') {
@@ -242,27 +261,33 @@ async function handleAreaTransition(nextDialogue) {
     }
 }
 
-async function loadAreaFromJSON(){
+async function loadAreaFromJSON() {
     try {
+        console.log("Loading area:", GameTracker.areaName);
+        console.log("File path:", GameTracker.areaFilepath);
+
         const response = await fetch(GameTracker.areaFilepath);
-        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
+        console.log("Loaded data:", data); // Log the entire data
+
         GameTracker.currentArea = data;
 
         let newAreaName = GameTracker.areaName.replace("_", " ");
         document.getElementById("area-name").innerHTML = newAreaName;
-        
+
         // Verify dialogue exists
-        const dialogueExists = data.some(d => d.dialogue === storyProgression[GameTracker.areaName].startDialogue);
+        const startDialogue = storyProgression[GameTracker.areaName].startDialogue;
+        console.log("Looking for dialogue:", startDialogue);
+
+        const dialogueExists = data.some(d => d.dialogue === startDialogue);
         if (!dialogueExists) {
-            throw new Error(`Starting dialogue '${storyProgression[GameTracker.areaName].startDialogue}' not found in area data`);
+            throw new Error(`Starting dialogue '${startDialogue}' not found in area data`);
         }
-    }
-    catch(error) {
+    } catch (error) {
         console.error("Error loading area from JSON: ", error);
         console.log("Attempted to load from path:", GameTracker.areaFilepath);
         Terminal.outputMessage("Error loading area data. Please check console.", errorColor);
@@ -411,14 +436,16 @@ function handleUserInput() {
 }
 
 //method disables input from this file and waits for a 'disableOtehrInput' event to trigger before input is returned to this file
-function allowOtherInput(){
+export function allowOtherInput(){
     allowInput = false; //disable input for this file
 
     //event that will enable input for this again
     const enableInputAgain = (event) => {
         allowInput = true;
         console.log("Input changed back to main game.");
-        loadDialogue();
+        if(event.detail.displayDialogue){
+            loadDialogue();
+        }
     }
 
     document.addEventListener("disableOtherInput", enableInputAgain, {once: true});
@@ -512,12 +539,12 @@ async function awardItem(option){
 
     //get the item from the database
     let newItem = {}; //holds data of new item
-    let getItemQuery = `SELECT * FROM items WHERE item_name = ${option.item}`;
+    let getItemQuery = `SELECT * FROM items WHERE item_name = '${option.item.trim()}'`;
     try{
-        let result = DBQuery.getQueryResult(getItemQuery);
+        let result = await DBQuery.getQueryResult(getItemQuery);
 
         //if no matching items were found
-        if(!result.success && result.data.length == 0){
+        if(!result.success || result.data.length == 0){
             console.error(`Item ${option.item} could not be found in DB.`);
             return;
         }
@@ -537,8 +564,69 @@ async function awardItem(option){
         return;
     }
 
-    
+    //add log
+    addLog("found_item");
+
+    //try to add to inventory
+    if(await Inventory.addItem(newItem)){
+        return;
+    }
+
+    //if addItem didnt work (inventory was full)
+    allowOtherInput();
+    let confirmMessage = `Would you like to remove an item from your inventory to collect ${newItem.name}`;
+    await Inventory.chooseItemToReplaceOutsideManager(confirmMessage, newItem);
+
+    const afterDecision = function(){
+        if(option.next){
+            handleAreaTransition(option.next);
+        }
+        else{
+            Terminal.outputMessage("Next area could not be found.", errorColor);
+        }
+    }
+    document.addEventListener("itemAddChoiceComplete", afterDecision, {once: true});
 }
+
+//method to add any given log by the log's name (DONT PASS OPTION, PASS option.log)
+async function addLog(logName){
+    //get the log from the database
+    let newLog = {}; //holds data of new log
+    let getLogQuery = `SELECT * FROM game_logs WHERE log_name = '${logName.trim()}'`;
+    try{
+        let result = await DBQuery.getQueryResult(getLogQuery);
+
+        //if no matching logs were found
+        if(!result.success || result.data.length == 0){
+            console.error(`Log ${logName} could not be found in DB.`);
+            return;
+        }
+
+        //formats the new log correctly
+        newLog.id = Number(result.data[0].log_id);
+        newLog.name = result.data[0].log_name;
+        newLog.routeLog = result.data[0].route_log === "1";
+        newLog.quantity = 1;
+    }
+    catch(error){
+        console.error("Error getting log from DB: ", error);
+        return;
+    }
+
+    //if the player already has 1 of these logs, increase quantity
+    for(let i=0; i<GameTracker.gameLogs.length; i++){
+        let currentLog = GameTracker.gameLogs[i];
+        if(currentLog.id === newLog.id){
+            currentLog.quantity += 1;
+            console.log(`Another ${newLog.name} log was added. Player now has ${currentLogs.quantity}.`);
+            return;
+        }
+    }
+
+    //if player does not have one of the logs, add the new log to the logs array
+    GameTracker.gameLogs.push(newLog);
+}
+
 
 // Add function to display final score
 function displayFinalScore() {

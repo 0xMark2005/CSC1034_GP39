@@ -1,32 +1,51 @@
 [
     {
         "dialogue": "slums_tavern_intro",
-        "message": "You arrive in the slums district. A busy tavern catches your eye, and you notice a makeshift medical clinic nearby.",
+        "message": "You arrive in the slums district. The Rusty Barrel tavern stands before you.",
         "optionType": "number",
         "options": [
             {
                 "choice": "1. Enter the tavern",
                 "message": "You step into the dimly lit tavern.",
-                "next": "tavern_scene"
-            },
-            {
-                "choice": "2. Visit the clinic",
-                "message": "You approach the clinic where a medic tends to the wounded.",
-                "next": "clinic_scene"
+                "next": "tavern_recognition"
             }
         ]
     },
     {
-        "dialogue": "tavern_scene",
-        "message": "The barman eyes you carefully, seeming to gauge your intentions.",
+        "dialogue": "tavern_recognition",
+        "message": "The barman's eyes widen with recognition. 'You! From the village attacks! Guards will pay well for information about survivors...'",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Ask about resistance",
-                "message": "He reveals he's been helping the resistance and offers to join your cause.",
-                "addAlly": "barman",
-                "reputation": 5,
-                "next": "clinic_scene"
+                "choice": "1. Try to negotiate",
+                "message": "You raise your hands cautiously.",
+                "next": "barman_deal",
+                "reputation": 5
+            }
+        ]
+    },
+    {
+        "dialogue": "barman_deal",
+        "message": "'Wait! I won't turn you in... if you help me rescue someone - a knight who refused the king's orders.'",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Accept his offer",
+                "message": "The barman slides you a healing potion as a sign of trust.",
+                "next": "knight_rescue_intro",
+                "item": "Full Potion"
+            }
+        ]
+    },
+    {
+        "dialogue": "tavern_to_prison",
+        "message": "The barman gives you information about the prison's security. Time to save the knight.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Head to the prison",
+                "message": "You make your way to the prison with the barman's intel.",
+                "next": "prison_intro"
             }
         ]
     },
@@ -210,6 +229,24 @@
                 "choice": "1. Listen to the information",
                 "message": "You learn about the general's location and importance to the resistance.",
                 "next": "knight_rescue_intro"
+            }
+        ]
+    },
+    {
+        "dialogue": "blacksmith_shop",
+        "message": "In an abandoned blacksmith's shop, you find a sturdy shield.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Take the shield",
+                "message": "The shield is heavy but well-crafted.",
+                "next": "slums_continue",
+                "item": "steel_shield"
+            },
+            {
+                "choice": "2. Leave it",
+                "message": "Better to stay mobile.",
+                "next": "slums_continue"
             }
         ]
     }

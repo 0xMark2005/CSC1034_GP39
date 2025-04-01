@@ -47,7 +47,7 @@ html, body {
   position: fixed;
   bottom: 10px;
   left: 10px;
-  width: 1px;
+  width: 50px;
   height: 40px;
   background-color: #2e2e2e;
   color: #fff;
@@ -195,8 +195,7 @@ h3 {
 }
 button {
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 10px 25px;
-  min-width: 145px;
+  padding: 10px;
   min-height: 45px;
   border-radius: 8px;
   background-color: #171717;
@@ -229,7 +228,7 @@ button {
   .left.open { transform: translateX(0); position: absolute; height: 100%; z-index: 100; }
   .right { flex: 1 0 100%; }
   #main-container { width: 100%; padding: 15px; margin: 0; }
-  button { min-width: 100px; width: 100%; margin: 5px 0; }
+  button { margin: 5px 0; }
   .button-container { flex-direction: column; }
 }
 button:hover,

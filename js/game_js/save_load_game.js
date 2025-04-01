@@ -1,6 +1,8 @@
 //Imports
 import {DBQuery} from "../dbQuery.js";
 import {GameTracker} from "./game_tracker.js";
+import * as Inventory from "./inventory.js";
+import { AllyManager } from "./ally_manager.js";
 import * as Util from "../util.js";
 
 //
@@ -159,6 +161,32 @@ export async function loadGame(){
     //
     // Load logs
     //
+    let logQuery = `SELECT * FROM game_session_logs_full_details WHERE game_session_id = ${gameSessionId}`;
+    try{
+        let result = await DBQuery.getQueryResult(logQuery);
+
+        for(let i=0; i<result.data.length; i++){
+            //convert values to correct type
+            let currentLog = result.data[i];
+            let newLog = {};
+
+            newLog.id = Number(currentLog.log_id);
+            newLog.name = currentLog.log_name;
+            newLog.routeLog = currentLog.route_log === "1";
+            newLog.quantity = Number(currentLog.quantity);
+
+            //add log
+            gameSessionLogs.push(newLog);
+        }
+        console.log("Logs: ", gameSessionLogs);
+    }
+    catch(error){
+        console.error("Error loading logs: ", error);
+        alert("Game save could not be loaded, please try again.");
+        window.location.href = "main_menu.html";
+        return;
+    }
+
 
 
     //set the GameTracker variables accordingly
@@ -170,6 +198,11 @@ export async function loadGame(){
     GameTracker.allies = gameSessionAllies;
     GameTracker.allyEquipment = gameSessionAllyItems;
     GameTracker.inventory = gameSessionInventory;
+    GameTracker.gameLogs = gameSessionLogs;
+
+    localStorage.setItem("loadGame", true); //sets loadGame to true (page refresh wont create new saves)
+    await Inventory.loadInventoryItemVisuals(); //load inventory visually
+    await AllyManager.loadAllyVisuals(); //loads the ally visuals
 
     console.log("Game loaded.");
 }
@@ -414,6 +447,51 @@ export async function saveGame(){
     //
     // Save game logs
     //
+    //Get logs currently in database
+    let getDBLogs = `SELECT * FROM game_session_logs WHERE game_session_id = ${gameSessionId}`;
+    let dbLogs = [];
+    try{
+        let result = await DBQuery.getQueryResult(getDBLogs);
+
+        for(let i=0; i<result.data.length; i++){
+            dbLogs.push(result.data[i]);
+        }
+    }
+    catch(error){
+        console.error("Game save error: ", error);
+        alert("An error occured when saving game. Please try again.");
+        return false;
+    }
+
+    //Check for any new logs and add if needed
+    const dbLogIds = dbLogs.map(dbLog => Number(dbLog.log_id));
+    const newLogs = GameTracker.gameLogs.filter(log => !dbLogIds.includes(log.id));
+    console.log("New logs to save: ", newLogs); 
+
+    //add the new logs to the database
+    try{
+        await Promise.all(
+            newLogs.map(log => DBQuery.getQueryResult(`INSERT INTO game_session_logs (game_session_id, log_id) VALUES (${gameSessionId}, ${log.id})`))
+        );
+    }
+    catch(error){
+        console.error("Game save error: ", error);
+        alert("An error occured when saving game. Please try again.");
+        return false;
+    }
+
+    //update log details
+    try{
+        await Promise.all(
+            GameTracker.gameLogs.map(log => DBQuery.getQueryResult(`UPDATE game_session_logs SET quantity = ${log.quantity} WHERE game_session_id = ${gameSessionId} AND log_id = ${log.id}`))
+        );
+    }
+    catch(error){
+        console.error("Game save error: ", error);
+        alert("An error occured when saving game. Please try again.");
+        return false;
+    }
+
 
 
     //All saving complete

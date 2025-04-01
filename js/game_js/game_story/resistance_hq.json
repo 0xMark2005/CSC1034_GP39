@@ -22,5 +22,23 @@
                 "next": "final_battle_intro"
             }
         ]
+    },
+    {
+        "dialogue": "armory_visit",
+        "message": "The resistance leader offers you their enchanted bow.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Accept the bow",
+                "message": "You feel the bow's ancient power.",
+                "next": "resistance_planning",
+                "item": "resistance_bow"
+            },
+            {
+                "choice": "2. Decline",
+                "message": "You prefer your current weapons.",
+                "next": "resistance_planning"
+            }
+        ]
     }
 ]

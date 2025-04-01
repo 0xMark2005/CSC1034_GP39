@@ -22,5 +22,23 @@
                 "next": "prison_intro"
             }
         ]
+    },
+    {
+        "dialogue": "merchant_help",
+        "message": "A friendly merchant offers you a healing potion.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Accept the potion",
+                "message": "You carefully pocket the healing potion.",
+                "next": "merchant_continue",
+                "item": "healing_potion"
+            },
+            {
+                "choice": "2. Decline",
+                "message": "You politely decline the offer.",
+                "next": "merchant_continue"
+            }
+        ]
     }
 ]
