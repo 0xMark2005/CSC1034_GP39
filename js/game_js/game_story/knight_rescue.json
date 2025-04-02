@@ -27,13 +27,13 @@
     },
     {
         "dialogue": "rescue_success",
-        "message": "With the knight freed, you both make your way to the resistance headquarters.",
+        "message": "With the knight freed, you both make your way through the city.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Continue to headquarters",
-                "message": "You follow the knight's directions to the secret resistance base.",
-                "next": "resistance_hq_intro"
+                "choice": "1. Continue onwards",
+                "message": "The knight is struggling from his injuries...",
+                "next": "knight_freed"
             }
         ]
     },
@@ -56,9 +56,8 @@
         "options": [
             {
                 "choice": "1. Visit the medic",
-                "message": "The medic treats the knight and joins your cause.",
-                "addAlly": "medic",
-                "next": "castle_plan"
+                "message": "You head to the medic's hidden clinic.",
+                "next": "clinic_scene"
             }
         ]
     },

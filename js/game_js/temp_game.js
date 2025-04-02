@@ -9,9 +9,9 @@ import { prisonEscapeGame } from "./minigames/prisonEscape_minigame.js";
 import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
 import { generalRescueGame } from "./minigames/generalRescue_minigame.js";
 import { finalBattleGame } from "./minigames/finalBattle_minigame.js";
+import { barmanTrustGame } from "./minigames/barmanTrust_minigame.js";
+import { medicTestGame } from "./minigames/medicTest_minigame.js";
 
-import { addAlly } from "./character.js";
-import { Battle } from './battle.js';
 import { ScoreSystem } from './score_system.js';
 import { DBQuery } from "../dbQuery.js";
 
@@ -49,7 +49,7 @@ function handleMinigame(option) {
 
     document.addEventListener('minigameComplete', minigameHandler);
 
-    // Start the appropriate minigame based on the current area
+    // Start the appropriate minigame based on the current area and dialogue
     switch(GameTracker.areaName) {
         case 'burning_village':
             villageEscapeGame();
@@ -58,10 +58,27 @@ function handleMinigame(option) {
             prisonEscapeGame();
             break;
         case 'knight_rescue':
-            generalRescueGame();
+            if (GameTracker.currentDialogue === 'rescue_general_intro') {
+                generalRescueGame();  // This will recruit the knight on success
+            }
             break;
         case 'final_battle':
             finalBattleGame();
+            break;
+        case 'slums':
+            if (GameTracker.currentDialogue === 'clinic_scene') {
+                medicTestGame();  // This will recruit the medic on success
+            } else if (GameTracker.currentDialogue === 'tavern_recognition') {
+                barmanTrustGame();
+            } else {
+                console.error('Minigame triggered at wrong dialogue');
+                allowInput = true;
+            }
+            break;
+        case 'slums_clinic':
+            if (GameTracker.currentDialogue === 'clinic_scene') {
+                medicTestGame();
+            }
             break;
         default:
             console.error('No minigame found for area:', GameTracker.areaName);
@@ -133,7 +150,7 @@ const storyProgression = {
     },
     prison: {
         startDialogue: "prison_intro",
-        nextArea: "slums",  // Changed from knight_rescue
+        nextArea: "slums",  
         transitionDialogue: "proceed_to_slums"
     },
     slums: {
@@ -142,12 +159,19 @@ const storyProgression = {
         transitionDialogue: "knight_rescue_intro"
     },
     knight_rescue: {
-        startDialogue: "knight_rescue_intro", 
-        nextArea: "resistance_hq"
+        startDialogue: "knight_rescue_intro",
+        nextArea: "slums_clinic",
+        transitionDialogue: "find_medic"
+    },
+    slums_clinic: {
+        startDialogue: "clinic_scene",
+        nextArea: "resistance_hq",
+        transitionDialogue: "medic_joins"
     },
     resistance_hq: {
         startDialogue: "resistance_hq_intro",
-        nextArea: "final_battle"
+        nextArea: "final_battle",
+        transitionDialogue: "resistance_hq_complete"
     },
     final_battle: {
         startDialogue: "final_battle_intro",
@@ -212,6 +236,22 @@ async function handleAreaTransition(nextDialogue) {
         } catch (error) {
             console.error("Knight rescue transition failed:", error);
             Terminal.outputMessage("Failed to load knight rescue area.", errorColor);
+        }
+    }
+    
+    // Handle transition to clinic
+    if (nextDialogue === 'clinic_scene') {
+        GameTracker.areaName = 'slums_clinic';
+        GameTracker.setFilepath();
+        
+        try {
+            await loadAreaFromJSON();
+            GameTracker.currentDialogue = 'clinic_scene';
+            loadDialogue();
+            return;
+        } catch (error) {
+            console.error("Clinic transition failed:", error);
+            Terminal.outputMessage("Failed to load clinic area.", errorColor);
         }
     }
     
@@ -314,7 +354,11 @@ function loadDialogue() {
         return;
     }
 
-    Terminal.outputMessage(currentAreaDialogue.message, dialogueColor);
+    if (currentAreaDialogue && currentAreaDialogue.message) {
+        Terminal.outputMessage(currentAreaDialogue.message, dialogueColor);
+    } else {
+        console.warn("Dialogue message is undefined or null.");
+    }
 
     //
     // ADDING AND OUTPUTTING OPTIONS

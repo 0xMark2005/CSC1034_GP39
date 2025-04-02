@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
     // Initialize the arrows once
     const leaderboardTitle = document.getElementById("leaderboard-title");
+    const leaderboardScore = document.getElementById("score");
     const leftArrow = document.getElementById("left-arrow");
     const rightArrow = document.getElementById("right-arrow");
 
@@ -57,10 +58,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         leaderboardList.innerHTML = ""; // Clear any existing leaderboard items
         
         let titleText = "Top Players";
-        if (currentLeaderboard === "reputation") titleText = "Top Reputation";
-        else if (currentLeaderboard === "wins") titleText = "Most Wins";
+        let headerText = "Score"
+        if (currentLeaderboard === "reputation")
+            {
+                headerText = "Rep";
+                titleText = "Top Reputation";
+            }
+        else if (currentLeaderboard === "wins")
+        {
+            headerText = "Wins";
+            titleText = "Most Wins";
+        }
         
         leaderboardTitle.textContent = titleText;
+        leaderboardScore.textContent = headerText;
         
         const players = await fetchLeaderboard(currentLeaderboard);
         const filteredPlayers = players.filter(player =>

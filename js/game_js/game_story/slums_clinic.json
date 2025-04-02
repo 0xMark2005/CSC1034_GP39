@@ -1,0 +1,27 @@
+[
+    {
+        "dialogue": "clinic_scene",
+        "message": "The medic examines the injured knight. 'I can help, but first prove you can be trusted.'",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Take the medic's test",
+                "message": "The medic prepares a series of medical questions.",
+                "startMinigame": true,
+                "next": "medic_joins"
+            }
+        ]
+    },
+    {
+        "dialogue": "medic_joins",
+        "message": "Impressed by your knowledge, the medic treats the knight's wounds and agrees to join your cause.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Head to resistance headquarters",
+                "message": "With your new allies, you make your way to the resistance base.",
+                "next": "resistance_hq_intro"
+            }
+        ]
+    }
+]

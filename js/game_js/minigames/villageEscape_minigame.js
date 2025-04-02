@@ -1,5 +1,7 @@
 import { Terminal } from "../../terminal.js";
 import { displayAnimation } from "../animation_handler.js";
+import { GameTracker } from "../game_tracker.js";
+import { AllyManager } from "../ally_manager.js";  // Changed from ally_handler.js
 
 export function villageEscapeGame() {
     Terminal.outputMessage("VILLAGE ESCAPE: Knights have come to raid your village!", "#FF8181");
@@ -19,6 +21,13 @@ export function villageEscapeGame() {
             },
             animations: {
                 jump: 'BurningVillage/JumpingOutOfFire.gif'
+            },
+            stats: {
+                jump: {
+                    strength: 5,    // Quick reflexes improve strength
+                    defense: 2,     // Learning to take falls
+                    intelligence: 1 // Quick thinking
+                }
             }
         },
         {
@@ -29,8 +38,20 @@ export function villageEscapeGame() {
                 flee: "You turn away, the cries haunting your conscience..."
             },
             animations: {
-                save: 'BurningVillage/SavedBaby.gif',  // Changed to single animation
-                flee: null  // Remove missing animation
+                save: 'BurningVillage/SavedBaby.gif',
+                flee: null
+            },
+            stats: {
+                save: {
+                    strength: 8,     // Heroic action boosts strength
+                    defense: 5,      // Enduring flames improves defense
+                    intelligence: 3  // Problem-solving under pressure
+                },
+                flee: {
+                    strength: -3,    // Cowardice weakens resolve
+                    defense: -2,     // Less experience in danger
+                    intelligence: -1 // Missed learning opportunity
+                }
             }
         },
         {
@@ -43,6 +64,18 @@ export function villageEscapeGame() {
             animations: {
                 run: 'BurningVillage/RunningWithBabyToKnight.gif',
                 tell: 'BurningVillage/RunningTHroughTown.gif'
+            },
+            stats: {
+                run: {
+                    strength: 6,     // Physical exertion builds strength
+                    defense: 3,      // Quick movement improves defense
+                    intelligence: -1 // Missed diplomatic opportunity
+                },
+                tell: {
+                    strength: 2,     // Less physical but still stressful
+                    defense: 4,      // Diplomatic solution improves defense
+                    intelligence: 7  // Clever thinking boosts intelligence
+                }
             }
         },
         {
@@ -55,6 +88,18 @@ export function villageEscapeGame() {
             animations: {
                 trees: 'BurningVillage/RunningThroughForest.gif',
                 road: 'BurningVillage/RunningTHroughTown.gif'
+            },
+            stats: {
+                trees: {
+                    strength: 4,     // Navigating difficult terrain
+                    defense: 6,      // Better at avoiding detection
+                    intelligence: 5  // Smart tactical choice
+                },
+                road: {
+                    strength: 7,     // Endurance from running
+                    defense: -2,     // More exposed to danger
+                    intelligence: -1 // Less tactical awareness
+                }
             }
         }
     ];
@@ -71,7 +116,7 @@ export function villageEscapeGame() {
         timeoutId = setTimeout(() => {
             Terminal.outputMessage("Your indecision proves fatal!", "#FF0000");
             cleanup(false);
-        }, 10000); // 10 seconds per decision
+        }, 10000);
 
         setupInputHandler();
     }
@@ -99,21 +144,58 @@ export function villageEscapeGame() {
         if (scenario.validAnswers.includes(input)) {
             clearTimeout(timeoutId);
             
-            // Special handling for first scenario - forced jump
-            if (currentRound === 0) {
-                const animation = scenario.animations.jump;
-                await displayAnimation(animation);
-                Terminal.outputMessage(scenario.success.jump, "#00FF00");
-                currentRound++;
-                startScenario();
-                return;
+            // Initialize GameTracker.choices if it doesn't exist
+            if (!GameTracker.choices) {
+                GameTracker.choices = [];
+            }
+            
+            // Modified stat changes logic to handle all scenarios
+            const actionKey = input.startsWith('s') ? 'save' :
+                            input.startsWith('r') ? (currentRound === 3 ? 'road' : 'run') :
+                            input.startsWith('t') ? (currentRound === 3 ? 'trees' : 'tell') :
+                            input.startsWith('j') ? 'jump' : 'flee';
+            
+            const statChanges = scenario.stats ? scenario.stats[actionKey] : null;
+            
+            if (statChanges) {
+                Terminal.outputMessage("\nStat Changes:", "#00FF00");
+                if (statChanges.strength) {
+                    Terminal.outputMessage(`Strength ${statChanges.strength > 0 ? '+' : ''}${statChanges.strength}`, 
+                        statChanges.strength > 0 ? "#00FF00" : "#FF0000");
+                }
+                if (statChanges.defense) {
+                    Terminal.outputMessage(`Defense ${statChanges.defense > 0 ? '+' : ''}${statChanges.defense}`, 
+                        statChanges.defense > 0 ? "#00FF00" : "#FF0000");
+                }
+                if (statChanges.intelligence) {
+                    Terminal.outputMessage(`Intelligence ${statChanges.intelligence > 0 ? '+' : ''}${statChanges.intelligence}`, 
+                        statChanges.intelligence > 0 ? "#00FF00" : "#FF0000");
+                }
             }
 
-            // Updated animation key logic to handle final scenario
+            // Store the stat changes for final tally
+            GameTracker.choices.push({input, stats: statChanges});
+
+            let isGoodChoice = false;
+            
+            if (currentRound === 0) {
+                isGoodChoice = true;
+            } else if (currentRound === 1) {
+                isGoodChoice = input.startsWith('s');
+            } else if (currentRound === 2) {
+                isGoodChoice = input.startsWith('t');
+            } else if (currentRound === 3) {
+                isGoodChoice = input.startsWith('t');
+            }
+
+            if (!isGoodChoice) {
+                Terminal.outputMessage("Your choice weakens you...", "#FF8181");
+            }
+
             const animationKey = 
                 input.startsWith('s') ? 'save' :
-                input.startsWith('r') ? (currentRound === 3 ? 'road' : 'run') :  // Fixed road condition
-                input.startsWith('t') ? (currentRound === 3 ? 'trees' : 'tell') : // Fixed trees condition
+                input.startsWith('r') ? (currentRound === 3 ? 'road' : 'run') :
+                input.startsWith('t') ? (currentRound === 3 ? 'trees' : 'tell') :
                 'flee';
                 
             const animation = scenario.animations[animationKey];
@@ -128,14 +210,13 @@ export function villageEscapeGame() {
                 }
             }
 
-            // Updated success message logic to match animation conditions
             const successMessage = 
                 input.startsWith('s') ? scenario.success.save :
                 input.startsWith('r') ? (currentRound === 3 ? scenario.success.road : scenario.success.run) :
                 input.startsWith('t') ? (currentRound === 3 ? scenario.success.trees : scenario.success.tell) :
                 scenario.success.flee;
             
-            Terminal.outputMessage(successMessage, "#00FF00");
+            Terminal.outputMessage(successMessage, isGoodChoice ? "#00FF00" : "#FF8181");
             currentRound++;
             startScenario();
         } else {
@@ -147,60 +228,88 @@ export function villageEscapeGame() {
         }
     }
 
-    function cleanup(success, timeLeft = 0, choices = []) {
+    function classifyStatValue(value) {
+        if (value >= 80) return 'stat-excellent';
+        if (value >= 60) return 'stat-good';
+        if (value >= 40) return 'stat-average';
+        if (value >= 20) return 'stat-poor';
+        return 'stat-critical';
+    }
+
+    function cleanup(success, timeLeft = 0) {
         gameActive = false;
         const userInput = document.getElementById("user-input");
         if (userInput.currentHandler) {
             userInput.removeEventListener("keypress", userInput.currentHandler);
         }
 
-        // Calculate score based on performance
-        let score = 0;
-        if (success) {
-            // Base completion bonus
-            score += 500;
-            
-            // Time bonus (10 points per second left)
-            const timeBonus = timeLeft * 10;
-            
-            // Moral choice bonuses
-            const moralBonus = calculateMoralBonus(choices);
-            
-            score += timeBonus + moralBonus;
+        const choices = GameTracker.choices || [];
+        let totalStats = {
+            strength: 0,
+            defense: 0,
+            intelligence: 0
+        };
 
-            Terminal.outputMessage(
-                `\nYou've successfully escaped the village! Score: ${score}`,
-                "#00FF00"
-            );
+        choices.forEach(choice => {
+            if (choice.stats) {
+                totalStats.strength += choice.stats.strength || 0;
+                totalStats.defense += choice.stats.defense || 0;
+                totalStats.intelligence += choice.stats.intelligence || 0;
+            }
+        });
 
-            document.dispatchEvent(new CustomEvent('minigameComplete', {
-                detail: { 
-                    success: true,
-                    score: score,
-                    minigameId: 'villageEscape',
-                    timeBonus: timeBonus,
-                    perfect: choices.includes('s') && choices.includes('r') && choices.includes('t'),
-                    message: "Village escape successful!",
-                    choices: choices
-                }
-            }));
+        // Update GameTracker ally stats
+        if (!GameTracker.allies) {
+            GameTracker.allies = [{
+                id: 1,
+                hp: 100,
+                attack: totalStats.strength,
+                defence: totalStats.defense,
+                intelligence: totalStats.intelligence,
+                alive: true
+            }];
         } else {
-            Terminal.outputMessage("Your journey ends here...", "#FF0000");
-            document.dispatchEvent(new CustomEvent('minigameComplete', {
-                detail: { 
-                    success: false,
-                    score: 0,
-                    minigameId: 'villageEscape',
-                    message: "Failed to escape the village"
-                }
-            }));
+            // Update existing ally stats
+            GameTracker.allies[0].attack += totalStats.strength;
+            GameTracker.allies[0].defence += totalStats.defense;
+            GameTracker.allies[0].intelligence += totalStats.intelligence;
         }
+
+        // Update ally visuals using AllyManager
+        AllyManager.loadAllyVisuals();
+
+        // Update stats in left panel
+        document.querySelectorAll('.stat-value').forEach(statValue => {
+            const value = parseInt(statValue.textContent);
+            statValue.classList.add(classifyStatValue(value));
+        });
+
+        let score = success ? 500 : 100;
+        score += (totalStats.strength + totalStats.defense + totalStats.intelligence) * 10;
+
+        // Display final score
+        Terminal.outputMessage(`\nFinal Score: ${score}`, "#FFA500");
+
+        // Dispatch minigame completion event
+        document.dispatchEvent(new CustomEvent('minigameComplete', {
+            detail: { 
+                success: true,
+                score: score,
+                minigameId: 'villageEscape',
+                statChanges: totalStats,
+                message: success ? "You've successfully escaped the village!" : "Barely escaped the village...",
+                next: 'burning_village_escape' // Add this to ensure proper story progression
+            }
+        }));
+
+        // Let the main game handle area transition
+        GameTracker.currentDialogue = 'burning_village_escape';
     }
 
     function calculateMoralBonus(choices) {
         let bonus = 0;
-        if (choices.includes('s')) bonus += 200; // Saving baby bonus
-        if (choices.includes('r') && choices.includes('t')) bonus += 150; // Strategic choices
+        if (choices.includes('s')) bonus += 200;
+        if (choices.includes('r') && choices.includes('t')) bonus += 150;
         return bonus;
     }
 

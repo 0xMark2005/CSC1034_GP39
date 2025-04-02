@@ -19,6 +19,25 @@
     position: relative;
 }
 
+/* Back Button */
+#back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 8px 16px;
+    background-color: #444; /* Adjust color as needed */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#back-button:hover {
+    background-color: #666; /* Slightly lighter on hover */
+}
+
 /* Reignfall Logo */
 #title img {
     width: 60%;
