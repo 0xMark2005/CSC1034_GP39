@@ -348,37 +348,27 @@ export class AllyManager{
 
 // Function to add ally by given name
 export async function recruitAlly(allyName) {
-    let recruitQuery = `
-        SELECT 
-            ally_id,
-            ally_name, 
-            ally_img_folder,
-            ally_max_hp,
-            ally_base_attack,
-            ally_base_defence,
-            ally_base_intelligence
-        FROM allies 
-        WHERE ally_name = ?
-    `;
+    // Use string concatenation instead of parameter binding since the DB query isn't handling parameters
+    let recruitQuery = `SELECT ally_id, ally_name, ally_img_folder, ally_max_hp, ally_base_attack, ally_base_defence, ally_base_intelligence FROM allies WHERE ally_name = '${allyName}'`;
 
     try {
-        const params = [allyName];
         console.log("Attempting to recruit:", allyName);
-        let result = await DBQuery.getQueryResult(recruitQuery, params);
+        let result = await DBQuery.getQueryResult(recruitQuery);
+        console.log("Query result:", result);
 
-        if (!result || !result.data || result.data.length === 0) {
+        if (!result || !result.success || !result.data || result.data.length === 0) {
             console.error(`Ally ${allyName} could not be found in the DB`);
             return false;
         }
 
         const dbAlly = result.data[0];
         console.log("Found ally data:", dbAlly);
-        
+
         if (!GameTracker.allies) {
             GameTracker.allies = [];
         }
 
-        GameTracker.allies.push({
+        const newAlly = {
             id: Number(dbAlly.ally_id),
             name: dbAlly.ally_name,
             imgFolder: dbAlly.ally_img_folder,
@@ -389,9 +379,10 @@ export async function recruitAlly(allyName) {
             intelligence: Number(dbAlly.ally_base_intelligence),
             alive: true,
             equipmentId: null
-        });
+        };
 
-        console.log("Successfully recruited ally:", dbAlly.ally_name);
+        GameTracker.allies.push(newAlly);
+        console.log(`Successfully recruited ${allyName}`, newAlly);
         return true;
 
     } catch (error) {

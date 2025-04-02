@@ -154,18 +154,24 @@ export function generalRescueGame() {
                 statChanges.intelligence = 3;
             }
 
-            if (await recruitAlly('Knight')) {
-                Terminal.outputMessage("\nStat Changes:", "#00FF00");
+            // Apply stats to all existing allies
+            if (GameTracker.allies) {
+                GameTracker.allies.forEach(ally => {
+                    ally.attack += statChanges.strength;
+                    ally.defence += statChanges.defense;
+                    ally.intelligence += statChanges.intelligence;
+                });
+            }
+
+            if (await recruitAlly('Knight')) {  // Name matches DB exactly
+                Terminal.outputMessage("\nStat Changes for all allies:", "#00FF00");
                 Terminal.outputMessage(`Strength +${statChanges.strength}`, "#00FF00");
                 Terminal.outputMessage(`Defense +${statChanges.defense}`, "#00FF00");
                 Terminal.outputMessage(`Intelligence +${statChanges.intelligence}`, "#00FF00");
                 
-                Terminal.outputMessage("\nThe knight joins your cause!", "#00FF00");
-                Terminal.outputMessage("\nHowever, the knight is injured from protecting you during the escape...", "#FF8181");
-                
                 const knight = GameTracker.allies.find(ally => ally.name === 'Knight');
                 if (knight) {
-                    knight.hp = Math.floor(knight.maxHp * 0.3); // 30% health
+                    knight.hp = Math.floor(knight.maxHp * 0.3);
                 }
             }
         } else {
@@ -176,6 +182,15 @@ export function generalRescueGame() {
             statChanges.strength = 2;
             statChanges.defense = 1;
             statChanges.intelligence = 1;
+
+            // Apply reduced stats to all allies
+            if (GameTracker.allies) {
+                GameTracker.allies.forEach(ally => {
+                    ally.attack += statChanges.strength;
+                    ally.defence += statChanges.defense;
+                    ally.intelligence += statChanges.intelligence;
+                });
+            }
 
             if (await recruitAlly('Knight')) {
                 Terminal.outputMessage("\nDespite the failed attempt, you manage to free the knight!", "#FF8181");

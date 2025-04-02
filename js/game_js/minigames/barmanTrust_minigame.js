@@ -1,6 +1,6 @@
 import { Terminal } from "../../terminal.js";
 import { GameTracker } from "../game_tracker.js";
-import { AllyManager } from "../ally_manager.js";
+import { AllyManager, recruitAlly } from "../ally_manager.js";
 
 export function barmanTrustGame() {
     // Game state
@@ -14,11 +14,11 @@ export function barmanTrustGame() {
 
     // Word pairs with hints
     const puzzles = [
-        { scrambled: "YOLALT", original: "LOYALTY", hint: "What a good barman values most" },
+        { scrambled: "YOLALYT", original: "LOYALTY", hint: "What a good barman values most" },
         { scrambled: "TSRUT", original: "TRUST", hint: "Essential for any partnership" },
-        { scrambled: "REBLI", original: "REBEL", hint: "Someone who fights the system" },
+        { scrambled: "REBLE", original: "REBEL", hint: "Someone who fights the system" },
         { scrambled: "GECAHN", original: "CHANGE", hint: "What the resistance seeks" },
-        { scrambled: "THRTু", original: "TRUTH", hint: "What you seek to reveal" }
+        { scrambled: "THRTU", original: "TRUTH", hint: "What you seek to reveal" }
     ];
 
     // Start game
@@ -84,29 +84,7 @@ export function barmanTrustGame() {
         inputEnabled = true;  // Ensure input is enabled at start of round
     }
 
-    function recruitAlly(name) {
-        if (!GameTracker.allies) {
-            GameTracker.allies = [];
-        }
-
-        // Add the ally with unique stats
-        GameTracker.allies.push({
-            id: GameTracker.allies.length + 1,
-            name: name,
-            imgFolder: 'css/assets/images/characters/bar_man',
-            maxHp: 120,
-            hp: 120,
-            attack: 35,
-            defence: 30,
-            intelligence: 45 + Math.min(10, successfulAttempts * 2), // Base intelligence + bonus from game
-            alive: true,
-            equipmentId: null
-        });
-
-        return true;
-    }
-
-    function cleanup(success) {
+    async function cleanup(success) {
         gameActive = false;
         if (timeoutId) clearTimeout(timeoutId);
 
@@ -118,7 +96,7 @@ export function barmanTrustGame() {
 
         if (success) {
             // Recruit barman using ally manager
-            if (recruitAlly('Barman')) {
+            if (await recruitAlly('Bar Man')) {  // Changed from 'Barman' to 'Bar Man' to match DB
                 Terminal.outputMessage("\nThe barman joins your cause!", "#00FF00");
                 AllyManager.loadAllyVisuals();
             } else {

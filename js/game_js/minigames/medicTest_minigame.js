@@ -1,6 +1,6 @@
 import { Terminal } from "../../terminal.js";
 import { GameTracker } from "../game_tracker.js";
-import { AllyManager } from "../ally_manager.js";
+import { AllyManager, recruitAlly } from "../ally_manager.js";
 
 export function medicTestGame() {
     let gameActive = true;
@@ -67,29 +67,7 @@ export function medicTestGame() {
         userInput.currentHandler = inputHandler;
     }
 
-    function recruitAlly(name) {
-        if (!GameTracker.allies) {
-            GameTracker.allies = [];
-        }
-
-        GameTracker.allies.push({
-            id: GameTracker.allies.length + 1,
-            name: name,
-            imgFolder: 'css/assets/images/characters/medic',
-            maxHp: 80,
-            hp: 80,
-            attack: 15,
-            defence: 25,
-            intelligence: 45,
-            healing: 30, // Special healing ability
-            alive: true,
-            equipmentId: null
-        });
-
-        return true;
-    }
-
-    function cleanup(success) {
+    async function cleanup(success) {
         gameActive = false;
         if (timeoutId) clearTimeout(timeoutId);
 
@@ -100,17 +78,36 @@ export function medicTestGame() {
         }
 
         if (success) {
-            // Recruit medic using ally manager
-            if (recruitAlly('Medic')) {
+            // Calculate stat changes based on performance
+            const statChanges = {
+                strength: Math.floor(successfulAttempts * 1.5),
+                defense: Math.floor(successfulAttempts * 1.2),
+                intelligence: Math.floor(successfulAttempts * 2)
+            };
+
+            // Apply stats to all existing allies
+            if (GameTracker.allies) {
+                GameTracker.allies.forEach(ally => {
+                    ally.attack += statChanges.strength;
+                    ally.defence += statChanges.defense;
+                    ally.intelligence += statChanges.intelligence;
+                });
+            }
+
+            if (await recruitAlly('Medic')) {
+                Terminal.outputMessage("\nStat Changes for all allies:", "#00FF00");
+                Terminal.outputMessage(`Strength +${statChanges.strength}`, "#00FF00");
+                Terminal.outputMessage(`Defense +${statChanges.defense}`, "#00FF00");
+                Terminal.outputMessage(`Intelligence +${statChanges.intelligence}`, "#00FF00");
+                
                 Terminal.outputMessage("\nThe medic joins your cause!", "#00FF00");
                 
-                // Heal the knight if present
-                const knight = GameTracker.allies.find(ally => ally.name === 'Knight');
-                if (knight) {
-                    knight.hp = knight.maxHp;
-                    Terminal.outputMessage("\nThe medic heals the knight back to full health!", "#00FF00");
-                }
+                // Heal all allies to full
+                GameTracker.allies.forEach(ally => {
+                    ally.hp = ally.maxHp;
+                });
                 
+                Terminal.outputMessage("\nThe medic heals everyone back to full health!", "#00FF00");
                 AllyManager.loadAllyVisuals();
             } else {
                 Terminal.outputMessage("\nError recruiting medic!", "#FF0000");
