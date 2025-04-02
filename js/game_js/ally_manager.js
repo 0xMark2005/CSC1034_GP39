@@ -1,4 +1,5 @@
-import {GameTracker} from "./game_tracker.js";
+import { DBQuery } from "../dbQuery.js";
+import { GameTracker } from "./game_tracker.js";
 import { Terminal } from "../terminal.js";
 import * as Inventory from "./inventory.js";
 
@@ -343,4 +344,58 @@ export class AllyManager{
         return true;
     }
 
+}
+
+// Function to add ally by given name
+export async function recruitAlly(allyName) {
+    let recruitQuery = `
+        SELECT 
+            ally_id,
+            ally_name, 
+            ally_img_folder,
+            ally_max_hp,
+            ally_base_attack,
+            ally_base_defence,
+            ally_base_intelligence
+        FROM allies 
+        WHERE ally_name = ?
+    `;
+
+    try {
+        const params = [allyName];
+        console.log("Attempting to recruit:", allyName);
+        let result = await DBQuery.getQueryResult(recruitQuery, params);
+
+        if (!result || !result.data || result.data.length === 0) {
+            console.error(`Ally ${allyName} could not be found in the DB`);
+            return false;
+        }
+
+        const dbAlly = result.data[0];
+        console.log("Found ally data:", dbAlly);
+        
+        if (!GameTracker.allies) {
+            GameTracker.allies = [];
+        }
+
+        GameTracker.allies.push({
+            id: Number(dbAlly.ally_id),
+            name: dbAlly.ally_name,
+            imgFolder: dbAlly.ally_img_folder,
+            maxHp: Number(dbAlly.ally_max_hp),
+            hp: Number(dbAlly.ally_max_hp),
+            attack: Number(dbAlly.ally_base_attack),
+            defence: Number(dbAlly.ally_base_defence),
+            intelligence: Number(dbAlly.ally_base_intelligence),
+            alive: true,
+            equipmentId: null
+        });
+
+        console.log("Successfully recruited ally:", dbAlly.ally_name);
+        return true;
+
+    } catch (error) {
+        console.error("An error occurred when recruiting the ally: ", error);
+        return false;
+    }
 }

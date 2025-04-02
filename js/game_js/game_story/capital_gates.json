@@ -1,23 +1,23 @@
 [
     {
         "dialogue": "capital_gates_intro",
-        "message": "You arrive at the capital's imposing gates. Guards thoroughly inspect all who enter.",
+        "message": "You arrive at the capital city gates. Guards are checking all who enter.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Report village raid",
-                "message": "The guards seem suspicious of your story.",
-                "next": "guard_reaction"
+                "choice": "1. Tell them about the village attack",
+                "message": "You explain what happened to your village.",
+                "next": "guard_questioning"
             },
             {
-                "choice": "2. Claim business purposes",
-                "message": "Present yourself as a merchant seeking trade opportunities.",
+                "choice": "2. Pose as a merchant",
+                "message": "You claim to be a traveling merchant.",
                 "next": "merchant_entry"
             }
         ]
     },
     {
-        "dialogue": "guard_reaction",
+        "dialogue": "guard_questioning",
         "message": "The guards discuss your report among themselves, clearly skeptical.",
         "optionType": "number",
         "options": [
@@ -29,18 +29,6 @@
             {
                 "choice": "2. Change your story",
                 "message": "Your attempt to change your story makes the guards even more suspicious.",
-                "next": "prison_intro"
-            }
-        ]
-    },
-    {
-        "dialogue": "arrested_outcome",
-        "message": "The guards exchange knowing looks before declaring you 'a person of interest' and arresting you.",
-        "optionType": "number",
-        "options": [
-            {
-                "choice": "1. Accept arrest",
-                "message": "You're escorted to the prison, already planning your next move.",
                 "next": "prison_intro"
             }
         ]

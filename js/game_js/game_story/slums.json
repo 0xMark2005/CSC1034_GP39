@@ -13,14 +13,26 @@
     },
     {
         "dialogue": "tavern_recognition",
-        "message": "The barman's eyes widen with recognition. 'You! From the village attacks! Guards will pay well for information about survivors...'",
+        "message": "The barman's eyes widen with recognition. 'You! From the village attacks!'",
         "optionType": "number",
         "options": [
             {
                 "choice": "1. Try to negotiate",
-                "message": "You raise your hands cautiously.",
-                "next": "barman_deal",
-                "reputation": 5
+                "message": "The barman studies you carefully...",
+                "startMinigame": true,
+                "next": "barman_trust_complete"
+            }
+        ]
+    },
+    {
+        "dialogue": "barman_trust_complete",
+        "message": "The barman nods approvingly. 'You've proven yourself trustworthy. I need your help with something...'",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Listen to his request",
+                "message": "He tells you about an imprisoned knight who refused the king's orders.",
+                "next": "knight_rescue_intro"
             }
         ]
     },
