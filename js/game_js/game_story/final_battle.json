@@ -27,14 +27,14 @@
     },
     {
         "dialogue": "ancient_altar",
-        "message": "You discover an ancient amulet glowing with power.",
+        "message": "You discover an ancient staff glowing with power.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Take the amulet",
-                "message": "The amulet pulses with protective energy.",
+                "choice": "1. Take the staff",
+                "message": "The staff pulses with protective energy.",
                 "next": "final_approach",
-                "item": "guardian_amulet"
+                "item": "Royal Staff"
             },
             {
                 "choice": "2. Leave it",

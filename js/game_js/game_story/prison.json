@@ -71,9 +71,9 @@
               "next": "proceed_to_slums"
           },
           {
-              "choice": "2. Take Guard's Dagger",
-              "message": "A small but effective weapon.",
-              "item": "Guard Dagger",
+              "choice": "2. Take Guard's Sword",
+              "message": "An effective weapon that may be of use later.",
+              "item": "Knight Sword",
               "next": "proceed_to_slums"
           },
           {
@@ -97,14 +97,14 @@
   },
   {
       "dialogue": "guard_unconscious",
-      "message": "The guard lies unconscious. His armor could be useful.",
+      "message": "The guard lies unconscious. His protective gear could be useful.",
       "optionType": "number",
       "options": [
           {
-              "choice": "1. Take guard's armor",
+              "choice": "1. Take guard's shield",
               "message": "You quickly don the guard's armor.",
               "next": "prison_escape",
-              "item": "guard_armor"
+              "item": "Knight Shield"
           },
           {
               "choice": "2. Leave it",

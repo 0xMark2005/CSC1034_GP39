@@ -25,17 +25,35 @@
     },
     {
         "dialogue": "merchant_help",
-        "message": "A friendly merchant offers you a healing potion.",
+        "message": "A friendly merchant offers you a potion of choice.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Accept the potion",
+                "choice": "1. Accept healing potion",
                 "message": "You carefully pocket the healing potion.",
                 "next": "merchant_continue",
-                "item": "healing_potion"
+                "item": "Health Potion"
             },
             {
-                "choice": "2. Decline",
+                "choice": "2. Accept attack potion",
+                "message": "You carefully pocket the attack potion.",
+                "next": "merchant_continue",
+                "item": "Attack Potion"
+            },
+            {
+                "choice": "3. Accept defence potion",
+                "message": "You carefully pocket the defence potion.",
+                "next": "merchant_continue",
+                "item": "Defence Potion"
+            },
+            {
+                "choice": "4. Accept intelligence potion",
+                "message": "You carefully pocket the intelligence potion.",
+                "next": "merchant_continue",
+                "item": "Intelligence Potion"
+            },
+            {
+                "choice": "5. Decline",
                 "message": "You politely decline the offer.",
                 "next": "merchant_continue"
             }

@@ -25,17 +25,23 @@
     },
     {
         "dialogue": "armory_visit",
-        "message": "The resistance leader offers you their enchanted bow.",
+        "message": "The resistance leader offers you one of the finest pieces of equipment known.",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Accept the bow",
+                "choice": "1. Accept Royal Sword",
                 "message": "You feel the bow's ancient power.",
                 "next": "resistance_planning",
-                "item": "resistance_bow"
+                "item": "Royal Sword"
             },
             {
-                "choice": "2. Decline",
+                "choice": "2. Accept Royal Shield",
+                "message": "You feel the bow's ancient power.",
+                "next": "resistance_planning",
+                "item": "Royal Shield"
+            },
+            {
+                "choice": "3. Decline",
                 "message": "You prefer your current weapons.",
                 "next": "resistance_planning"
             }

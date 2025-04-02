@@ -22,15 +22,15 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Take Royal Sword",
+                "choice": "1. Take Wooden Sword",
                 "message": "You grab the ancestral blade.",
-                "item": "Royal Sword",
+                "item": "Wooden Sword",
                 "next": "escape_start"
             },
             {
                 "choice": "2. Take healing potion",
                 "message": "You pocket the medicinal brew.",
-                "item": "Full Potion",
+                "item": "Half Health Potion",
                 "next": "escape_start"
             },
             {
