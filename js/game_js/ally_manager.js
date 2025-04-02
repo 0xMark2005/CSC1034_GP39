@@ -361,8 +361,7 @@ export class AllyManager{
 }
 
 // Function to add ally by given name
-export async function recruitAlly(allyName) {
-    // Use string concatenation instead of parameter binding since the DB query isn't handling parameters
+export async function recruitAlly(allyName, success = true) {  // Add success parameter
     let recruitQuery = `SELECT ally_id, ally_name, ally_img_folder, ally_max_hp, ally_base_attack, ally_base_defence, ally_base_intelligence FROM allies WHERE ally_name = '${allyName}'`;
 
     try {
@@ -382,12 +381,20 @@ export async function recruitAlly(allyName) {
             GameTracker.allies = [];
         }
 
+        // Set initial HP based on success state for Knight
+        let initialHp = Number(dbAlly.ally_max_hp);
+        if (allyName === 'Knight') {
+            initialHp = success ? 
+                Math.floor(initialHp * 0.2) :  // 20% HP on success
+                Math.floor(initialHp * 0.1);   // 10% HP on failure
+        }
+
         const newAlly = {
             id: Number(dbAlly.ally_id),
             name: dbAlly.ally_name,
             imgFolder: dbAlly.ally_img_folder,
             maxHp: Number(dbAlly.ally_max_hp),
-            hp: Number(dbAlly.ally_max_hp),
+            hp: initialHp,
             attack: Number(dbAlly.ally_base_attack),
             defence: Number(dbAlly.ally_base_defence),
             intelligence: Number(dbAlly.ally_base_intelligence),

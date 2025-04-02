@@ -85,8 +85,8 @@ export function medicTestGame() {
                 intelligence: Math.floor(successfulAttempts * 2)
             };
 
-            // Apply stats to all existing allies
-            if (GameTracker.allies) {
+            // Apply stats to all existing allies first
+            if (GameTracker.allies && GameTracker.allies.length > 0) {
                 GameTracker.allies.forEach(ally => {
                     ally.attack += statChanges.strength;
                     ally.defence += statChanges.defense;
@@ -94,6 +94,7 @@ export function medicTestGame() {
                 });
             }
 
+            // Then recruit the medic
             if (await recruitAlly('Medic')) {
                 Terminal.outputMessage("\nStat Changes for all allies:", "#00FF00");
                 Terminal.outputMessage(`Strength +${statChanges.strength}`, "#00FF00");
@@ -108,17 +109,24 @@ export function medicTestGame() {
                 });
                 
                 Terminal.outputMessage("\nThe medic heals everyone back to full health!", "#00FF00");
-                AllyManager.loadAllyVisuals();
-            } else {
-                Terminal.outputMessage("\nError recruiting medic!", "#FF0000");
+                
+                // Update visuals after all changes
+                await AllyManager.loadAllyVisuals();
             }
         }
 
+        // Calculate final score
         let score = success ? 500 : 100;
-        score += (successfulAttempts * 100);
+        score += (successfulAttempts * 100);  // Add bonus for each correct answer
+
+        // Add bonus for full success
+        if (successfulAttempts >= requiredSuccesses) {
+            score += 300;  // Bonus for completing all required successes
+        }
 
         Terminal.outputMessage(`\nFinal Score: ${score}`, "#FFA500");
 
+        // Dispatch completion event with updated score
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: success,

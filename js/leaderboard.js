@@ -4,14 +4,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     let currentLeaderboard = "score";
     
     // Initialize the arrows once
+    const backButton = document.getElementById("back-button");
     const leaderboardTitle = document.getElementById("leaderboard-title");
     const leaderboardScore = document.getElementById("score");
     const leftArrow = document.getElementById("left-arrow");
     const rightArrow = document.getElementById("right-arrow");
 
+    // Add back button functionality
+    backButton.addEventListener("click", () => {
+        window.location.href = "main_menu.html";
+    });
+
     // Event listeners for arrows
     leftArrow.addEventListener("click", () => switchLeaderboard(-1));
     rightArrow.addEventListener("click", () => switchLeaderboard(1));
+
+    //Event listenrer for back
+    backButton.addEventListener("click, ")
 
     // Fetch leaderboard data based on the type of leaderboard (score, reputation, wins)
     async function fetchLeaderboard(type) {
