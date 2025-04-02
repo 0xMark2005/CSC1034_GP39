@@ -1,139 +1,41 @@
-//Imports
-import { Terminal } from "./terminal.js";
+// Imports
 import { DBQuery } from "./dbQuery.js";
 import SettingsManager from "./settingsManager.js";
 import * as Util from "./util.js";
 
-//Constants
-const menuOptions = ["New Game", "Load Game", "Settings", "Logout"];
-const terminalColor = "#00FF00";
-const optionsColor = "#00FF00";
-const errorColor = "#FF0000";
-const optionResultColor = "#0000FF";
-
-//Variables
-let inputFor = "menu";
 let gameSaves = [];
 
 document.addEventListener("DOMContentLoaded", async function () {
-    //ensure the user is logged in
-    await Util.checkUserLogin();
+  await Util.checkUserLogin();
+  localStorage.removeItem("loadGame");
+  localStorage.removeItem("gameSessionId");
 
-    //remove previously loaded game
-    localStorage.removeItem("loadGame");
-    localStorage.removeItem("gameSessionId");
-    
-    //Initialize the terminal
-    let outputTerminal = document.getElementById("output-terminal"); 
-    let userInput = document.getElementById("user-input");
-    Terminal.initialize(outputTerminal, userInput);
-    const currentSettings = SettingsManager.applySettings();
+  document.getElementById("new-game").addEventListener("click", () => {
+    localStorage.setItem("loadGame", false);
+    window.location.href = "temp_game.html";
+  });
 
-    // Retrieve username from session (stored during login)
-    let username = localStorage.getItem("username");
-    if (username) {
-        Terminal.outputMessage(`Hello, ${username}`, "#00FF00");
-    }
+  document.getElementById("load-game").addEventListener("click", async () => {
+    await loadGameSaves();
+  });
 
-    //add event for the user input
-    userInput.addEventListener("keypress", async function (event) {
-        if (event.key === "Enter") {
-            
-            //get the user input
-            const choice = Terminal.getUserInput();
+  document.getElementById("settings-menu").addEventListener("click", () => {
+    window.location.href = "settings.html";
+  });
 
-            switch(inputFor){
-                case "menu": await chooseMenuOption(choice); break;
-                case "loadGame": chooseGameSave(choice); break;
-            }
-        }
-    });
-    
+  document.getElementById("player-stats").addEventListener("click", () => {
+    window.location.href = "profile.html";
+  });
+
+  document.getElementById("leaderboard-menu").addEventListener("click", () => {
+    window.location.href = "Leaderboard.html";
+  });
+
+  document.getElementById("popup-close").addEventListener("click", closePopup);
 });
 
-//function to output the menu options to the terminal
-function resetMenu(){
-    document.getElementById("output-terminal").innerHTML = `
-    <h2>Main Menu</h2>
-        <ol>
-            <li>1. New Game</li>
-            <li>2. Load Game</li>
-            <li>3. Settings</li>
-            <li>4. Edit Account</li>
-            <li>5. Log Out</li>
-        </ol>`;
-}
-
-//
-//Functions for reading input
-//
-async function chooseMenuOption(choice){
-    // Wait 1 second before processing the input
-    setTimeout(async () => {
-        handleMenuChoice(choice);
-    }, 1000); // 1 sec delay
-}
-
-function chooseGameSave(choice){
-    if(!gameSaves || gameSaves.length < 1){
-        inputFor = "menu";
-        window.location.reload(); // Reload page instead of resetMenu
-        return;
-    }
-
-    try{
-        // Check for delete command (e.g., "1D")
-        if(choice.toString().toLowerCase().endsWith('d')){
-            let index = parseInt(choice) - 1;
-            if(index >= 0 && index < gameSaves.length){
-                deleteGameSave(index);
-            }
-            return;
-        }
-
-        // Check for return to menu
-        if(parseInt(choice) === gameSaves.length + 1){
-            inputFor = "menu";
-            window.location.reload(); // Reload page instead of resetMenu
-            return;
-        }
-
-        // Handle loading game
-        let choiceNum = parseInt(choice);
-        if(choiceNum < 1 || choiceNum > gameSaves.length){
-            Terminal.outputMessage(`Invalid choice, please enter the number of the save file you wish to load (1-${gameSaves.length}).`, errorColor);
-            return;
-        }
-
-        let gameSessionId = gameSaves[choiceNum-1].game_session_id;
-        localStorage.setItem("gameSessionId", gameSessionId);
-        localStorage.setItem("loadGame", true);
-
-        Terminal.outputMessage("Loading Game...", optionResultColor);
-        window.location.href = "temp_game.html";
-    }
-    catch(error){
-        console.log("Error: ", error);
-        Terminal.outputMessage("Invalid choice!");
-    }
-}
-
-// Add this new function to handle save deletion
-async function deleteGameSave(index) {
-    try {
-        let query = `DELETE FROM game_sessions WHERE game_session_id = ${gameSaves[index].game_session_id}`;
-        await DBQuery.executeQuery(query);
-        Terminal.outputMessage("Save file deleted successfully.", optionResultColor);
-        loadGameSaves(); // Refresh the list
-    } catch(error) {
-        Terminal.outputMessage("Error deleting save file.", errorColor);
-    }
-}
-
-//function allowing user to select a game save
-async function loadGameSaves(){
-    //Get all the user's save files, ordered by most recent first
-    let query = `SELECT * FROM game_sessions 
+async function loadGameSaves() {
+  const query = `SELECT * FROM game_sessions 
                  WHERE user_id = ${localStorage.getItem("userID")} 
                  ORDER BY previous_save_datetime DESC 
                  LIMIT 5`;
@@ -226,16 +128,6 @@ function handleLogout() {
     }
 }
 
-if (userInput === "exit" || userInput === "menu") {
-    window.location.href = "main_menu.html";  
+function closePopup() {
+  document.getElementById("popup-container").style.display = "none";
 }
-
-//button sound effect
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const clickSound = new Audio('css/assets/sounds/button-click.mp3');
-            clickSound.play();
-        });
-    });
-});
