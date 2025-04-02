@@ -218,6 +218,8 @@ button {
   position: relative;
   background: linear-gradient(to bottom, #1e1e1eed, #000000);
   overflow: hidden;
+  margin-top: 15px;
+
 }
 #main-container.centered {
   align-items: center;
@@ -489,6 +491,8 @@ button:focus {
 
 .left {
   scrollbar-width: thin;
+  margin-top: 25px;
+
   scrollbar-color: #555 #2e2e2e;
 }
 

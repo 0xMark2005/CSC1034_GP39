@@ -190,6 +190,7 @@ async function handleLogin() {
                 // Save session info to localStorage
                 localStorage.setItem("loggedIn", "true");
                 localStorage.setItem("userID", userID);
+                localStorage.setItem("username", username);
                 localStorage.setItem("sessionToken", sessionToken);
 
                 window.location.href = "main_menu.html";

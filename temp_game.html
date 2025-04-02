@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/terminal.css" />
     <link rel="stylesheet" href="css/temp_game.css" />
     <link rel="stylesheet" href="css/inventory.css" />
+    <link rel="stylesheet" href="css/global_menu.css" />
 
     <!-- Inline CSS for layout changes -->
     <style>
@@ -20,6 +21,39 @@
     </style>
   </head>
   <body>
+     <!-- Top Bar Navigation -->
+     <nav class="topbar">
+      <div class="topbar-left">
+        <a href="index.html">    
+          <img src="css/assets/images/icons/homeIcon.png" alt="Home Icon" class="link-icon">
+          Menu
+        </a>
+     
+        <a href="settings.html">    
+          <img src="css/assets/images/icons/settingsIcon.png" alt="Settings Icon" class="link-icon">
+          Settings
+        </a>
+
+        <a href="#a">    
+          <img src="css/assets/images/icons/saveFileIcon.png" alt="Save File Icon" class="link-icon">
+          Save File
+        </a>
+
+      </div>
+    
+      <div class="topbar-right">
+        <div class="user-dropdown">
+          <a id="user-button">User ▾</a>
+          <div class="dropdown-content" id="user-dropdown">
+            <span id="username-label"></span>
+            <a href="logout.html">Log Out</a>
+          </div>
+        </div>
+        <button class="hamburger" id="hamburger-btn">☰</button>
+      </div>
+    </nav>
+
+     <!-- Top Bar Navigation Ends-->
     <div class="container">
       <!-- NEW: Toggle button placed outside the left panel so it stays accessible -->
       <button id="toggle-left">☰</button>
@@ -91,6 +125,7 @@
     <!-- JavaScript Import -->
     <script type="module" src="./js/game_js/temp_game.js"></script>
     <script type="module" src="js/game_js/inventory.js"></script>
+    <script type="module" src="js/global_menu.js"></script>
     <script type="module">
       document.addEventListener("DOMContentLoaded", () => {
         const leftPanel = document.getElementById("left-panel");
