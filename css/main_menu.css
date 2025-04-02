@@ -1,276 +1,275 @@
 /** CSS for the menu which appears after the user has logged in **/
 #main-menu {
-    text-align: center;
-    padding: 15px;
-    display: block; /* Stack items vertically */
-    margin: 10px;
+  text-align: center;
+  padding: 15px;
+  display: block; /* Stack items vertically */
+  margin: 10px;
+}
+
+.picmargin {
+  margin-top: 10px;
+}
+
+/* Default grid layout for larger screens: 4 columns, variable rows */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+  background-color: #00000000;
+  padding: 100px;
+  padding-top: 0px !important;
+}
+
+.menu-item {
+  background-color: #333;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  aspect-ratio: 1 / 1;
+  border-style: solid;
+  border-width: 4px;
+  border-color: #4d4d4d;
+}
+
+.menu-item img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+.tile-label {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-family: "Consolas", monospace;
+  font-size: 20px;
+  color: #d1cd7f;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  z-index: 1;
+  font-weight: bolder;
+}
+
+.menu-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 10px #ffd700;
+}
+
+.menu-item:active {
+  animation: clickPop 0.2s ease forwards;
+}
+
+@keyframes clickPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.big-tile {
+  grid-column: 1 / span 2;
+  grid-row: 1 / span 2;
+  aspect-ratio: 1 / 1;
+}
+
+@media screen and (max-width: 768px) {
+  /* Safari-specific fix for viewport height */
+  html, body {
+    height: 100%;
+    min-height: -webkit-fill-available;
   }
   
-  .picmargin {
-    margin-top: 10px;
+  /* Fix for mobile Safari viewport issues */
+  #main-menu {
+    height: 100%;
+    height: -webkit-fill-available;
+    margin: 0;
+    padding: 10px;
   }
   
-  /* Default grid layout for larger screens: 4 columns, variable rows */
   .menu-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    width: 100%;
-    background-color: #00000000;
-    padding: 100px;
-    padding-top: 0px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    padding: 15px;
+    /* Reduced padding to fit better */
+    height: auto;
+    min-height: 100%;
+    box-sizing: border-box;
+    /* iOS safe area insets */
+    padding-top: env(safe-area-inset-top, 10px);
+    padding-bottom: env(safe-area-inset-bottom, 10px);
+    padding-left: env(safe-area-inset-left, 15px);
+    padding-right: env(safe-area-inset-right, 15px);
   }
   
   .menu-item {
-    background-color: #333;
-    position: relative;
-    cursor: pointer;
+    width: 100%;
+    aspect-ratio: auto;
     display: flex;
+    flex-direction: row;
+    height: 80px; /* Reduced height */
+    position: relative;
     align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    aspect-ratio: 1 / 1;
-    border-style: solid;
-    border-width: 4px;
-    border-color: #4d4d4d;
+    justify-content: flex-start;
+    padding-left: 15px;
+    box-sizing: border-box;
+    /* Smaller borders on mobile */
+    border-width: 2px;
+  }
+  
+  .big-tile {
+    grid-column: auto;
+    grid-row: auto;
   }
   
   .menu-item img {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 80px; /* Reduced width */
+    height: 100%; /* Match parent height */
     object-fit: cover;
     top: 0;
-    left: 0;
+    right: 0;
+    left: auto;
     z-index: 0;
+    /* Fix for Safari rendering */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
   
   .tile-label {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    font-family: "Consolas", monospace;
-    font-size: 20px;
-    color: #d1cd7f;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    position: relative;
+    bottom: auto;
+    left: auto;
     z-index: 1;
-    font-weight: bolder;
+    font-size: 16px; /* Smaller font */
+    max-width: calc(100% - 100px);
   }
-  
-  .menu-item:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 10px #ffd700;
-  }
-  
-  .menu-item:active {
-    animation: clickPop 0.2s ease forwards;
-  }
-  
-  @keyframes clickPop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-  }
-  
-  .big-tile {
-    grid-column: 1 / span 2;
-    grid-row: 1 / span 2;
-    aspect-ratio: 1 / 1;
-  }
-  
-  @media screen and (max-width: 768px) {
-    /* Safari-specific fix for viewport height */
-    html, body {
-      height: 100%;
-      min-height: -webkit-fill-available;
-    }
-    
-    /* Fix for mobile Safari viewport issues */
-    #main-menu {
-      height: 100%;
-      height: -webkit-fill-available;
-      margin: 0;
-      padding: 10px;
-    }
-    
-    .menu-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      overflow-y: auto;
-      padding: 15px;
-      /* Reduced padding to fit better */
-      height: auto;
-      min-height: 100%;
-      box-sizing: border-box;
-      /* iOS safe area insets */
-      padding-top: env(safe-area-inset-top, 10px);
-      padding-bottom: env(safe-area-inset-bottom, 10px);
-      padding-left: env(safe-area-inset-left, 15px);
-      padding-right: env(safe-area-inset-right, 15px);
-    }
-    
-    .menu-item {
-      width: 100%;
-      aspect-ratio: auto;
-      display: flex;
-      flex-direction: row;
-      height: 80px; /* Reduced height */
-      position: relative;
-      align-items: center;
-      justify-content: flex-start;
-      padding-left: 15px;
-      box-sizing: border-box;
-      /* Smaller borders on mobile */
-      border-width: 2px;
-    }
-    
-    .big-tile {
-      grid-column: auto;
-      grid-row: auto;
-    }
-    
-    .menu-item img {
-      position: absolute;
-      width: 80px; /* Reduced width */
-      height: 100%; /* Match parent height */
-      object-fit: cover;
-      top: 0;
-      right: 0;
-      left: auto;
-      z-index: 0;
-      /* Fix for Safari rendering */
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
-    }
-    
-    .tile-label {
-      position: relative;
-      bottom: auto;
-      left: auto;
-      z-index: 1;
-      font-size: 16px; /* Smaller font */
-      max-width: calc(100% - 100px);
-    }
-  }
-  
-  /* Additional fixes for iPhone */
-  @media screen and (max-width: 428px) {
-    .menu-item {
-      height: 70px; /* Even smaller height for narrow screens */
-      padding-left: 10px;
-    }
-    
-    .menu-item img {
-      width: 70px; /* Matching width */
-    }
-    
-    .tile-label {
-      font-size: 14px;
-      max-width: calc(100% - 80px);
-    }
-    
-    .current-image
-    {
-        width: 100%
-    }
+}
 
-    .current-image img
-    {
-        width: 100%
-    }
-    .picmargin {
-      margin-top: 5px;
-    }
+/* Additional fixes for iPhone */
+@media screen and (max-width: 428px) {
+  .menu-item {
+    height: 70px; /* Even smaller height for narrow screens */
+    padding-left: 10px;
+  }
+  
+  .menu-item img {
+    width: 70px; /* Matching width */
+  }
+  
+  .tile-label {
+    font-size: 14px;
+    max-width: calc(100% - 80px);
+  }
+  
+  .current-image
+  {
+      width: 100%
   }
 
+  .current-image img
+  {
+      width: 100%
+  }
+  .picmargin {
+    margin-top: 5px;
+  }
+}
 
-  
+
+
 
 /* Popup styling */
 
-  
-  .popup h2 {
-    margin-top: 0;
-    text-align: center;
-  }
-  
-  .popup ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 15px 0;
-  }
-  
-  .popup li {
-    padding: 10px;
-    border-bottom: 1px solid #222222;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-  }
-  
-  .popup li:last-child {
-    border-bottom: none;
-  }
-  
-  .popup button {
-    background: #171717;
-    color: white;
-    border: 0;
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  
-  .popup button:hover {
-    background: #000000;
-  }
-  
+
+.popup h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.popup ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.popup li {
+  padding: 10px;
+  border-bottom: 1px solid #222222;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.popup li:last-child {
+  border-bottom: none;
+}
+
+.popup button {
+  background: #171717;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.popup button:hover {
+  background: #000000;
+}
+
 /* Popup container centered */
 .popup-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  /* Popup style similar to leaderboard container */
-  .popup {
-    background: rgba(23, 23, 23, 0.85);
-    width: 50%;
-    max-width: 600px;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
-    max-height: 90vh;
-    overflow-y: auto;
-    font-family: 'Consolas', 'Lucida Console', monospace;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-  }
-  
-  .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: white;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Popup style similar to leaderboard container */
+.popup {
+  background: rgba(23, 23, 23, 0.85);
+  width: 50%;
+  max-width: 600px;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+  max-height: 90vh;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Lucida Console', monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: white;
+}
