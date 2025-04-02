@@ -1,3 +1,5 @@
+import { DBQuery } from "./dbQuery.js";
+
 // settings-manager.js
 const SettingsManager = {
     // Default settings as fallback
@@ -21,19 +23,10 @@ const SettingsManager = {
             return this.defaults;
         }
 
-        const params = new URLSearchParams();
-        params.append('hostname', 'localhost');
-        params.append('username', 'jdonnelly73');
-        params.append('password', 'CHZHy02qM20fcLVt');
-        params.append('database', 'CSC1034_CW_39');
-        params.append('query', `SELECT * FROM user_settings WHERE userID='${userID}' LIMIT 1`);
+        let query = `SELECT * FROM user_settings WHERE userID=${userID} LIMIT 1`;
 
         try {
-            const response = await fetch('includes/db_connect.php', { 
-                method: 'POST', 
-                body: params 
-            });
-            const result = await response.json();
+            const result = await DBQuery.getQueryResult(query);
 
             if (result.data && result.data.length > 0) {
                 const dbSettings = result.data[0];
@@ -61,27 +54,22 @@ const SettingsManager = {
 
     // Create default settings in database
     createDefaultSettings: async function(userID) {
-        const params = new URLSearchParams();
-        params.append('hostname', 'localhost');
-        params.append('username', 'jdonnelly73');
-        params.append('password', 'CHZHy02qM20fcLVt');
-        params.append('database', 'CSC1034_CW_39');
-        params.append('query', `
+        let query = `
             INSERT INTO user_settings (
                 userID, currentTextSize, isHighContrast, volume, 
                 soundEnabled, cursorStyle, terminalColor,
                 animationsEnabled, keyboardSounds, textSpeed
             ) VALUES (
-                '${userID}', '${this.defaults.currentTextSize}', 
+                ${userID}, '${this.defaults.currentTextSize}', 
                 ${this.defaults.isHighContrast ? 1 : 0}, ${this.defaults.volume},
                 ${this.defaults.soundEnabled ? 1 : 0}, '${this.defaults.cursorStyle}', 
                 '${this.defaults.terminalColor}', ${this.defaults.animationsEnabled ? 1 : 0},
                 ${this.defaults.keyboardSounds ? 1 : 0}, '${this.defaults.textSpeed}'
             )
-        `);
+        `;
 
         try {
-            await fetch('includes/db_connect.php', { method: 'POST', body: params });
+            let result = await DBQuery.getQueryResult(query);
         } catch (e) {
             console.error("Could not create default settings:", e);
         }
@@ -98,7 +86,7 @@ const SettingsManager = {
             // Use localStorage if available and less than 30 minutes old
             if (savedSettings && savedTimestamp && 
                 (currentTime - parseInt(savedTimestamp) < 30 * 60 * 1000)) {
-                return {...this.defaults, ...JSON.parse(savedSettings)};
+                //return {...this.defaults, ...JSON.parse(savedSettings)};
             }
             
             // If not in localStorage or too old, load from DB
@@ -179,13 +167,7 @@ const SettingsManager = {
             return;
         }
 
-        const params = new URLSearchParams();
-        params.append('hostname', 'localhost');
-        params.append('username', 'jdonnelly73');
-        params.append('password', 'CHZHy02qM20fcLVt');
-        params.append('database', 'CSC1034_CW_39');
-        params.append('query', `
-            UPDATE user_settings SET
+        let query = `UPDATE user_settings SET
                 currentTextSize = '${settings.currentTextSize}',
                 isHighContrast = ${settings.isHighContrast ? 1 : 0},
                 volume = ${settings.volume},
@@ -195,11 +177,10 @@ const SettingsManager = {
                 animationsEnabled = ${settings.animationsEnabled ? 1 : 0},
                 keyboardSounds = ${settings.keyboardSounds ? 1 : 0},
                 textSpeed = '${settings.textSpeed}'
-            WHERE userID = '${userID}'
-        `);
+            WHERE userID = ${userID}`;
 
         try {
-            await fetch('includes/db_connect.php', { method: 'POST', body: params });
+            let result = await DBQuery.getQueryResult(query);
         } catch (e) {
             console.error("Could not save settings to database:", e);
         }

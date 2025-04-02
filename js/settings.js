@@ -10,6 +10,7 @@ window.appSettings = {
     textSpeed: "normal"
 };
 
+import { DBQuery } from "./dbQuery.js";
 import { Terminal } from "./terminal.js";
 import * as Util from "./util.js";
 
@@ -178,17 +179,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             keyboardSounds='${window.appSettings.keyboardSounds ? 1 : 0}',
             textSpeed='${window.appSettings.textSpeed}'
             WHERE userID='${userID}'`;
-        
-        let params = new URLSearchParams();
-        params.append('hostname', 'localhost');
-        params.append('username', 'jdonnelly73');
-        params.append('password', 'CHZHy02qM20fcLVt');
-        params.append('database', 'CSC1034_CW_39');
-        params.append('query', query);
-        
+
         try {
-            let response = await fetch('includes/db_connect.php', { method: 'POST', body: params });
-            let result = await response.json();
+            let result = await DBQuery.getQueryResult(query);
+            
             if(result.error) {
                 console.error("Error saving settings:", result.error);
             } else {
@@ -206,34 +200,27 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error("No user ID found for loading settings."); 
             return; 
         }
-        let query = `SELECT * FROM user_settings WHERE userID='${userID}' LIMIT 1`;
-        let params = new URLSearchParams();
-        params.append('hostname', 'localhost');
-        params.append('username', 'jdonnelly73');
-        params.append('password', 'CHZHy02qM20fcLVt');
-        params.append('database', 'CSC1034_CW_39');
-        params.append('query', query);
+
+
+        let query = `SELECT * FROM user_settings WHERE userID=${userID} LIMIT 1`;
+
         try {
-            let response = await fetch('includes/db_connect.php', { method: 'POST', body: params });
-            let result = await response.json();
+            let result = await DBQuery.getQueryResult(query);
+
             if (result.data && result.data.length > 0) {
                 const settingsData = result.data[0];
                 window.appSettings.currentTextSize = settingsData.currentTextSize;
                 window.appSettings.isHighContrast = (settingsData.isHighContrast == 1);
-            } else {
+            } 
+            else {
                 // No settings exist; create default row
                 let defaultTextSize = window.appSettings.currentTextSize;
                 let defaultHighContrast = window.appSettings.isHighContrast ? 1 : 0;
-                let insertQuery = `INSERT INTO user_settings (userID, currentTextSize, isHighContrast) VALUES ('${userID}', '${defaultTextSize}', '${defaultHighContrast}')`;
-                let insertParams = new URLSearchParams();
-                insertParams.append('hostname', 'localhost');
-                insertParams.append('username', 'jdonnelly73');
-                insertParams.append('password', 'CHZHy02qM20fcLVt');
-                insertParams.append('database', 'CSC1034_CW_39');
-                insertParams.append('query', insertQuery);
-                let insertResponse = await fetch('includes/db_connect.php', { method: 'POST', body: insertParams });
-                let insertResult = await insertResponse.json();
-                if (insertResult.error) {
+
+                let insertQuery = `INSERT INTO user_settings (userID, currentTextSize, isHighContrast) VALUES (${userID}, '${defaultTextSize}', '${defaultHighContrast}')`;
+                let insertResult = await DBQuery.getQueryResult(insertQuery);
+
+                if (!insertResult.success) {
                     console.error("Error inserting default settings:", insertResult.error);
                 }
             }
