@@ -68,69 +68,23 @@ export function medicTestGame() {
     }
 
     async function cleanup(success) {
-        gameActive = false;
-        if (timeoutId) clearTimeout(timeoutId);
-
-        // Remove input handler
-        const userInput = document.getElementById("user-input");
-        if (userInput.currentHandler) {
-            userInput.removeEventListener("keypress", userInput.currentHandler);
-        }
-
+        let score = 0;
         if (success) {
-            // Calculate stat changes based on performance
-            const statChanges = {
-                strength: Math.floor(successfulAttempts * 1.5),
-                defense: Math.floor(successfulAttempts * 1.2),
-                intelligence: Math.floor(successfulAttempts * 2)
-            };
-
-            // Apply stats to all existing allies first
-            if (GameTracker.allies && GameTracker.allies.length > 0) {
-                GameTracker.allies.forEach(ally => {
-                    ally.attack += statChanges.strength;
-                    ally.defence += statChanges.defense;
-                    ally.intelligence += statChanges.intelligence;
-                });
-            }
-
-            // Then recruit the medic
-            if (await recruitAlly('Medic')) {
-                Terminal.outputMessage("\nStat Changes for all allies:", "#00FF00");
-                Terminal.outputMessage(`Strength +${statChanges.strength}`, "#00FF00");
-                Terminal.outputMessage(`Defense +${statChanges.defense}`, "#00FF00");
-                Terminal.outputMessage(`Intelligence +${statChanges.intelligence}`, "#00FF00");
-                
-                Terminal.outputMessage("\nThe medic joins your cause!", "#00FF00");
-                
-                // Heal all allies to full
-                GameTracker.allies.forEach(ally => {
-                    ally.hp = ally.maxHp;
-                });
-                
-                Terminal.outputMessage("\nThe medic heals everyone back to full health!", "#00FF00");
-                
-                // Update visuals after all changes
-                await AllyManager.loadAllyVisuals();
+            score = Number(500); // Base score
+            score += Number(successfulAttempts * 100); // Points per correct answer
+            if (successfulAttempts >= requiredSuccesses) {
+                score += Number(300); // Bonus
             }
         }
 
-        // Calculate final score
-        let score = success ? 500 : 100;
-        score += (successfulAttempts * 100);  // Add bonus for each correct answer
+        GameTracker.updateScore(score);
+        Terminal.outputMessage(`\nFinal Score: +${score}`, "#FFA500");
 
-        // Add bonus for full success
-        if (successfulAttempts >= requiredSuccesses) {
-            score += 300;  // Bonus for completing all required successes
-        }
-
-        Terminal.outputMessage(`\nFinal Score: ${score}`, "#FFA500");
-
-        // Dispatch completion event with updated score
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: success,
                 score: score,
+                totalScore: GameTracker.score,
                 minigameId: 'medicTest',
                 message: success ? "The medic agrees to join your cause!" : "The medic remains unconvinced...",
                 next: success ? 'resistance_hq_intro' : 'clinic_scene'

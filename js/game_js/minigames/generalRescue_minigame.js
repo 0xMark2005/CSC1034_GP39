@@ -119,165 +119,62 @@ export function generalRescueGame() {
     }
 
     async function cleanup(success) {
-        if (!gameActive) return;
-        gameActive = false;
-        
-        // Clear all timeouts
+        // Clear timeouts and disable game
         timeoutIds.forEach(id => clearTimeout(id));
         timeoutIds = [];
-        
-        // Remove any active event listeners
-        const userInput = document.getElementById("user-input");
-        if (userInput && userInput.currentHandler) {
-            userInput.removeEventListener("keypress", userInput.currentHandler);
-        }
+        gameActive = false;
 
-        // Calculate score and stats
         let score = 0;
-        let statChanges = {
-            strength: 0,
-            defense: 0,
-            intelligence: 0
-        };
-
+        
+        // Calculate score with verification
         if (success) {
-            // Base success score
-            score += 400;
+            score = Number(400); // Base score
+            console.log(`Base score: ${score}`);
+
+            let attemptsBonus = Number(successfulAttempts * 100);
+            console.log(`Attempts bonus (${successfulAttempts} × 100): +${attemptsBonus}`);
+            score += attemptsBonus;
+
             if (successfulAttempts === totalAttempts) {
-                score += 300; // Perfect score bonus
-            }
-            score += successfulAttempts * 100;
-
-            // Calculate stat changes based on performance
-            if (successfulAttempts >= totalAttempts) {
-                statChanges.strength = 8;
-                statChanges.defense = 7;
-                statChanges.intelligence = 6;
-            } else if (successfulAttempts >= 4) {
-                statChanges.strength = 6;
-                statChanges.defense = 5;
-                statChanges.intelligence = 5;
-            } else {
-                statChanges.strength = 4;
-                statChanges.defense = 3;
-                statChanges.intelligence = 3;
-            }
-
-            // Apply stats to all existing allies
-            if (GameTracker.allies) {
-                GameTracker.allies.forEach(ally => {
-                    ally.attack += statChanges.strength;
-                    ally.defence += statChanges.defense;
-                    ally.intelligence += statChanges.intelligence;
-                });
-            }
-
-            if (await recruitAlly('Knight', true)) {  // Pass success=true
-                Terminal.outputMessage("\nStat Changes for all allies:", "#00FF00");
-                Terminal.outputMessage(`Strength +${statChanges.strength}`, "#00FF00");
-                Terminal.outputMessage(`Defense +${statChanges.defense}`, "#00FF00");
-                Terminal.outputMessage(`Intelligence +${statChanges.intelligence}`, "#00FF00");
-                Terminal.outputMessage("\nThe knight is wounded but stable.", "#FF8181");
+                let perfectBonus = Number(300);
+                console.log(`Perfect bonus: +${perfectBonus}`);
+                score += perfectBonus;
             }
         } else {
-            // Failed attempt scoring
-            score += successfulAttempts * 50;
-
-            // Reduced stats for failed attempt
-            statChanges.strength = 2;
-            statChanges.defense = 1;
-            statChanges.intelligence = 1;
-
-            // Apply reduced stats and health to all allies
-            if (GameTracker.allies) {
-                GameTracker.allies.forEach(ally => {
-                    const originalStats = {
-                        hp: ally.hp,
-                        attack: ally.attack,
-                        defence: ally.defence,
-                        intelligence: ally.intelligence
-                    };
-
-                    // Reduce stats but prevent negatives
-                    ally.attack = Math.max(0, ally.attack - 5);
-                    ally.defence = Math.max(0, ally.defence - 5);
-                    ally.intelligence = Math.max(0, ally.intelligence - 5);
-
-                    // Calculate and show stat reductions
-                    Terminal.outputMessage(`\n${ally.name}'s stats reduced:`, "#FF8181");
-                    Terminal.outputMessage(`Attack: ${originalStats.attack} → ${ally.attack} (-${originalStats.attack - ally.attack})`, "#FF8181");
-                    Terminal.outputMessage(`Defence: ${originalStats.defence} → ${ally.defence} (-${originalStats.defence - ally.defence})`, "#FF8181");
-                    Terminal.outputMessage(`Intelligence: ${originalStats.intelligence} → ${ally.intelligence} (-${originalStats.intelligence - ally.intelligence})`, "#FF8181");
-
-                    // Set and display health reductions
-                    if (ally.name === 'Knight') {
-                        ally.hp = Math.floor(ally.maxHp * 0.1); // 10% health on failure
-                        const hpPercentage = (ally.hp / ally.maxHp) * 100;
-                        Terminal.outputMessage(`HP: ${ally.hp}/${ally.maxHp}`, "#FF8181");
-                        Terminal.outputMessage(`Health remaining: ${Math.floor(hpPercentage)}%`, "#FF8181");
-
-                        // Update Knight's HP bar
-                        const characters = document.querySelectorAll('.character');
-                        characters.forEach(char => {
-                            if (char.querySelector('h1').textContent === 'Knight') {
-                                const hpBar = char.querySelector('.hp-bar-fill');
-                                if (hpBar) {
-                                    hpBar.style.width = `${hpPercentage}%`;
-                                    // Set color based on HP percentage
-                                    hpBar.style.backgroundColor = hpPercentage < 35 ? '#FF0000' : '#00FF00';
-                                }
-                            }
-                        });
-                    } else {
-                        // Small health reduction for other allies
-                        const originalHp = ally.hp;
-                        ally.hp = Math.max(ally.hp - 5, 1); // Reduce by 5, minimum 1 HP
-                        const hpLoss = originalHp - ally.hp;
-                        const hpPercentage = Math.max((ally.hp / ally.maxHp) * 100, 1);
-                        
-                        Terminal.outputMessage(`HP: ${originalHp} → ${ally.hp} (-${hpLoss})`, "#FF8181");
-                        Terminal.outputMessage(`Health remaining: ${Math.floor(hpPercentage)}%`, "#FF8181");
-
-                        // Update HP bar
-                        const characters = document.querySelectorAll('.character');
-                        characters.forEach(char => {
-                            if (char.querySelector('h1').textContent === ally.name) {
-                                const hpBar = char.querySelector('.hp-bar-fill');
-                                if (hpBar) {
-                                    hpBar.style.width = `${hpPercentage}%`;
-                                }
-                            }
-                        });
-                    }
-                });
-
-                Terminal.outputMessage("\nThe failed rescue attempt has left everyone critically wounded!", "#FF8181");
-                Terminal.outputMessage("The knight is barely alive!", "#FF0000");
-            }
-
-            if (await recruitAlly('Knight', false)) {  // Pass success=false
-                Terminal.outputMessage("\nThe knight needs immediate medical attention!", "#FF0000");
-            }
+            score = Number(successfulAttempts * 50);
+            console.log(`Consolation score (${successfulAttempts} × 50): ${score}`);
         }
 
-        // Update visuals
-        await AllyManager.loadAllyVisuals();
+        // Verify final score calculation
+        console.log('Score Verification:', {
+            calculatedScore: score,
+            isNumber: typeof score === 'number',
+            value: Number(score)
+        });
 
-        // Display results
-        Terminal.outputMessage(
-            success ? `\nCell unlocked! The knight is free! Score: ${score}` 
-                   : `\nFailed to unlock the cell! Score: ${score}`, 
-            success ? "#00FF00" : "#FF0000"
-        );
+        // Update global score with verification
+        const oldScore = GameTracker.score;
+        GameTracker.updateScore(score);
+        console.log('Score Update Verification:', {
+            oldScore: oldScore,
+            addedScore: score,
+            newTotal: GameTracker.score,
+            expectedTotal: Number(oldScore) + Number(score)
+        });
 
-        // completion event
+        // Show score in game
+        Terminal.outputMessage(`\nFinal Score: +${score}`, "#FFA500");
+
+        // Dispatch completion event with correct success state
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
-                success: true, // Always true to continue story
+                success: successfulAttempts >= requiredSuccesses, 
                 score: score,
+                totalScore: GameTracker.score,
                 minigameId: 'generalRescue',
-                statChanges: statChanges,
-                message: success ? "You've successfully rescued the knight, but they're injured!" : "The rescue attempt failed...",
+                message: successfulAttempts >= requiredSuccesses ? 
+                    "Successfully rescued the knight!" : 
+                    "The rescue attempt failed...",
                 next: 'find_medic_intro'
             }
         }));

@@ -236,7 +236,7 @@ export function villageEscapeGame() {
         return 'stat-critical';
     }
 
-    function cleanup(success, timeLeft = 0) {
+    function cleanup(success) {
         gameActive = false;
         const userInput = document.getElementById("user-input");
         if (userInput.currentHandler) {
@@ -284,11 +284,11 @@ export function villageEscapeGame() {
             statValue.classList.add(classifyStatValue(value));
         });
 
-        let score = success ? 500 : 100;
-        score += (totalStats.strength + totalStats.defense + totalStats.intelligence) * 10;
+        let score = Number(success ? 500 : 100);
+        score += Number((totalStats.strength + totalStats.defense + totalStats.intelligence) * 10);
 
-        // Display final score
-        Terminal.outputMessage(`\nFinal Score: ${score}`, "#FFA500");
+        GameTracker.updateScore(score);
+        Terminal.outputMessage(`\nFinal Score: +${score}`, "#FFA500");
 
         // Dispatch minigame completion event
         document.dispatchEvent(new CustomEvent('minigameComplete', {

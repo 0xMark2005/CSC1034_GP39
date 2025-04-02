@@ -85,38 +85,37 @@ export function barmanTrustGame() {
     }
 
     async function cleanup(success) {
+        // Disable input and clear handlers first
+        inputEnabled = false;
         gameActive = false;
         if (timeoutId) clearTimeout(timeoutId);
-
-        // Remove input handler
+        
         const userInput = document.getElementById("user-input");
-        if (userInput.currentHandler) {
+        if (userInput && userInput.currentHandler) {
             userInput.removeEventListener("keypress", userInput.currentHandler);
-        }
-
-        if (success) {
-            // Recruit barman using ally manager
-            if (await recruitAlly('Bar Man')) {  // Changed from 'Barman' to 'Bar Man' to match DB
-                Terminal.outputMessage("\nThe barman joins your cause!", "#00FF00");
-                AllyManager.loadAllyVisuals();
-            } else {
-                Terminal.outputMessage("\nError recruiting barman!", "#FF0000");
-            }
+            userInput.currentHandler = null;
         }
 
         // Calculate score
-        let score = success ? 500 : 100;
-        score += (successfulAttempts * 100);
-        Terminal.outputMessage(`\nFinal Score: ${score}`, "#FFA500");
+        let score = 0;
+        if (success) {
+            score = Number(500);
+            score += Number(successfulAttempts * 100);
+        }
+
+        // Update score and show result
+        GameTracker.updateScore(score);
+        Terminal.outputMessage(`\nFinal Score: +${score}`, "#FFA500");
 
         // Dispatch completion event
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: success,
                 score: score,
+                totalScore: GameTracker.score,
                 minigameId: 'barmanTrust',
-                message: success ? "You've earned the barman's trust!" : "The barman remains skeptical...",
-                next: 'barman_trust_complete'
+                message: success ? "The barman joins your cause!" : "The barman remains skeptical...",
+                next: success ? 'barman_joins' : 'tavern_scene'
             }
         }));
     }
