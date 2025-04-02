@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     rightArrow.addEventListener("click", () => switchLeaderboard(1));
 
     //Event listenrer for back
-    backButton.addEventListener("click, ")
 
     // Fetch leaderboard data based on the type of leaderboard (score, reputation, wins)
     async function fetchLeaderboard(type) {
