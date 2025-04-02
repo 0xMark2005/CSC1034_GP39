@@ -194,7 +194,10 @@ function handleMenuChoice(choice) {
         case "5":
              window.location.href = "player_stats.html";
             break;
-        case '6':
+        case "6":
+             window.location.href = "leaderboard.html";
+            break;
+        case '7':
             handleLogout();
             break;
         default:
