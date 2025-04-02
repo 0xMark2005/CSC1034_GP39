@@ -83,39 +83,41 @@
 
             <!-- Game Title -->
             <div id="title">
-                <h1><img src="css/assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall"width="40%" ></h1>
+                <h1><img src="css/assets/images/reignfall-logo.png" alt="Logo for Reignfall" title="Logo for Reignfall"width="40%" class="picmargin" ></h1>
             </div>
 
-            <!-- Text-Based Menu -->     
-            <div id="main-menu">
-
-
-                <div id="output-terminal">
-                  <h2>Main Menu</h2>
-                  <ol>
-                    <li>New Game</li>
-                    <li>Load Game</li>
-                    <li>Settings</li>
-                    <li>Edit Profile</li>
-                    <li>View Player Stats</li>
-                    <li>Log Out</li>
-                  </ol>
-                </div>
-
-                <!-- Get Users input From the Menu -->
-           
-                <div id="input-terminal">
-                    <div class="input-wrapper">
-                        <input type="text" id="user-input" placeholder="Type here...">
-                    </div>
-                </div>
+            <div class="menu-grid">
+              <div class="menu-item big-tile" id="new-game">
+                <img src="css/assets/images/icons/gameIcon2.png" alt="New Game" />
+                <div class="tile-label">New Game</div>
+              </div>
+              <div class="menu-item small-tile" id="load-game">
+                <img src="css/assets/images/icons/saveFileIcon.png" alt="Load Game" />
+                <div class="tile-label">Load Game</div>
+              </div>
+              <div class="menu-item small-tile" id="settings-menu">
+                <img src="css/assets/images/icons/settingsIcon.png" alt="Settings" />
+                <div class="tile-label">Settings</div>
+              </div>
+              <div class="menu-item small-tile" id="player-stats">
+                <img src="css/assets/images/icons/playerstatsIcon.png" alt="Player Stats" />
+                <div class="tile-label">Player Stats</div>
+              </div>
+              <div class="menu-item small-tile" id="leaderboard-menu">
+                <img src="css/assets/images/icons/leaderboardIcon.png" alt="Leaderboard" />
+                <div class="tile-label">Leaderboard</div>
+              </div>
             </div>
-
-        </div>
-   
-        <!-- JavaScript Import -->
-        <script type="module" src="js/menu.js"></script>
-        <script type="module" src="js/global_menu.js"></script>
+          </div>
+          <!-- Popup for Load Game Saves -->
+          <div id="popup-container" class="popup-container" style="display: none;">
+            <div class="popup">
+              <span id="popup-close" class="close-btn">&times;</span>
+              <div id="popup-content"></div>
+            </div>
+          </div>
+          <script type="module" src="js/menu.js"></script>
+          <script type="module" src="js/global_menu.js"></script>
   
     </body>
 </html>

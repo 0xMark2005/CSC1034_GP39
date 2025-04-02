@@ -244,12 +244,14 @@ button {
 
 @media (max-width: 768px) {
   body {
-    padding: 5%;
+    padding: 0%;
+    
   }
   #main-container {
     width: 100%;
-    padding-left: 0px;
+    padding: 5px;
     margin: 0px;
+    background-color: #13131362 !important;
   }
   button {
     min-width: 100px;
@@ -469,8 +471,8 @@ outline-offset: 2px;
   background-color: rgba(0, 0, 0, 0.8);
   padding: 20px;
   border-radius: 8px;
-  border: 2px solid #00FF00;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+  border: 2px solid #000000;
+  box-shadow: 0 0 20px rgba(114, 114, 114, 0.2);
 }
 
 #gif-container img {
@@ -478,5 +480,3 @@ outline-offset: 2px;
   height: auto;
   display: block;
 }
-
-
