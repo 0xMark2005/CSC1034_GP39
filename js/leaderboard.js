@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     const rightArrow = document.getElementById("right-arrow");
 
     // Add back button functionality
-    const backButton = document.getElementById("back-button");
     backButton.addEventListener("click", () => {
         window.location.href = "main_menu.html";
     });
