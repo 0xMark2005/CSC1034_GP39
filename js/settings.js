@@ -11,12 +11,15 @@ window.appSettings = {
 };
 
 import { Terminal } from "./terminal.js";
+import * as Util from "./util.js";
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+    
     let outputTerminal = document.getElementById("output-terminal");
     const userInput = document.getElementById("user-input");
     Terminal.initialize(outputTerminal, userInput);  // Initialize terminal
     let currentMode = "main"; 
+    await Util.checkUserLogin();
 
     // loading settings from db first
     loadSettings().then(() => {

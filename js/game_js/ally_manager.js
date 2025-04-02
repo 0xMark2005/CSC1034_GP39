@@ -8,6 +8,14 @@ export class AllyManager{
     //Variables
     static optionResultColor = "#0000FF";
 
+
+    // Helper function to classify stat values
+    static classifyStatValue(value) {
+        if (value < 16) return 'low';
+        if (value < 40) return 'medium-low';
+        if (value < 60) return 'medium-high';
+        return 'high'; // Anything above 10 gets 'high' class
+    }
     //allies
     static async loadAllyVisuals() {
         const alliesData = GameTracker.allies; // Retrieve allies from GameTracker.allies
@@ -87,6 +95,12 @@ export class AllyManager{
                 rightDiv.querySelector('.stat-row:nth-child(2) .stat-value').textContent = ally.defence || '0';
                 rightDiv.querySelector('.stat-row:nth-child(3) .stat-value').textContent = ally.intelligence || '0';
                 //rightDiv.querySelector('.stat-row:nth-child(4) .stat-value').textContent = ally.maxHp || '0'; 
+
+
+                rightDiv.querySelector('.stat-row:nth-child(1) .stat-value').classList.add(AllyManager.classifyStatValue(ally.attack));
+                rightDiv.querySelector('.stat-row:nth-child(2) .stat-value').classList.add(AllyManager.classifyStatValue(ally.defence));
+                rightDiv.querySelector('.stat-row:nth-child(3) .stat-value').classList.add(AllyManager.classifyStatValue(ally.intelligence));
+
             } else {
                 console.error('Error: Missing .cleft or .cright divs for ally', ally.name);
             }
@@ -347,51 +361,49 @@ export class AllyManager{
 }
 
 // Function to add ally by given name
-export async function recruitAlly(allyName) {
-    let recruitQuery = `
-        SELECT 
-            ally_id,
-            ally_name, 
-            ally_img_folder,
-            ally_max_hp,
-            ally_base_attack,
-            ally_base_defence,
-            ally_base_intelligence
-        FROM allies 
-        WHERE ally_name = ?
-    `;
+export async function recruitAlly(allyName, success = true) {  // Add success parameter
+    let recruitQuery = `SELECT ally_id, ally_name, ally_img_folder, ally_max_hp, ally_base_attack, ally_base_defence, ally_base_intelligence FROM allies WHERE ally_name = '${allyName}'`;
 
     try {
-        const params = [allyName];
         console.log("Attempting to recruit:", allyName);
-        let result = await DBQuery.getQueryResult(recruitQuery, params);
+        let result = await DBQuery.getQueryResult(recruitQuery);
+        console.log("Query result:", result);
 
-        if (!result || !result.data || result.data.length === 0) {
+        if (!result || !result.success || !result.data || result.data.length === 0) {
             console.error(`Ally ${allyName} could not be found in the DB`);
             return false;
         }
 
         const dbAlly = result.data[0];
         console.log("Found ally data:", dbAlly);
-        
+
         if (!GameTracker.allies) {
             GameTracker.allies = [];
         }
 
-        GameTracker.allies.push({
+        // Set initial HP based on success state for Knight
+        let initialHp = Number(dbAlly.ally_max_hp);
+        if (allyName === 'Knight') {
+            initialHp = success ? 
+                Math.floor(initialHp * 0.2) :  // 20% HP on success
+                Math.floor(initialHp * 0.1);   // 10% HP on failure
+        }
+
+        const newAlly = {
             id: Number(dbAlly.ally_id),
             name: dbAlly.ally_name,
             imgFolder: dbAlly.ally_img_folder,
             maxHp: Number(dbAlly.ally_max_hp),
-            hp: Number(dbAlly.ally_max_hp),
+            hp: initialHp,
             attack: Number(dbAlly.ally_base_attack),
             defence: Number(dbAlly.ally_base_defence),
             intelligence: Number(dbAlly.ally_base_intelligence),
             alive: true,
             equipmentId: null
-        });
+        };
 
-        console.log("Successfully recruited ally:", dbAlly.ally_name);
+        GameTracker.allies.push(newAlly);
+        console.log(`Successfully recruited ${allyName}`, newAlly);
         return true;
 
     } catch (error) {

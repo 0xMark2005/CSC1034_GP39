@@ -218,6 +218,8 @@ button {
   position: relative;
   background: linear-gradient(to bottom, #1e1e1eed, #000000);
   overflow: hidden;
+  margin-top: 15px;
+
 }
 #main-container.centered {
   align-items: center;
@@ -230,6 +232,12 @@ button {
   #main-container { width: 100%; padding: 15px; margin: 0; }
   button { margin: 5px 0; }
   .button-container { flex-direction: column; }
+
+  .left {
+    margin-top: 0px !important;
+  }
+
+
 }
 button:hover,
 button:focus-visible {
@@ -241,6 +249,8 @@ button:focus {
   outline: 3px solid #FFD700;
   outline-offset: 2px;
 }
+
+
 @media (prefers-reduced-motion: reduce) {
   button { transition: none; }
   #output-terminal { transition: none; }
@@ -489,6 +499,8 @@ button:focus {
 
 .left {
   scrollbar-width: thin;
+  margin-top: 25px;
+
   scrollbar-color: #555 #2e2e2e;
 }
 

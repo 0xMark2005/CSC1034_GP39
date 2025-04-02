@@ -14,32 +14,26 @@
         <link rel="stylesheet" href="css/terminal.css">
         <link rel="stylesheet" href="css/main_menu.css">
         <link rel="stylesheet" href="css/inventory.css">
+        <link rel="stylesheet" href="css/global_menu.css">
+
         <!-- checking for logged in status-->
-        <script>
-          (function() {
-            // Retrieve settings
-            var settings = localStorage.getItem("appSettings");
-            var currentTextSize = "16px"; // default text size
-            var soundEnabled = 0;         // default sound setting
-            if (settings) {
-              try {
-                var parsed = JSON.parse(settings);
-                if (parsed.currentTextSize) {
-                  currentTextSize = parsed.currentTextSize;
-                }
-                soundEnabled = parsed.soundEnabled || 0;
-              } catch(e) {
-                console.error("Error parsing appSettings:", e);
-              }
-            }
-            document.documentElement.style.fontSize = currentTextSize;
+        <script type="module">
+          import SettingsManager from '/js/settingsManager.js'; 
         
-            // Check login status
-            var loggedIn = localStorage.getItem("loggedIn") === "true";
-            // Only play sound if enabled or if user isn't logged in
-            var shouldPlaySound = (soundEnabled == 1 || !loggedIn);
+          (async function() {
+            const userInput = document.getElementById('user-input');
+
+            // Get settings using the SettingsManager
+            const settings = await SettingsManager.getSettings(); 
+            const currentTextSize = settings.currentTextSize || "16px"; // Default to 16px
         
-            if (shouldPlaySound) {
+            // Apply the text size globally
+            document.documentElement.style.setProperty('--base-font-size', currentTextSize);
+        
+        
+            // Handle sound settings if necessary
+            const soundEnabled = settings.soundEnabled;
+            if (soundEnabled) {
               document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll('button').forEach(function(btn) {
                   btn.addEventListener('click', function() {
@@ -51,11 +45,39 @@
           })();
         </script>
         
-          
               
             
     </head>
     <body>
+        <!-- Top Bar Navigation -->
+      <nav class="topbar">
+        <div class="topbar-left">
+          <a href="index.html">    
+            <img src="css/assets/images/icons/homeIcon.png" alt="Home Icon" class="link-icon">
+            Menu
+          </a>
+       
+          <a href="settings.html">    
+            <img src="css/assets/images/icons/settingsIcon.png" alt="Settings Icon" class="link-icon">
+            Settings
+          </a>
+
+
+        </div>
+      
+        <div class="topbar-right">
+          <div class="user-dropdown">
+            <a id="user-button">User ▾</a>
+            <div class="dropdown-content" id="user-dropdown">
+              <span id="username-label"></span>
+              <a href="logout.html">Log Out</a>
+            </div>
+          </div>
+          <button class="hamburger" id="hamburger-btn">☰</button>
+        </div>
+      </nav>
+
+       <!-- Top Bar Navigation Ends-->
         <!-- Main Container Div -->
         <div id="main-container">
 
@@ -67,11 +89,6 @@
             <!-- Text-Based Menu -->     
             <div id="main-menu">
 
-                <!-- Inventory (Temporarily Here)-->
-                <div id="inventory" class="inventory-outer-container">
-                   <!-- intentionally left blank  - this is no longer hardcoded. see database table (tools) to add/delete VIEW ON SERVER!-->
-                </div>
-
 
                 <div id="output-terminal">
                   <h2>Main Menu</h2>
@@ -81,6 +98,7 @@
                     <li>Settings</li>
                     <li>Edit Profile</li>
                     <li>View Player Stats</li>
+                    <li>Leaderboard</li>
                     <li>Log Out</li>
                   </ol>
                 </div>
@@ -98,6 +116,7 @@
    
         <!-- JavaScript Import -->
         <script type="module" src="js/menu.js"></script>
-          
+        <script type="module" src="js/global_menu.js"></script>
+  
     </body>
 </html>

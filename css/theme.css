@@ -226,6 +226,7 @@ button {
 #main-container {
   width: 70%;
   height: 100%;
+  margin-top: 15px;
   color: white;
   padding: 10px;
   display: flex!important; /* Ensure visibility */
@@ -477,3 +478,5 @@ outline-offset: 2px;
   height: auto;
   display: block;
 }
+
+
