@@ -7,6 +7,14 @@ export class AllyManager{
     //Variables
     static optionResultColor = "#0000FF";
 
+
+    // Helper function to classify stat values
+    static classifyStatValue(value) {
+        if (value < 16) return 'low';
+        if (value < 40) return 'medium-low';
+        if (value < 60) return 'medium-high';
+        return 'high'; // Anything above 10 gets 'high' class
+    }
     //allies
     static async loadAllyVisuals() {
         const alliesData = GameTracker.allies; // Retrieve allies from GameTracker.allies
@@ -86,6 +94,12 @@ export class AllyManager{
                 rightDiv.querySelector('.stat-row:nth-child(2) .stat-value').textContent = ally.defence || '0';
                 rightDiv.querySelector('.stat-row:nth-child(3) .stat-value').textContent = ally.intelligence || '0';
                 //rightDiv.querySelector('.stat-row:nth-child(4) .stat-value').textContent = ally.maxHp || '0'; 
+
+
+                rightDiv.querySelector('.stat-row:nth-child(1) .stat-value').classList.add(AllyManager.classifyStatValue(ally.attack));
+                rightDiv.querySelector('.stat-row:nth-child(2) .stat-value').classList.add(AllyManager.classifyStatValue(ally.defence));
+                rightDiv.querySelector('.stat-row:nth-child(3) .stat-value').classList.add(AllyManager.classifyStatValue(ally.intelligence));
+
             } else {
                 console.error('Error: Missing .cleft or .cright divs for ally', ally.name);
             }
