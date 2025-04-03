@@ -142,6 +142,39 @@ a {
     color: white;
     text-decoration: none;
 }
+/* For the headings above requirement lists */
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+ul .title {
+  text-decoration: underline;
+  font-weight: bolder;
+}
+
+ul li {
+  padding-left: 10px;
+}
+
+ /* For the password and username requirement lists */
+ li
+ {
+   color: white; 
+   font-weight: bold;
+   list-style-type: "✖ "; /* White cross before the item */
+   }
+
+/* Fulfilled requirement */
+li.fulfilled
+{
+   color: lime;
+   font-weight: bold;
+   list-style-type: "✔ "; /* Different checkmark style for fulfilled */
+}
 
 @media (max-width: 768px) {
     body {

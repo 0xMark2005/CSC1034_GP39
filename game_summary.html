@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!--Set the meta tags-->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!--Title-->
+        <title>ReignFall Game</title>
+        <link rel="icon" type="image/x-icon" href="css/assets/images/logo_favicon.png">
+        
+        <!--CSS Import-->
+        <link rel="stylesheet" href="css/theme.css">
+        <link rel="stylesheet" href="css/global_menu.css">
+        <link rel="stylesheet" href="css/game_summary.css">
+
+    </head>
+    <body>
+          <!-- Top Bar Navigation -->
+      <nav class="topbar">
+        <div class="topbar-left">
+          <a href="index.html">    
+            <img src="css/assets/images/icons/homeIcon.png" alt="Home Icon" class="link-icon">
+            Menu
+          </a>
+       
+          <a href="settings.html">    
+            <img src="css/assets/images/icons/settingsIcon.png" alt="Settings Icon" class="link-icon">
+            Settings
+          </a>
+
+
+        </div>
+      
+        <div class="topbar-right">
+          <div class="user-dropdown">
+            <a id="user-button">User ▾</a>
+            <div class="dropdown-content" id="user-dropdown">
+              <span id="username-label"></span>
+              <a href="logout.html">Log Out</a>
+            </div>
+          </div>
+          <button class="hamburger" id="hamburger-btn">☰</button>
+        </div>
+      </nav>
+
+       <!-- Top Bar Navigation Ends-->
+
+        <!-- Main Container Div -->
+        <div id="main-container">
+
+            <!-- Game Title -->
+            <div id="title">
+                <h1 id="header-text">Congratulations!!!</h1>
+            </div>
+
+            <div id="game-summary-container">
+
+                <!-- Allies -->
+                <div id="allies-container">
+
+                    <div id="allies-header" class="section-header">
+                        <h1>Allies</h1>
+                    </div>
+
+                    <div class="detail-container">
+
+                        <div class="value-container ally-value-container">
+                            <img class="ally-img" src="css/assets/images/characters/peasant/character.png" alt="Peasant"></img>
+                            <div class="ally-vertical-rule"></div>
+                            <p class="ally-name">Peasant</p>
+                        </div>
+
+                        <div class="value-container ally-value-container">
+                            <img class="ally-img" src="css/assets/images/characters/medic/character.png" alt="Medic"></img>
+                            <div class="ally-vertical-rule"></div>
+                            <p class="ally-name">Medic</p>
+                        </div>
+
+                        <div class="value-container ally-value-container">
+                            <img class="ally-img" src="css/assets/images/characters/bar_man/character.png" alt="Bar Man"></img>
+                            <div class="ally-vertical-rule"></div>
+                            <p class="ally-name">Bar Man</p>
+                        </div>
+
+                        <div class="value-container ally-value-container">
+                            <img class="ally-img" src="css/assets/images/characters/knight/character.png" alt="Knight"></img>
+                            <div class="ally-vertical-rule"></div>
+                            <p class="ally-name">Knight</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Game Statistics -->
+                <div id="game-statistics-container">
+                    <div id="stats-header" class="section-header">
+                        <h1>Stats</h1>
+                    </div>
+
+                    <div class="detail-container">
+
+                        <div class="value-container stats-value-container">
+                            <div class="stat-name-container">
+                                <span class="stat-name">Score</span>
+                                <span class="global-avg">Global Avg</span>
+                            </div>
+
+                            <div class="ally-vertical-rule"></div>
+
+                            <div class="stat-value-container">
+                                <span id="score-value" class="stat-value">0</span>
+                                <span id="score-global-avg" class="global-avg-value">0</span>
+                            </div>
+                        </div>
+
+                        <div class="value-container stats-value-container">
+                            <div class="stat-name-container">
+                                <span class="stat-name">Reputation</span>
+                                <span class="global-avg">Global Avg</span>
+                            </div>
+
+                            <div class="ally-vertical-rule"></div>
+
+                            <div class="stat-value-container">
+                                <span id="reputation-value" class="stat-value">0</span>
+                                <span id="reputation-global-avg" class="global-avg-value">0</span>
+                            </div>
+                        </div>
+
+                        <div class="value-container stats-value-container">
+                            <div class="stat-name-container">
+                                <span class="stat-name">Items Collected</span>
+                                <span class="global-avg">Global Avg</span>
+                            </div>
+
+                            <div class="ally-vertical-rule"></div>
+
+                            <div class="stat-value-container">
+                                <span id="items-collected-value" class="stat-value">0</span>
+                                <span id="items-collected-global-avg" class="global-avg-value">0</span>
+                            </div>
+                        </div>
+
+                        <div class="value-container stats-value-container">
+                            <div class="stat-name-container">
+                                <span class="stat-name">Areas Visited</span>
+                                <span class="global-avg">Global Avg</span>
+                            </div>
+
+                            <div class="ally-vertical-rule"></div>
+
+                            <div class="stat-value-container">
+                                <span id="areas-visited-value" class="stat-value">0</span>
+                                <span id="areas-visited-global-avg" class="global-avg-value">0</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Minigame Statistics -->
+                <div id="minigame-statistics-container">
+                    <div id="minigame-header" class="section-header">
+                        <h1>Minigames</h1>
+                    </div>
+
+                    <div class="detail-container">
+                        <div class="value-container minigame-value-container">
+                            <div class="stat-name-container">
+                                <span class="stat-name">Minigames Played</span>
+                                <span class="global-avg">Global Avg</span>
+                            </div>
+
+                            <div class="ally-vertical-rule"></div>
+
+                            <div class="stat-value-container">
+                                <span id="minigames-played-value" class="stat-value">0</span>
+                                <span id="minigames-played-global-avg" class="global-avg-value">0</span>
+                            </div>
+                        </div>
+
+                        <div class="value-container minigame-value-container">
+                            <div class="stat-name-container">
+                                <span class="stat-name">Minigames Won</span>
+                                <span class="global-avg">Global Avg</span>
+                            </div>
+
+                            <div class="ally-vertical-rule"></div>
+
+                            <div class="stat-value-container">
+                                <span id="minigames-won-value" class="stat-value">0</span>
+                                <span id="minigames-won-global-avg" class="global-avg-value">0</span>
+                            </div>
+                        </div>
+
+                        <div class="value-container minigame-value-container">
+                            <div class="stat-name-container">
+                                <span class="stat-name">Minigames Lost</span>
+                                <span class="global-avg">Global Avg</span>
+                            </div>
+
+                            <div class="ally-vertical-rule"></div>
+
+                            <div class="stat-value-container">
+                                <span id="minigames-lost-value" class="stat-value">0</span>
+                                <span id="minigames-lost-global-avg" class="global-avg-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <script type="module" src="js/#"></script>
+        <script type="module" src="js/global_menu.js"></script>
+
+    </body>
+</html>
