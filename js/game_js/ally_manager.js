@@ -2,6 +2,7 @@ import { DBQuery } from "../dbQuery.js";
 import { GameTracker } from "./game_tracker.js";
 import { Terminal } from "../terminal.js";
 import * as Inventory from "./inventory.js";
+import * as MainGame from "./temp_game.js";
 
 export class AllyManager{
 
@@ -347,7 +348,8 @@ export class AllyManager{
         if (GameTracker.allies && GameTracker.allies.length > 0) {
             const peasant = GameTracker.allies[0]; // Peasant is always first ally
             if (peasant && peasant.hp <= 0) {
-                alert("Game Over - You have died!");
+                MainGame.gameOver();
+
                 return true;
             }
         }

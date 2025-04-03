@@ -109,6 +109,16 @@ document.addEventListener("DOMContentLoaded", async function() {
     //Load the game
     await SaveLoadGame.loadGame();
 
+    //Check if this game has already been completed or not
+    if(GameTracker.gameCompleted){
+        gameComplete();
+        return;
+    }
+    if(GameTracker.gameOver){
+        gameOver();
+        return;
+    }
+
     // Load initial area and dialogue
     await loadAreaFromJSON();
     loadDialogue();
@@ -624,6 +634,21 @@ async function gameComplete(){
 
     //set the game completion to true
     GameTracker.gameCompleted = true;
+    await SaveLoadGame.saveGame();
+
+    setTimeout(function(){
+        window.location.href="game_summary.html";
+        return;
+    }, 3000);
+}
+
+//Checks if the game is over
+export async function gameOver(){
+    Terminal.outputMessage("GAME OVER!", errorColor);
+    Terminal.outputMessage("You have died!", errorColor);
+
+    //set the game completion to true
+    GameTracker.gameOver = true;
     await SaveLoadGame.saveGame();
 
     setTimeout(function(){
