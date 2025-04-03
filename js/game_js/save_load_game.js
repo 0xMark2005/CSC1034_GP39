@@ -193,12 +193,42 @@ export async function loadGame(){
     GameTracker.areaName = gameSessionData.current_location;
     GameTracker.setFilepath();
     GameTracker.currentDialogue = gameSessionData.current_dialogue;
-    GameTracker.reputation = gameSessionData.reputation;
-    GameTracker.score = gameSessionData.score;
+    GameTracker.reputation = Number(gameSessionData.reputation || 0); // Ensure number conversion
+    GameTracker.score = Number(gameSessionData.score || 0);          // Ensure number conversion
+    GameTracker.gameOver = gameSessionData.game_over === "1";
+    GameTracker.gameCompleted = gameSessionData.game_completed === "1";
     GameTracker.allies = gameSessionAllies;
     GameTracker.allyEquipment = gameSessionAllyItems;
     GameTracker.inventory = gameSessionInventory;
     GameTracker.gameLogs = gameSessionLogs;
+
+    // Add UI update for score and reputation with multiplier
+    const scoreElement = document.getElementById('score-number');
+    if (scoreElement) {
+        scoreElement.textContent = GameTracker.score.toString();
+    }
+
+    const reputationElement = document.getElementById('reputation-number');
+    if (reputationElement) {
+        // Calculate reputation multiplier (matches ScoreSystem logic)
+        const reputation = GameTracker.reputation;
+        const multiplier = Math.max(0.5, Math.min(2.0, reputation / 50));
+        
+        // Set text content with reputation and multiplier
+        reputationElement.textContent = `${reputation}/100 (${multiplier.toFixed(1)}x)`;
+        
+        // Set color based on reputation value (matches ScoreSystem logic)
+        const color = reputation >= 75 ? "#00FF00" : 
+                     reputation >= 50 ? "#FFA500" : 
+                     reputation >= 25 ? "#FF7F50" : "#FF0000";
+        reputationElement.style.color = color;
+        
+        console.log('Reputation Loaded:', {
+            value: reputation,
+            multiplier: multiplier,
+            color: color
+        });
+    }
 
     localStorage.setItem("loadGame", true); //sets loadGame to true (page refresh wont create new saves)
     await Inventory.loadInventoryItemVisuals(); //load inventory visually
@@ -212,7 +242,7 @@ export async function loadGame(){
 //
 // Set up a new game save
 //
-async function setupNewGame(){
+async function setupNewGame() {
     //set the new game's data (NOTE: game_session_id is not set yet as the DB creates that)
     let newGameData = {
         user_id: localStorage.getItem("userID"),
@@ -222,14 +252,28 @@ async function setupNewGame(){
         reputation: generateRandomReputation(),
         game_over: false,
         game_completed: false,
-        score: 0
+        score: 0  // Initialize score at 0
     }
 
-    //
-    // Inserts the new game data into the database
-    //
-    let createNewGameQuery = `INSERT INTO game_sessions(user_id, current_location, current_dialogue, reputation, game_over, game_completed, previous_save_datetime, score)
-    VALUES (${newGameData.user_id}, '${newGameData.current_location}', '${newGameData.current_dialogue}', ${newGameData.reputation}, ${newGameData.game_over}, ${newGameData.game_completed}, NOW(), ${newGameData.score});`;
+    // Ensure the values are properly typed when creating new game
+    const createNewGameQuery = `
+        INSERT INTO game_sessions(
+            user_id, current_location, current_dialogue, 
+            reputation, game_over, game_completed, 
+            previous_save_datetime, score
+        )
+        VALUES (
+            ${newGameData.user_id}, 
+            '${newGameData.current_location}', 
+            '${newGameData.current_dialogue}', 
+            ${Number(newGameData.reputation)}, 
+            ${newGameData.game_over ? 1 : 0}, 
+            ${newGameData.game_completed ? 1 : 0}, 
+            NOW(), 
+            ${Number(newGameData.score)}
+        );
+    `;
+
     try{
         let result = await DBQuery.getQueryResult(createNewGameQuery);
 
