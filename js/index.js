@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("cbx-register").onclick = function() {
         togglePasswordVisibility('register-password');
+        togglePasswordVisibility('confirm-password');
     }
 
 });
@@ -134,8 +135,7 @@ async function handleRegister() {
 
     if(registerErrors.length > 0)
     {
-        document.getElementById("register-error").textContent = "Registration failed: " + registerErrors;
-        document.getElementById('register-error').style.display = "block";
+        alert("Errors: " + registerErrors.join("\n"));
         return;
     }
 
