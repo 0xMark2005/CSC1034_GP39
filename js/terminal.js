@@ -24,9 +24,12 @@ function unlockAudioOnce() {
   });
 }
 
-export class Terminal{
+export class Terminal {
     static #outputTerminal;
     static #userInput;
+    static #messageQueue = [];
+    static #isProcessing = false;
+    static textDelay = 50; // Default speed (normal)
 
     static initialize(givenoutputTerminal, givenUserInput){
         this.#outputTerminal = givenoutputTerminal //get the output terminal
@@ -54,9 +57,6 @@ export class Terminal{
     //-------
 
     //output a non-user message to the terminal
-    static #messageQueue = [];
-    static #isProcessing = false;
-
     static outputMessage(message, color) {
         // Add the message to the queue
         this.#messageQueue.push({ message, color });
@@ -68,7 +68,6 @@ export class Terminal{
     }
 
     static #processNextMessage() {
-        // If the queue is empty, mark as not processing and return
         if (!this.#messageQueue || this.#messageQueue.length === 0) {
             this.#isProcessing = false;
             if (typingAudio) {
@@ -80,37 +79,42 @@ export class Terminal{
 
         this.#isProcessing = true;
         
-        // Get the next message from the queue
         const { message, color } = this.#messageQueue.shift() || { message: '', color: '#FFFFFF' };
         
-        // Guard against undefined or null messages
         if (!message) {
             console.warn('Attempted to process undefined/null message');
             this.#processNextMessage();
             return;
         }
 
-        // Create a new element for the message
+        // Create message element
         const messageElement = document.createElement("div");
         messageElement.style.color = color || '#FFFFFF';
         this.#outputTerminal.appendChild(messageElement);
         
-        const speed = 5; // Typing speed in milliseconds
+        // Start typing sound if audio is unlocked
+        if (audioUnlocked) {
+            typingAudio.play();
+        }
+
         let i = 0;
-        
         const typeWriter = () => {
             if (i < message.length) {
                 messageElement.innerHTML += message.charAt(i);
                 i++;
-                setTimeout(typeWriter, speed);
+                this.#scrollToBottom();
+                setTimeout(typeWriter, this.textDelay); // Use textDelay directly, no special calculations
             } else {
-                // When done typing, process next message and scroll
+                if (typingAudio) {
+                    typingAudio.pause();
+                    typingAudio.currentTime = 0;
+                }
+                messageElement.appendChild(document.createElement('br'));
                 this.#processNextMessage();
                 this.#scrollToBottom();
             }
         };
         
-        // Start the typewriter effect
         typeWriter();
     }
 
