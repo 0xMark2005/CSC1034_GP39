@@ -65,19 +65,13 @@
       "optionType": "number",
       "options": [
           {
-              "choice": "1. Take Prison Key",
-              "message": "This master key could be useful later.",
-              "item": "Prison Key",
-              "next": "proceed_to_slums"
-          },
-          {
-              "choice": "2. Take Guard's Sword",
+              "choice": "1. Take Guard's Sword",
               "message": "An effective weapon that may be of use later.",
               "item": "Knight Sword",
               "next": "proceed_to_slums"
           },
           {
-              "choice": "3. Leave immediately",
+              "choice": "2. Leave immediately",
               "message": "Better not risk getting caught.",
               "next": "proceed_to_slums"
           }
@@ -91,7 +85,8 @@
           {
               "choice": "1. Head to the slums",
               "message": "You carefully navigate towards the slums district.",
-              "next": "slums_tavern_intro"
+              "next": "slums_tavern_intro",
+              "log": "slums"
           }
       ]
   },

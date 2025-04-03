@@ -32,7 +32,8 @@
             {
                 "choice": "1. Listen to his request",
                 "message": "He tells you about an imprisoned knight who refused the king's orders.",
-                "next": "knight_rescue_intro"
+                "next": "knight_rescue_intro",
+                "log": "prison_outskirts"
             }
         ]
     },
@@ -45,6 +46,7 @@
                 "choice": "1. Accept his offer",
                 "message": "The barman slides you a healing potion as a sign of trust.",
                 "next": "knight_rescue_intro",
+                "log": "prison_outskirts",
                 "item": "Full Potion"
             }
         ]
@@ -133,13 +135,15 @@
                 "choice": "1. Offer to help rescue the general",
                 "message": "The contact provides you with details about the prison where the general is held.",
                 "reputation": 10,
-                "next": "knight_rescue_intro"
+                "next": "knight_rescue_intro",
+                "log": "prison_outskirts"
             },
             {
                 "choice": "2. Request more information",
                 "message": "You learn about the general's importance to the resistance movement.",
                 "reputation": 5,
-                "next": "knight_rescue_intro"
+                "next": "knight_rescue_intro",
+                "log": "prison_outskirts"
             }
         ]
     },
@@ -152,13 +156,15 @@
                 "choice": "Accept the mission",
                 "message": "You agree to help free the general. The woman provides you with details about the prison.",
                 "reputation": 5,
-                "next": "knight_rescue_intro"
+                "next": "knight_rescue_intro",
+                "log": "prison_outskirts"
             },
             {
                 "choice": "Decline the offer",
                 "message": "You decide the risk is too great and continue your journey through the slums.",
                 "reputation": -2,
-                "next": "slums_deeper"
+                "next": "slums_deeper",
+                "log": "deep_slums"
             }
         ]
     },
@@ -228,7 +234,8 @@
                 "choice": "Listen to her story",
                 "message": "You decide to hear what she has to say about the general.",
                 "reputation": 0,
-                "next": "knight_rescue_intro"
+                "next": "knight_rescue_intro",
+                "log": "prison_outskirts"
             }
         ]
     },
@@ -240,7 +247,8 @@
             {
                 "choice": "1. Listen to the information",
                 "message": "You learn about the general's location and importance to the resistance.",
-                "next": "knight_rescue_intro"
+                "next": "knight_rescue_intro",
+                "log": "prison_outskirts"
             }
         ]
     },

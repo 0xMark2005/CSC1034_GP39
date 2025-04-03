@@ -1,6 +1,30 @@
 [
     {
         "dialogue": "capital_gates_intro",
+        "message": "You have successfully fled the village amid all the chaos with a few items in hand. You can manage your inventory by clicking the 'Manage Inventory' button in the menu at the top (desktop) / in the dropdown (mobile) or by typing 'Manage Inventoy' in the terminal at any point, as long as you aren't occupied with something else (e.g. a minigame). Give it a try!",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Next",
+                "message": "What about saving progress?",
+                "next": "save_tutorial"
+            }
+        ]
+    },
+    {
+        "dialogue": "save_tutorial",
+        "message": "Your progress is saved every time you enter a new area. You can also manually save any changes between areas by clicking the 'Save' button in the menu at the top (desktop) / in the dropdown (mobile) or by typing 'Save' in the terminal. Give it a try too!",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Continue Story...",
+                "message": "You head towards the gates of the capital.",
+                "next": "capital_gates_arrival"
+            }
+        ]
+    },
+    {
+        "dialogue": "capital_gates_arrival",
         "message": "You arrive at the capital city gates. Guards are checking all who enter.",
         "optionType": "number",
         "options": [
@@ -24,12 +48,14 @@
             {
                 "choice": "1. Insist on the truth",
                 "message": "The guards arrest you for spreading 'false allegations against the crown'.",
-                "next": "prison_intro"
+                "next": "prison_intro",
+                "log": "prison"
             },
             {
                 "choice": "2. Change your story",
                 "message": "Your attempt to change your story makes the guards even more suspicious.",
-                "next": "prison_intro"
+                "next": "prison_intro",
+                "log": "prison"
             }
         ]
     },
@@ -41,7 +67,8 @@
             {
                 "choice": "1. Enter the city",
                 "message": "You make your way into the bustling capital.",
-                "next": "merchant_district_intro"
+                "next": "merchant_district_intro",
+                "log": "merchant_district"
             }
         ]
     }

@@ -8,6 +8,11 @@
                 "choice": "1. Continue forward",
                 "message": "A guard patrol approaches you, demanding documentation.",
                 "next": "arrest_scene"
+            },
+            {
+                "choice": "2. Talk to the merchant next to you",
+                "message": "You spark up a conversation with the merchant next to you and appear as though you are travelling with him.",
+                "next": "merchant_help"
             }
         ]
     },
@@ -19,7 +24,16 @@
             {
                 "choice": "1. Accept arrest",
                 "message": "The guards escort you to the prison.",
-                "next": "prison_intro"
+                "next": "prison_intro",
+                "reputation": -5,
+                "log": "prison"
+            },
+            {
+                "choice": "2. Resist arrest",
+                "message": "You resist arrest as the people around you watch with a frightened look on their face, but it is futile. The guards escort you to the prison.",
+                "next": "prison_intro",
+                "reputation": -10,
+                "log": "prison"
             }
         ]
     },
@@ -56,6 +70,18 @@
                 "choice": "5. Decline",
                 "message": "You politely decline the offer.",
                 "next": "merchant_continue"
+            }
+        ]
+    },
+    {
+        "dialogue": "merchant_continue",
+        "message": "You walk past the guards next to the legitimate merchant. However, there are guards stationed everywhere, it appears it is futile to avoid them. A guard appraoches you and asks for documentation.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Tell a lie about how you lost the documentation",
+                "message": "Your lie was not enough to convince the guards.",
+                "next": "arrest_scene"
             }
         ]
     }

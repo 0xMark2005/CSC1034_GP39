@@ -1,7 +1,56 @@
 [
     {
         "dialogue": "burning_village_intro",
-        "message": "Your village is under attack! Flames engulf your home.",
+        "message": "Welcome to Reignfall. In this world, a corrupt king is taking advantage of the citizens for his own benefit. You are a yound peasant who is aiming to strike the king down and create hope for the villagers, however, if you manage to perish along the way, hope will be lost. Are you ready to begin?",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Start Game",
+                "message": "The game begins...",
+                "item": "Half Health Potion",
+                "next": "opening_scene"
+            }
+        ]
+    },
+    {
+        "dialogue": "opening_scene",
+        "message": "It is a peaceful day in your village, everyone is out enjoying the sun, but suddenly, the wheels of a carriage can be heard approaching the town, its the knights. Everyone but you scramble into their homes. A knight appraoches you.",
+        "optionType": "verb",
+        "options": [
+            {
+                "choice": "ask",
+                "message": "You ask the knight why he has come to your village.",
+                "next": "ask_knight"
+            }
+        ]
+    },
+    {
+        "dialogue": "ask_knight",
+        "message": "The knight looks down upon you with a disgusted look on his face. He demands that the village pay 60% of their profits on their recent harvest to the king as a tax.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Decline",
+                "message": "You plead to the knight for the request to be reconsidered, as your village will not be able to afford supplies like firewood or food for the coming winter",
+                "next": "knight_response"
+            }
+        ]
+    },
+    {
+        "dialogue": "knight_response",
+        "message": "The knight laughs at your request, and whispers to the other knight next to him who then returns to the carriage. Just as you think you are safe, the knight shouts 'I CAN SEE PLENTY OF FIREWOOD HERE!', as he throws a burning bottle towards a house. The other knights rush into the village with swords in hand.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Run from the knights",
+                "message": "You run away from the knights...",
+                "next": "burning_village_attack"
+            }
+        ]
+    },
+    {
+        "dialogue": "burning_village_attack",
+        "message": "Knights begin invading homes, while setting other homes on fire. The village is now engulfed in flames and panic.",
         "optionType": "number",
         "options": [
             {
@@ -18,7 +67,7 @@
     },
     {
         "dialogue": "search_home",
-        "message": "Through the smoke, you spot: [1] Wooden Sword [2] Half Health Potion [3] Leave Now",
+        "message": "Through the smoke, you spot some items...",
         "optionType": "number",
         "options": [
             {
@@ -28,9 +77,9 @@
                 "next": "search_home_sword_taken"
             },
             {
-                "choice": "2. Take healing potion",
-                "message": "You pocket the medicinal brew.",
-                "item": "Half Health Potion",
+                "choice": "2. Take small defence potion",
+                "message": "You pocket the small brew.",
+                "item": "Half Defence Potion",
                 "next": "search_home_potion_taken"
             },
             {
@@ -42,13 +91,13 @@
     },
     {
         "dialogue": "search_home_sword_taken",
-        "message": "Would you like to take the healing potion as well?",
+        "message": "Would you like to take the defence potion as well?",
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Take healing potion",
-                "message": "You grab the potion before leaving.",
-                "item": "Half Health Potion",
+                "choice": "1. Take small defence potion",
+                "message": "You grab the small potion before leaving.",
+                "item": "Half Defence Potion",
                 "next": "escape_start"
             },
             {
@@ -98,7 +147,8 @@
             {
                 "choice": "1. Head to the capital",
                 "message": "You make your way towards the capital city.",
-                "next": "capital_gates_intro"
+                "next": "capital_gates_intro",
+                "log": "capital_gates"
             }
         ]
     }

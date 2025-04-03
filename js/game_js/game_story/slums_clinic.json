@@ -33,7 +33,8 @@
             {
                 "choice": "1. Head to resistance headquarters",
                 "message": "With your new allies, you make your way to the resistance base.",
-                "next": "resistance_hq_intro"
+                "next": "resistance_hq_intro",
+                "log": "resistance_hq"
             }
         ]
     }

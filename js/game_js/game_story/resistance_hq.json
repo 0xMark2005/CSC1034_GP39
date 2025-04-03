@@ -8,6 +8,11 @@
                 "choice": "1. Meet the resistance leaders",
                 "message": "The resistance leaders welcome you and the rescued knight.",
                 "next": "resistance_briefing"
+            },
+            {
+                "choice": "2. Visit the armory",
+                "message": "The armory catches the corner of your eye. you decide to stop by.",
+                "next": "armory_visit"
             }
         ]
     },
@@ -19,31 +24,50 @@
             {
                 "choice": "1. Join the final battle",
                 "message": "You prepare to join the resistance in their assault on the castle.",
-                "next": "final_battle_intro"
+                "next": "final_battle_intro",
+                "log": "throne_room"
             }
         ]
     },
     {
         "dialogue": "armory_visit",
-        "message": "The resistance leader offers you one of the finest pieces of equipment known.",
+        "message": "In the armory you meet one of the resistance leaders and have a chat, telling them about your quest. The resistance leader offers you one of the finest pieces of equipment known in exchange for joining their final battle.",
         "optionType": "number",
         "options": [
             {
                 "choice": "1. Accept Royal Sword",
-                "message": "You feel the bow's ancient power.",
-                "next": "resistance_planning",
+                "message": "You feel the swords's ancient power.",
+                "next": "after_armory",
                 "item": "Royal Sword"
             },
             {
                 "choice": "2. Accept Royal Shield",
-                "message": "You feel the bow's ancient power.",
-                "next": "resistance_planning",
+                "message": "You feel the shield's ancient power.",
+                "next": "after_armory",
                 "item": "Royal Shield"
             },
             {
-                "choice": "3. Decline",
+                "choice": "3. Accept Royal Staff",
+                "message": "You feel the staff's ancient power.",
+                "next": "after_armory",
+                "item": "Royal Staff"
+            },
+            {
+                "choice": "4. Decline Politely",
                 "message": "You prefer your current weapons.",
-                "next": "resistance_planning"
+                "next": "after_armory"
+            }
+        ]
+    },
+    {
+        "dialogue": "after_armory",
+        "message": "The resistance leader takes you to meet with the other leaders.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Meet the resistance leaders",
+                "message": "The resistance leaders welcome you and the rescued knight.",
+                "next": "resistance_briefing"
             }
         ]
     }

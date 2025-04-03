@@ -113,6 +113,12 @@ document.addEventListener("DOMContentLoaded", async function() {
     await loadAreaFromJSON();
     loadDialogue();
 
+    //add methods to save and manage inventory buttons
+    let saveBtn = document.getElementById("save-button");
+    let manageInventoryBtn = document.getElementById("manage-inventory-button");
+    saveBtn.addEventListener("click", () => saveGameBtnFunction());
+    manageInventoryBtn.addEventListener("click", () => manageInventoryBtnFunction());
+
     // Add input handler
     userInput.addEventListener("keydown", function(event) {
         if (!allowInput) return;
@@ -134,6 +140,29 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     });
 });
+
+//
+// Toolbar methods
+//
+async function saveGameBtnFunction(){
+    if(await SaveLoadGame.saveGame()){
+        Terminal.outputMessage("Game Saved!", optionResultColor);
+    }
+    else{
+        Terminal.outputMessage("Game failed to save.", errorColor);
+    }
+}
+
+async function manageInventoryBtnFunction(){
+    if(allowInput){
+        allowOtherInput();
+        Inventory.openInventoryManager();
+    }
+    else{
+        Terminal.outputMessage("Cannot manage inventory at this time!", errorColor);
+    }
+}
+
 
 // Story progression map
 const storyProgression = {
@@ -189,20 +218,35 @@ const storyProgression = {
 async function processChoice(option) {
     Terminal.outputMessage(option.message, dialogueColor);
     
+    //check for game completion
+    if(option.gameComplete){
+        await gameComplete();
+    }
+
     //Add any logs
     if(option.log){
         addLog(option.log);
     }
 
-    // Handle item acquisition first
-    if (option.item) {
-        await awardItem(option);
+    if(option.reputation){
+        updateReputation(option);
     }
-    
+
     // Then handle next dialogue or minigame
     if (option.startMinigame) {
         handleMinigame(option);
-    } else if (option.next) {
+        return;
+    } 
+    
+    // Handle item acquisition
+    if (option.item) {
+        if(await awardItem(option)){
+            return; //returns if next dialogue being handled by awardItem method
+        }
+    }
+
+    //Opens dialogue for next area
+    if (option.next) {
         handleAreaTransition(option.next);
     }
 }
@@ -338,6 +382,13 @@ async function loadAreaFromJSON() {
         console.log("Attempted to load from path:", GameTracker.areaFilepath);
         Terminal.outputMessage("Error loading area data. Please check console.", errorColor);
     }
+
+    if(await SaveLoadGame.saveGame()){
+        Terminal.outputMessage("Autosaved!", optionResultColor);
+    }
+    else{
+        Terminal.outputMessage("Autosave Failed!", errorColor);
+    }
 }
 
 function loadDialogue() {
@@ -452,17 +503,12 @@ function loadDialogue() {
  * to the appropriate handler function based on the current option type.
  * Includes a delay to improve user experience.
  */
-function handleUserInput() {
+async function handleUserInput() {
     const choice = Terminal.getUserInput().toLowerCase();
     
-    setTimeout(() => {
-        // Special commands
-        if (choice === "show inventory") {
-            // TODO: Implement inventory display
-            return;
-        }
-        else if(choice === "save"){
-            if(SaveLoadGame.saveGame()){
+    await setTimeout(async () => {
+        if(choice === "save"){
+            if(await SaveLoadGame.saveGame()){
                 Terminal.outputMessage("Game Saved!", optionResultColor);
             }
             else{
@@ -571,6 +617,21 @@ function handleArrowNavigation(direction) {
 // Methods for updating game tracker based on selected option
 //-----
 
+//Checks if the game has been completed and opens the summary screen
+async function gameComplete(){
+    Terminal.outputMessage("GAME COMPLETE!!!", dialogueColor);
+    Terminal.outputMessage("Thanks for playing Reignfall!!", dialogueColor);
+
+    //set the game completion to true
+    GameTracker.gameCompleted = true;
+    await SaveLoadGame.saveGame();
+
+    setTimeout(function(){
+        window.location.href="game_summary.html";
+        return;
+    }, 3000);
+}
+
 //updates the player's reputation by the given amount in the option if the option includes it
 function updateReputation(option){
     if (option.reputation) {
@@ -580,11 +641,11 @@ function updateReputation(option){
     }
 }
 
-//if the option includes an item to award, gives it to the player
+//if the option includes an item to award, gives it to the player (RETURNS: false = no input needed, true = input needed)
 async function awardItem(option){
     //if option doesnt award any item
     if(!option.item){
-        return;
+        return false;
     }
 
     //get the item from the database
@@ -596,7 +657,7 @@ async function awardItem(option){
         //if no matching items were found
         if(!result.success || result.data.length == 0){
             console.error(`Item ${option.item} could not be found in DB.`);
-            return;
+            return false;
         }
 
         //formats the new item correctly
@@ -611,7 +672,7 @@ async function awardItem(option){
     }
     catch(error){
         console.error("Error getting item from DB: ", error);
-        return;
+        return false;
     }
 
     //add log
@@ -619,7 +680,7 @@ async function awardItem(option){
 
     //try to add to inventory
     if(await Inventory.addItem(newItem)){
-        return;
+        return false;
     }
 
     //if addItem didnt work (inventory was full)
@@ -636,6 +697,8 @@ async function awardItem(option){
         }
     }
     document.addEventListener("itemAddChoiceComplete", afterDecision, {once: true});
+
+    return true;
 }
 
 //method to add any given log by the log's name (DONT PASS OPTION, PASS option.log)
@@ -668,7 +731,7 @@ export async function addLog(logName){
         let currentLog = GameTracker.gameLogs[i];
         if(currentLog.id === newLog.id){
             currentLog.quantity += 1;
-            console.log(`Another ${newLog.name} log was added. Player now has ${currentLogs.quantity}.`);
+            console.log(`Another ${newLog.name} log was added. Player now has ${currentLog.quantity}.`);
             return;
         }
     }

@@ -576,8 +576,8 @@ function letUserChooseAlly(allies, emptyArrayMessage, message){
 //
 function exitInventoryManager(){
   //remove inventory management input
-  returnToMainInput(true);
   Terminal.outputMessage("Closing inventory manager...", optionResultColor);
+  returnToMainInput(true);
 }
 
 //

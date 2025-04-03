@@ -27,13 +27,15 @@
                 "choice": "fight",
                 "message": "You engage the mutated rat in battle and defeat it.",
                 "reputation": 2,
-                "next": "slums_intro"
+                "next": "slums_intro",
+                "log": "slums"
             },
             {
                 "choice": "sneak",
                 "message": "You manage to slip past the creature unnoticed.",
                 "reputation": 1,
-                "next": "slums_intro"
+                "next": "slums_intro",
+                "log": "slums"
             }
         ]
     },
@@ -46,7 +48,8 @@
                 "choice": "Continue to the slums",
                 "message": "You emerge from the sewers into the city's poorest district.",
                 "reputation": 0,
-                "next": "slums_intro"
+                "next": "slums_intro",
+                "log": "slums"
             }
         ]
     },
@@ -64,13 +67,15 @@
                     "strength": 2.5,
                     "defense": 3.0
                 },
-                "next": "slums_intro"
+                "next": "slums_intro",
+                "log": "slums"
             },
             {
                 "choice": "2. Ask for directions",
                 "message": "They point you toward the slums, where more resistance members gather.",
                 "reputation": 0,
-                "next": "slums_intro"
+                "next": "slums_intro",
+                "log": "slums"
             }
         ]
     }

@@ -48,7 +48,6 @@ export class AllyManager{
     
         for (let i = 0; i < alliesData.length; i++) {
             let ally = alliesData[i];
-            console.log(ally);
             const characterDiv = updatedCharacterDivs[i];
     
             if (!characterDiv) {

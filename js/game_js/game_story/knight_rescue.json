@@ -47,6 +47,11 @@
                 "message": "You claim the well-crafted sword.",
                 "item": "Knight Sword",
                 "next": "guard_shield"
+            },
+            {
+                "choice": "2. Leave it",
+                "message": "The sword is too much to carry around.",
+                "next": "guard_shield"
             }
         ]
     },
@@ -88,7 +93,8 @@
             {
                 "choice": "1. Visit the medic",
                 "message": "You head to the medic's hidden clinic.",
-                "next": "clinic_scene"
+                "next": "clinic_scene",
+                "log": "clinic"
             }
         ]
     },
@@ -100,7 +106,8 @@
             {
                 "choice": "1. Plan castle assault",
                 "message": "Your team begins preparing for the final battle.",
-                "next": "castle_takeover_intro"
+                "next": "castle_takeover_intro",
+                "log": "castle"
             }
         ]
     }

@@ -7,12 +7,14 @@
             {
                 "choice": "1. Try to explain lack of papers",
                 "message": "Without proper documentation, the guards arrest you as a suspected spy.",
-                "next": "prison_intro"
+                "next": "prison_intro",
+                "log": "prison"
             },
             {
                 "choice": "2. Attempt to flee",
                 "message": "You try to escape but are quickly caught. The guards drag you away to the prison.",
-                "next": "prison_intro"
+                "next": "prison_intro",
+                "log": "prison"
             }
         ]
     },
@@ -49,7 +51,8 @@
             {
                 "choice": "1. Plan the rescue",
                 "message": "You begin preparing to infiltrate the prison.",
-                "next": "knight_rescue_intro"
+                "next": "knight_rescue_intro",
+                "log": "prison_outskirts"
             }
         ]
     }
