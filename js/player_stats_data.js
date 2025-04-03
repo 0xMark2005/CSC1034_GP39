@@ -29,20 +29,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         highestScore: `SELECT MAX(score) AS highestScore FROM game_sessions WHERE user_id = ${userID}`,
         totalReputation: `SELECT SUM(reputation) AS totalReputation FROM game_sessions WHERE user_id = ${userID}`,
         highestReputation: `SELECT MAX(reputation) AS highestReputation FROM game_sessions WHERE user_id = ${userID}`,
-        minigamesPlayed: `SELECT COUNT(*) AS played FROM game_session_logs JOIN game_logs ON game_logs.log_id = game_session_logs.log_id WHERE user_id = ${userID} AND log_name = 'played_minigame'`,
-        minigamesWon: `SELECT COUNT(*) AS won FROM game_session_logs JOIN game_logs ON game_logs.log_id = game_session_logs.log_id WHERE user_id = ${userID} AND log_name = 'minigame_complete'`,
-        minigamesLost: `SELECT COUNT(*) AS lost FROM game_session_logs JOIN game_logs ON game_logs.log_id = game_session_logs.log_id WHERE user_id = ${userID} AND log_name = 'minigame_failed'`,
-        totalItems: `SELECT SUM(quantity) AS totalItems FROM game_session_inventory JOIN game_sessions ON game_session_inventory.game_session_id = game_sessions.game_session_id WHERE user_id = ${userID}`,
-        mostItems: `
-            SELECT MAX(item_total) AS mostItems
-            FROM (
-                SELECT SUM(quantity) AS item_total
-                FROM game_session_inventory
-                JOIN game_sessions ON game_session_inventory.game_session_id = game_sessions.game_session_id
-                WHERE user_id = ${userID}
-                GROUP BY game_session_inventory.game_session_id
-            ) AS session_items;
-        `
+        minigamesPlayed: `SELECT COUNT(*) AS played FROM game_session_logs JOIN game_logs ON game_logs.log_id = game_session_logs.log_id INNER JOIN game_sessions ON game_session_logs.game_session_id = game_sessions.game_session_id WHERE user_id = ${userID} AND log_name = 'played_minigame'`,
+        minigamesWon: `SELECT COUNT(*) AS won FROM game_session_logs JOIN game_logs ON game_logs.log_id = game_session_logs.log_id INNER JOIN game_sessions ON game_session_logs.game_session_id = game_sessions.game_session_id WHERE user_id = ${userID} AND log_name = 'minigame_won'`,
+        minigamesLost: `SELECT COUNT(*) AS lost FROM game_session_logs JOIN game_logs ON game_logs.log_id = game_session_logs.log_id INNER JOIN game_sessions ON game_session_logs.game_session_id = game_sessions.game_session_id WHERE user_id = ${userID} AND log_name = 'minigame_failed'`,
+        totalItems: `SELECT SUM(quantity) AS mostItems FROM game_session_logs JOIN game_logs ON game_logs.log_id = game_session_logs.log_id INNER JOIN game_sessions ON game_session_logs.game_session_id = game_sessions.game_session_id WHERE user_id = ${userID} AND log_name = 'found_item';`,
+        mostItems: `SELECT MAX(quantity) AS mostItems FROM game_session_logs JOIN game_logs ON game_logs.log_id = game_session_logs.log_id INNER JOIN game_sessions ON game_session_logs.game_session_id = game_sessions.game_session_id WHERE user_id = ${userID} AND log_name = 'found_item';`
     };
 
     for (const [key, query] of Object.entries(queries)) {
