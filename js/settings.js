@@ -10,6 +10,9 @@ window.appSettings = {
     textSpeed: "normal"
 };
 
+window.audioContext = null;
+window.gainNode = null;
+
 import { DBQuery } from "./dbQuery.js";
 import { Terminal } from "./terminal.js";
 import * as Util from "./util.js";
@@ -57,6 +60,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 break;
             case "textSpeed":
                 processTextSpeedInput(input);
+                break;
+            case "volume":
+                processVolumeInput(input);
                 break;
             default:
                 Terminal.outputMessage("Unknown mode. Returning to main menu.", "#FF8181");
@@ -179,6 +185,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 break;
             default:
                 Terminal.textDelay = 10; // Default to normal
+        }
+
+        // Initialize and apply volume
+        initializeAudio();
+        if (window.gainNode) {
+            window.gainNode.gain.value = window.appSettings.volume / 100;
         }
     }
     
@@ -403,6 +415,33 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
+    function processSoundInput(input) {
+        switch (input) {
+            case "1":
+                displayVolumeOptions();
+                break;
+            case "2":
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
+                break;
+            case "3":
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
+                break;
+            case "0":
+                currentMode = "main";
+                displayMainMenu();
+                break;
+            default:
+                Terminal.outputMessage("Invalid choice! Enter 0-3.", "#FF8181");
+        }
+    }
+
+    function displayVolumeOptions() {
+        Terminal.outputMessage("===== VOLUME SETTINGS =====", "#00FFFF");
+        Terminal.outputMessage("Current Volume: " + window.appSettings.volume + "%", "#FFFF00");
+        Terminal.outputMessage("\nEnter a value between 0-100:", "#FFFFFF");
+        currentMode = "volume";
+    }
+
     function displayColorPicker() {
         Terminal.outputMessage("===== TERMINAL COLOR =====", "#00FFFF");
         Terminal.outputMessage("1. Default (#171717)", "#00FF00");
@@ -540,15 +579,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         switch (input) {
             case "1":
                 speed = "slow";
-                delay = 25;    // Slow but readable
+                delay = 25;
                 break;
             case "2":
                 speed = "normal";
-                delay = 10;    // Quick
+                delay = 10;
                 break;
             case "3":
                 speed = "fast";
-                delay = 1;     // Almost instant
+                delay = 1;
                 break;
             case "0":
                 currentMode = "accessibility";
@@ -559,10 +598,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return;
         }
         
-        // Update settings
+        // Update settings and apply immediately
         window.appSettings.textSpeed = speed;
         Terminal.textDelay = delay;
-        saveSettings(); // Save to database
+        
+        // Save to both localStorage and database
+        localStorage.setItem('appSettings', JSON.stringify(window.appSettings));
+        saveSettings();
         
         // Demo text with new speed
         Terminal.outputMessage(`Text speed changed to ${speed}! This is a demonstration of the new speed.`, "#00FF00");
@@ -571,5 +613,66 @@ document.addEventListener("DOMContentLoaded", async function () {
             currentMode = "accessibility";
             displayAccessibilityOptions();
         }, 2000);
+    }
+
+    function processVolumeInput(input) {
+        const volume = parseInt(input, 10);
+        if (isNaN(volume) || volume < 0 || volume > 100) {
+            Terminal.outputMessage("Invalid volume! Enter a value between 0-100.", "#FF8181");
+            displayVolumeOptions();
+            return;
+        }
+
+        // Initialize audio context if not already done
+        initializeAudio();
+
+        // Update volume in settings
+        window.appSettings.volume = volume;
+        
+        // Actually apply the volume change
+        if (window.gainNode) {
+            window.gainNode.gain.value = volume / 100;
+        }
+
+        // Update any currently playing audio elements
+        const audioElements = document.querySelectorAll('audio');
+        audioElements.forEach(audio => {
+            audio.volume = volume / 100;
+        });
+
+        Terminal.outputMessage(`Volume set to ${volume}%`, "#00FF00");
+        saveSettings();
+
+        // Play a test sound to demonstrate new volume
+        playTestSound();
+
+        setTimeout(() => {
+            currentMode = "sound";
+            displaySoundOptions();
+        }, 1000);
+    }
+
+    function initializeAudio() {
+        if (!window.audioContext) {
+            window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            window.gainNode = window.audioContext.createGain();
+            window.gainNode.connect(window.audioContext.destination);
+            // Set initial volume
+            window.gainNode.gain.value = window.appSettings.volume / 100;
+        }
+    }
+
+    function playTestSound() {
+        // Create a brief test tone
+        const oscillator = window.audioContext.createOscillator();
+        oscillator.connect(window.gainNode);
+        oscillator.frequency.value = 440; // A4 note
+        oscillator.type = 'sine';
+        
+        // Play for 200ms
+        oscillator.start();
+        setTimeout(() => {
+            oscillator.stop();
+        }, 200);
     }
 });

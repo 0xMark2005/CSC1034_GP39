@@ -29,16 +29,32 @@ export class Terminal {
     static #userInput;
     static #messageQueue = [];
     static #isProcessing = false;
-    static textDelay = 50; // Default speed (normal)
+    static textDelay = 10; // Default speed
 
-    static initialize(givenoutputTerminal, givenUserInput){
-        this.#outputTerminal = givenoutputTerminal //get the output terminal
-        this.#userInput = givenUserInput;
-
-        if (!this.#outputTerminal || !this.#userInput) {
-            console.error("Error: Terminal elements not found");
-            return;
+    static initialize(outputTerminal, userInput) {
+        this.#outputTerminal = outputTerminal;
+        this.#userInput = userInput;
+        
+        // Load text speed from localStorage or settings
+        const savedSettings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+        if (savedSettings.textSpeed) {
+            // Apply text speed immediately
+            switch (savedSettings.textSpeed) {
+                case 'slow':
+                    this.textDelay = 25;
+                    break;
+                case 'normal':
+                    this.textDelay = 10;
+                    break;
+                case 'fast':
+                    this.textDelay = 1;
+                    break;
+                default:
+                    this.textDelay = 10;
+            }
         }
+        
+        console.log('Terminal initialized with text delay:', this.textDelay);
     }
 
     // Add setter/getter for input value
@@ -57,11 +73,24 @@ export class Terminal {
     //-------
 
     //output a non-user message to the terminal
-    static outputMessage(message, color) {
-        // Add the message to the queue
+    static async outputMessage(message, color = "#FFFFFF") {
+        if (!this.#outputTerminal) return;
+
+        // For fast speed, skip animation completely
+        if (this.textDelay <= 1) {
+            const span = document.createElement("span");
+            span.style.color = color;
+            span.textContent = message;
+            this.#outputTerminal.appendChild(span);
+            this.#outputTerminal.appendChild(document.createElement("br"));
+            this.#scrollToBottom();
+            return;
+        }
+
+        // Add to message queue for normal typing effect
         this.#messageQueue.push({ message, color });
         
-        // If we're not already processing a message, start processing
+        // Start processing if not already doing so
         if (!this.#isProcessing) {
             this.#processNextMessage();
         }
