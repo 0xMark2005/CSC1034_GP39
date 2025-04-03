@@ -5,7 +5,7 @@ export class GameTracker {
     static currentDialogue;
     static gameLogs = [];
 
-    static reputation = 0;
+    static reputation = 0;  // Initialize at 0
     static score = 0;
     static scoreUpdateInProgress = false;
     static inventory = [];
@@ -35,6 +35,13 @@ export class GameTracker {
         this.reputation += change;
         if (this.reputation < 0) this.reputation = 0;
         if (this.reputation > 100) this.reputation = 100;
+
+        // Update reputation display with multiplier
+        const reputationElement = document.getElementById('reputation-number');
+        if (reputationElement) {
+            const multiplier = 1 + Math.floor(this.reputation / 50);
+            reputationElement.textContent = `${this.reputation}/100 (${multiplier}x)`;
+        }
     }
 
     static logGold(amount) {
@@ -65,7 +72,6 @@ export class GameTracker {
             if (scoreElement) {
                 scoreElement.textContent = this.score.toString();
             }
-
             // Log final state for verification
             console.log('Score Update Complete:', {
                 previousScore: currentScore,

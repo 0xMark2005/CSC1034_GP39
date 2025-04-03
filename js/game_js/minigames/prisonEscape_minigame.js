@@ -2,6 +2,7 @@ import { Terminal } from "../../terminal.js";
 import { displayAnimation } from "../animation_handler.js";
 import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
+import { AllyManager } from "../ally_manager.js";  
 import * as MainGame from "../temp_game.js";
 
 export function prisonEscapeGame() {
@@ -73,7 +74,7 @@ export function prisonEscapeGame() {
             escapeWindow = false;
             gameActive = false;
             try {
-                await displayAnimation('PrisonEscape/WakingUp.gif');
+                await displayAnimation('PrisonEscape/wakingUp.gif');
                 Terminal.outputMessage("The guard woke up! You've been caught!", "#FF0000");
             } catch (error) {
                 console.error('Error playing waking animation:', error);
@@ -82,7 +83,7 @@ export function prisonEscapeGame() {
         }, 5000);
     }
 
-    function cleanup(success, reactionTime = 0) {
+    async function cleanup(success, reactionTime = 0) {
         if (timeoutId) clearTimeout(timeoutId);
         cleanupInputHandlers();
 
@@ -90,31 +91,65 @@ export function prisonEscapeGame() {
         MainGame.addLog("played_minigame");
         
         let score = 0;
+        let healthChange = 0;
+        let healthMessage = "";
+        let detailedMessage = "";
+
         if (success) {
             //Add log
             MainGame.addLog("minigame_won");
 
-            score = Number(300); // Base score
+            score = Number(300);
             if (reactionTime > 0) {
-                score += Number(Math.max(0, Math.floor((5000 - reactionTime) / 25))); // Time bonus
+                score += Number(Math.max(0, Math.floor((5000 - reactionTime) / 25)));
             }
             
-            // Add reputation based on performance
+            // More detailed health change messages
             if (reactionTime < 1000) {
-                ScoreSystem.updateReputation(10); // Perfect escape
-                console.log('Perfect escape: +10 reputation');
+                healthChange = 20;
+                healthMessage = "Perfect escape! Your adrenaline rush energizes you!";
+                detailedMessage = "Quick thinking and steady hands kept you at peak condition.";
+                ScoreSystem.updateReputation(10);
             } else if (reactionTime < 2000) {
-                ScoreSystem.updateReputation(5);  // Good escape
-                console.log('Good escape: +5 reputation');
+                healthChange = 10;
+                healthMessage = "Good escape! The smooth getaway preserves your strength.";
+                detailedMessage = "Your careful timing helped avoid unnecessary strain.";
+                ScoreSystem.updateReputation(5);
             } else {
-                ScoreSystem.updateReputation(2);  // Basic escape
-                console.log('Basic escape: +2 reputation');
+                healthChange = -10;
+                healthMessage = "Close call! The tense escape saps your energy.";
+                detailedMessage = "The prolonged stress takes its toll on your body.";
+                ScoreSystem.updateReputation(2);
             }
         } else {
-            ScoreSystem.updateReputation(-5); // Failed escape
-            console.log('Failed escape: -5 reputation');
             //Add log
             MainGame.addLog("minigame_failed");
+
+            healthChange = -25;
+            healthMessage = "Captured! The guards rough you up during capture!";
+            detailedMessage = "Being caught and restrained causes significant injuries.";
+            ScoreSystem.updateReputation(-5);
+        }
+
+        // Apply health changes to peasant without minimum bound
+        if (GameTracker.allies && GameTracker.allies.length > 0) {
+            const peasant = GameTracker.allies[0];
+            const oldHp = peasant.hp;
+            
+            // Remove Math.max(1, ...) to allow HP to reach 0
+            peasant.hp = Math.min(peasant.maxHp, peasant.hp + healthChange);
+            
+            // Show detailed health feedback
+            Terminal.outputMessage(`\n${healthMessage} (${healthChange > 0 ? '+' : ''}${healthChange} HP)`, 
+                healthChange > 0 ? "#00FF00" : "#FF8181");
+            Terminal.outputMessage(detailedMessage, "#ADD8E6");
+            Terminal.outputMessage(`HP: ${oldHp} → ${peasant.hp}/${peasant.maxHp}`, "#FFA500");
+            
+            // Update health bar before checking game over
+            await AllyManager.loadAllyVisuals();
+            
+            // Check for game over - will redirect to main menu if HP <= 0
+            if (AllyManager.checkGameOver()) return;
         }
 
         GameTracker.updateScore(score);

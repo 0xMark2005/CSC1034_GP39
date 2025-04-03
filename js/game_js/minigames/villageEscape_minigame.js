@@ -116,7 +116,22 @@ export function villageEscapeGame() {
         Terminal.outputMessage(`\n${scenario.prompt}`, "#00FF00");
         
         timeoutId = setTimeout(() => {
-            Terminal.outputMessage("Your indecision proves fatal!", "#FF0000");
+            // Apply consistent -10 HP damage for timeouts
+            if (GameTracker.allies && GameTracker.allies.length > 0) {
+                const peasant = GameTracker.allies[0];
+                const oldHp = peasant.hp;
+                
+                // Apply -10 HP damage
+                const healthChange = -10;
+                peasant.hp = Math.min(peasant.maxHp, peasant.hp + healthChange);
+                
+                Terminal.outputMessage("Your indecision costs you!", "#FF0000");
+                Terminal.outputMessage(`Health damage from hesitation: ${healthChange} HP`, "#FF8181");
+                Terminal.outputMessage(`HP: ${oldHp} → ${peasant.hp}/${peasant.maxHp}`, "#FFA500");
+                
+                AllyManager.loadAllyVisuals();
+                if (AllyManager.checkGameOver()) return;
+            }
             cleanup(false);
         }, 10000);
 
@@ -146,6 +161,63 @@ export function villageEscapeGame() {
         if (scenario.validAnswers.includes(input)) {
             clearTimeout(timeoutId);
             
+            // Apply health changes based on choices
+            if (GameTracker.allies && GameTracker.allies.length > 0) {
+                const peasant = GameTracker.allies[0];
+                let healthChange = 0;
+                let healthMessage = "";
+                
+                switch(currentRound) {
+                    case 0: // Jump scenario
+                        healthChange = -10;
+                        healthMessage = "The impact of jumping from the window bruises your legs.";
+                        break;
+                        
+                    case 1: // Baby scenario
+                        if (input.startsWith('s')) {
+                            healthChange = -20;
+                            healthMessage = "The intense heat and smoke from the burning building sear your lungs and burn your skin.";
+                        } else {
+                            healthChange = -5;
+                            healthMessage = "The guilt of leaving the baby weighs heavily, causing stress damage.";
+                        }
+                        break;
+                        
+                    case 2: // Guard scenario
+                        if (input.startsWith('t')) {
+                            healthChange = 15;
+                            healthMessage = "The sympathetic guard shares his healing potion, mending your wounds.";
+                        } else {
+                            healthChange = -15;
+                            healthMessage = "The strain of running with injuries worsens your condition.";
+                        }
+                        break;
+                        
+                    case 3: // Final escape
+                        if (input.startsWith('t')) {
+                            healthChange = -10;
+                            healthMessage = "Sharp branches and thorns in the dense forest cut and scratch you.";
+                        } else {
+                            healthChange = 10;
+                            healthMessage = "The clear road allows you to catch your breath and recover some strength.";
+                        }
+                        break;
+                }
+
+                // Apply health change
+                peasant.hp = Math.max(1, Math.min(peasant.maxHp, peasant.hp + healthChange));
+                await AllyManager.loadAllyVisuals();
+                if (AllyManager.checkGameOver()) return;
+
+                // Show health change message
+                Terminal.outputMessage(`\n${healthMessage}`, healthChange > 0 ? "#00FF00" : "#FF8181");
+                Terminal.outputMessage(`Health Change: (${healthChange > 0 ? '+' : ''}${healthChange} HP)`, "#FFA500");
+                Terminal.outputMessage(`Current HP: ${peasant.hp}/${peasant.maxHp}`, "#FFA500");
+                
+                // Update health bar
+                AllyManager.loadAllyVisuals();
+            }
+
             // Initialize GameTracker.choices if it doesn't exist
             if (!GameTracker.choices) {
                 GameTracker.choices = [];

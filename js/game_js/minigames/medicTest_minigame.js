@@ -5,6 +5,12 @@ import { AllyManager, recruitAlly } from "../ally_manager.js";  // Add recruitAl
 import * as MainGame from "../temp_game.js";
 
 export function medicTestGame() {
+    // Add attempt tracking
+    if (GameTracker.completedMinigames.has('medicTest')) {
+        Terminal.outputMessage("The medic won't test you again. Find another way.", "#FF8181");
+        return;
+    }
+
     let gameActive = true;
     let currentRound = 0;
     let timeoutId = null;
@@ -85,55 +91,71 @@ export function medicTestGame() {
             userInput.currentHandler = null;
         }
 
-        // Calculate stat changes based on performance
-        const statChanges = {
-            strength: Math.floor(successfulAttempts * 1.5),
-            defense: Math.floor(successfulAttempts * 1.2),
-            intelligence: Math.floor(successfulAttempts * 2)
-        };
-
-        // Apply stats to all existing allies first
+        // Handle health changes for all allies
         if (GameTracker.allies && GameTracker.allies.length > 0) {
-            GameTracker.allies.forEach(ally => {
-                ally.attack += statChanges.strength;
-                ally.defence += statChanges.defense;
-                ally.intelligence += statChanges.intelligence;
-            });
+            for (let ally of GameTracker.allies) {
+                const oldHp = ally.hp;
+                let healthChange = 0;
+                let healthMessage = "";
+
+                if (success) {
+                    if (ally.name === "Peasant") {
+                        const missingHealth = ally.maxHp - ally.hp;
+                        healthChange = Math.floor(missingHealth * 0.5);
+                        healthMessage = "The medic provides treatment, restoring half your missing health.";
+                    } else if (ally.name === "Knight") {
+                        const missingHealth = ally.maxHp - ally.hp;
+                        healthChange = Math.floor(missingHealth * 0.75);
+                        healthMessage = "The medic focuses on the Knight's severe wounds.";
+                    }
+                } else {
+                    if (ally.name === "Peasant") {
+                        healthChange = -15;
+                        healthMessage = "The stress of failing the medical exam gives you a migraine!";
+                    }
+                }
+
+                // Apply health change with bounds
+                if (healthChange !== 0) {
+                    ally.hp = Math.max(1, Math.min(ally.maxHp, ally.hp + healthChange));
+                    Terminal.outputMessage(`\n${ally.name}: ${healthMessage}`, healthChange > 0 ? "#00FF00" : "#FF8181");
+                    Terminal.outputMessage(`Health Change: (${healthChange > 0 ? '+' : ''}${healthChange} HP)`, "#FFA500");
+                    Terminal.outputMessage(`${ally.name}'s HP: ${oldHp} → ${ally.hp}/${ally.maxHp}`, "#FFA500");
+                }
+
+                ally.hp = Math.max(1, Math.min(ally.maxHp, ally.hp + healthChange));
+                await AllyManager.loadAllyVisuals();
+                if (AllyManager.checkGameOver()) return; // Add this line
+            }
+
+            // Update health bars
+            await AllyManager.loadAllyVisuals();
         }
-        
+
+        //Add log
+        MainGame.addLog("played_minigame");
+
+        // Simply recruit medic without full healing
+        if (success) {
+            //Add log
+            MainGame.addLog("minigame_won");
+
+            await recruitAlly('Medic');
+            Terminal.outputMessage("\nThe medic joins your cause!", "#00FF00");
+        }
+        else{
+            //Add log
+            MainGame.addLog("minigame_failed");
+        }
+
         let baseScore = 500; // Base score
         let reputationMultiplier = 1; // Placeholder for reputation multiplier
         let finalScore = baseScore + (successfulAttempts * 100) * reputationMultiplier;
 
         GameTracker.updateScore(finalScore);
 
-        //Add log
-        MainGame.addLog("played_minigame");
-
-        if (success) {
-            //Add log
-            MainGame.addLog("minigame_won");
-
-            // Recruit medic using proper database recruitment
-            if (await recruitAlly('Medic')) {  // Changed to use recruitAlly function
-                Terminal.outputMessage("\nThe medic joins your cause!", "#00FF00");
-                await AllyManager.loadAllyVisuals();
-
-                // Heal all allies to full health after recruitment
-                if (GameTracker.allies && GameTracker.allies.length > 0) {
-                    GameTracker.allies.forEach(ally => {
-                        ally.hp = ally.maxHp;
-                    });
-                    Terminal.outputMessage("\nThe medic heals everyone back to full health!", "#00FF00");
-                }
-            } else {
-                Terminal.outputMessage("\nError recruiting medic!", "#FF0000");
-            }
-        }
-        else{
-            //Add log
-            MainGame.addLog("minigame_failed");
-        }
+        // Mark minigame as completed regardless of outcome
+        GameTracker.completedMinigames.add('medicTest');
 
         // Dispatch completion event
         document.dispatchEvent(new CustomEvent('minigameComplete', {

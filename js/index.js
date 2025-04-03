@@ -31,8 +31,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("cbx-register").onclick = function() {
         togglePasswordVisibility('register-password');
+        togglePasswordVisibility('confirm-password');
     }
+
 });
+
+document.getElementById('register-username').addEventListener("input", function ()
+    {
+        let usernameField = document.getElementById('register-username').value.trim();
+        let passwordField = document.getElementById('register-password').value.trim();
+        let passwordConfirm = document.getElementById('confirm-password').value.trim();
+        updateRequirements(usernameField,passwordField,passwordConfirm);
+    });
+    document.getElementById('register-password').addEventListener("input", function ()
+    {
+        let usernameField = document.getElementById('register-username').value.trim();
+        let passwordField = document.getElementById('register-password').value.trim();
+        let passwordConfirm = document.getElementById('confirm-password').value.trim();
+        updateRequirements(usernameField,passwordField,passwordConfirm);
+    });
+    document.getElementById('confirm-password').addEventListener("input", function ()
+    {
+        let usernameField = document.getElementById('register-username').value.trim();
+        let passwordField = document.getElementById('register-password').value.trim();
+        let passwordConfirm = document.getElementById('confirm-password').value.trim();
+        updateRequirements(usernameField,passwordField,passwordConfirm);
+    });
 
 function showLoginScreen() {
     document.getElementById('menu-screen').classList.remove('active');
@@ -101,14 +125,21 @@ async function hashPasswordWithSalt(password, salt) {
 async function handleRegister() {
     let usernameField = document.getElementById('register-username');
     let passwordField = document.getElementById('register-password');
-
-    if (!usernameField || !passwordField) {
-        console.error("Error: Registration input fields not found.");
-        return;
-    }
+    let confirmPasswordField = document.getElementById("confirm-password");
 
     let username = usernameField.value.trim();
     let password = passwordField.value.trim();
+    let password2 = confirmPasswordField.value.trim();
+
+    let registerErrors = updateRequirements(username,password,password2);
+
+    if(registerErrors.length > 0)
+    {
+        alert("Errors: " + registerErrors.join("\n"));
+        return;
+    }
+
+    if(password)
 
     if (username === '' || password === '') {
         document.getElementById('register-error').textContent = "Please fill in all fields.";
@@ -210,15 +241,14 @@ async function handleLogin() {
 }
 
 // Toggle password visibility for both fields
-function togglePasswordVisibility(id1, id2) {
-    const passwordField = document.getElementById(id1);
-    const checkPasswordField = document.getElementById(id2);
-    
-    const type = passwordField.type === "password" ? "text" : "password";
-    passwordField.type = type;
-    checkPasswordField.type = type;
+function togglePasswordVisibility(passwordFieldId) {
+    var passwordField = document.getElementById(passwordFieldId);
+    if (passwordField.type === "password") {
+        passwordField.type = "text"; // Show the password
+    } else {
+        passwordField.type = "password"; // Hide the password
+    }
 }
-
 //button sound effect
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('button').forEach(btn => {
@@ -229,6 +259,69 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+function updateRequirements(username, password, password2) {
+    let errors = [];
 
+    // Username validation
+    if (!validateUsernameEmpty(username)) {
+        document.getElementById("0").classList.add("fulfilled");
+    } else {
+        document.getElementById("0").classList.remove("fulfilled");
+        errors.push("Username cannot be empty.");
+    }
+
+    if (!validateUsernameLength(username)) {
+        document.getElementById("1").classList.add("fulfilled");
+    } else {
+        document.getElementById("1").classList.remove("fulfilled");
+        errors.push("Username must be between 3 and 15 characters.");
+    }
+
+    if (!validateUsernameFormat(username)) {
+        document.getElementById("2").classList.add("fulfilled");
+    } else {
+        document.getElementById("2").classList.remove("fulfilled");
+        errors.push("Username must only contain letters and numbers.");
+    }
+
+    // Password validation
+    if (!validatePasswordUppercase(password)) {
+        document.getElementById("3").classList.add("fulfilled");
+    } else {
+        document.getElementById("3").classList.remove("fulfilled");
+        errors.push("Password must include at least one uppercase letter.");
+    }
+
+    if (!validatePasswordLowercase(password)) {
+        document.getElementById("4").classList.add("fulfilled");
+    } else {
+        document.getElementById("4").classList.remove("fulfilled");
+        errors.push("Password must include at least one lowercase letter.");
+    }
+
+    if (!validatePasswordDigit(password)) {
+        document.getElementById("5").classList.add("fulfilled");
+    } else {
+        document.getElementById("5").classList.remove("fulfilled");
+        errors.push("Password must include at least one digit.");
+    }
+
+    if (!validatePasswordSpecialChar(password)) {
+        document.getElementById("6").classList.add("fulfilled");
+    } else {
+        document.getElementById("6").classList.remove("fulfilled");
+        errors.push("Password must include at least one special character.");
+    }
+
+    if(!validatePasswordRepeat(password,password2)){
+        document.getElementById("7").classList.add("fulfilled");
+    }
+    else{
+        document.getElementById("7").classList.remove("fulfilled");
+        errors.push("Passwords must match.");
+    }
+
+    return errors; // This can be used to display errors elsewhere if needed
+}
 
 window.showMenuScreen = showMenuScreen;

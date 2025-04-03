@@ -2,6 +2,7 @@
 import { DBQuery } from "./dbQuery.js";
 import SettingsManager from "./settingsManager.js";
 import * as Util from "./util.js";
+import { Terminal } from "./terminal.js";
 
 let gameSaves = [];
 
@@ -115,12 +116,35 @@ async function deleteGameSave(index) {
       alert("Invalid selection for deletion.");
       return;
     }
-    const query = `DELETE FROM game_sessions WHERE game_session_id = ${gameSaves[idx].game_session_id}`;
-    await DBQuery.executeQuery(query);
+
+    const gameSessionId = gameSaves[idx].game_session_id;
+
+    // Delete related data in correct order with error checking
+    const deleteQueries = [
+      // Check if table exists before deleting
+      `DELETE FROM game_session_inventory WHERE game_session_id = ${gameSessionId}`,
+      `DELETE FROM game_session_logs WHERE game_session_id = ${gameSessionId}`,
+      // Remove minigame_scores query since table might not exist
+      `DELETE FROM game_session_allies WHERE game_session_id = ${gameSessionId}`,
+      `DELETE FROM game_sessions WHERE game_session_id = ${gameSessionId}`
+    ];
+
+    for (const query of deleteQueries) {
+      const result = await DBQuery.getQueryResult(query);
+      if (!result.success) {
+        console.warn(`Query failed but continuing: ${query}`);
+        // Don't throw error, continue with other deletions
+      }
+    }
+
+    // Use alert instead of Terminal since we're in the menu
     alert("Save file deleted successfully.");
-    await loadGameSaves();
+    await loadGameSaves(); // Refresh the saves list
+    displayGameSavesPopup(); // Refresh the display
+
   } catch (error) {
-    alert("Error deleting save file.");
+    console.error("Delete save error:", error);
+    alert(`Error deleting save file: ${error.message}`);
   }
 }
 

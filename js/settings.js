@@ -10,6 +10,9 @@ window.appSettings = {
     textSpeed: "normal"
 };
 
+window.audioContext = null;
+window.gainNode = null;
+
 import { DBQuery } from "./dbQuery.js";
 import { Terminal } from "./terminal.js";
 import * as Util from "./util.js";
@@ -51,6 +54,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                 break;
             case "accessibility":
                 processAccessibilityInput(input);
+                break;
+            case "terminalColor":
+                window.colorHandler(input);
+                break;
+            case "textSpeed":
+                processTextSpeedInput(input);
+                break;
+            case "volume":
+                processVolumeInput(input);
                 break;
             default:
                 Terminal.outputMessage("Unknown mode. Returning to main menu.", "#FF8181");
@@ -153,12 +165,33 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.body.style.display = '';
     }
 
-    function applyCurrentSettings() {
+    async function applyCurrentSettings() {
         // Apply text size
         applyTextSize();
         
         // Apply contrast mode
         document.body.classList.toggle("high-contrast", window.appSettings.isHighContrast);
+        
+        // Apply text speed
+        switch (window.appSettings.textSpeed) {
+            case 'slow':
+                Terminal.textDelay = 25;
+                break;
+            case 'normal':
+                Terminal.textDelay = 10;
+                break;
+            case 'fast':
+                Terminal.textDelay = 1;
+                break;
+            default:
+                Terminal.textDelay = 10; // Default to normal
+        }
+
+        // Initialize and apply volume
+        initializeAudio();
+        if (window.gainNode) {
+            window.gainNode.gain.value = window.appSettings.volume / 100;
+        }
     }
     
     async function saveSettings() {
@@ -317,8 +350,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     function displaySoundOptions() {
         Terminal.outputMessage("===== SOUND SETTINGS =====", "#00FFFF");
         Terminal.outputMessage("1. Volume Level", "#00FF00");
-        Terminal.outputMessage("2. Toggle Sound Effects", "#00FF00");
-        Terminal.outputMessage("3. Toggle Keyboard Sounds", "#00FF00");
+        Terminal.outputMessage("2. Toggle Sound Effects (Coming Soon)", "#808080");  // Changed to gray
+        Terminal.outputMessage("3. Toggle Keyboard Sounds (Coming Soon)", "#808080");  // Changed to gray
         Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
         Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
     }
@@ -326,8 +359,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     function displayAppearanceOptions() {
         Terminal.outputMessage("===== TERMINAL APPEARANCE =====", "#00FFFF");
         Terminal.outputMessage("1. Change Terminal Color", "#00FF00");
-        Terminal.outputMessage("2. Change Cursor Style", "#00FF00");
-        Terminal.outputMessage("3. Toggle Animations", "#00FF00");
+        Terminal.outputMessage("2. Change Cursor Style (Coming Soon)", "#808080");  // Changed to gray
+        Terminal.outputMessage("3. Toggle Animations (Coming Soon)", "#808080");    // Changed to gray
         Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
         Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
     }
@@ -335,22 +368,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     function displayAccessibilityOptions() {
         Terminal.outputMessage("===== ACCESSIBILITY OPTIONS =====", "#00FFFF");
         Terminal.outputMessage("1. Text Speed", "#00FF00");
-        Terminal.outputMessage("2. Screen Reader Mode", "#00FF00");
-        Terminal.outputMessage("3. Input Timing", "#00FF00");
+        Terminal.outputMessage("2. Screen Reader Mode (Coming Soon)", "#808080");  // Changed to gray
+        Terminal.outputMessage("3. Input Timing (Coming Soon)", "#808080");        // Changed to gray
         Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
         Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
     }
 
-    function processSoundInput(input) {
+    function processAccessibilityInput(input) {
         switch (input) {
             case "1":
-                displayVolumeSlider();
+                currentMode = "textSpeed";
+                displayTextSpeedOptions();
                 break;
             case "2":
-                toggleSoundEffects();
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
                 break;
             case "3":
-                toggleKeyboardSounds();
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
                 break;
             case "0":
                 currentMode = "main";
@@ -367,10 +401,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 displayColorPicker();
                 break;
             case "2":
-                cycleCursorStyle();
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
                 break;
             case "3":
-                toggleAnimations();
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
                 break;
             case "0":
                 currentMode = "main";
@@ -381,16 +415,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    function processAccessibilityInput(input) {
+    function processSoundInput(input) {
         switch (input) {
             case "1":
-                cycleTextSpeed();
+                displayVolumeOptions();
                 break;
             case "2":
-                toggleScreenReader();
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
                 break;
             case "3":
-                adjustInputTiming();
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
                 break;
             case "0":
                 currentMode = "main";
@@ -399,5 +433,246 @@ document.addEventListener("DOMContentLoaded", async function () {
             default:
                 Terminal.outputMessage("Invalid choice! Enter 0-3.", "#FF8181");
         }
+    }
+
+    function displayVolumeOptions() {
+        Terminal.outputMessage("===== VOLUME SETTINGS =====", "#00FFFF");
+        Terminal.outputMessage("Current Volume: " + window.appSettings.volume + "%", "#FFFF00");
+        Terminal.outputMessage("\nEnter a value between 0-100:", "#FFFFFF");
+        currentMode = "volume";
+    }
+
+    function displayColorPicker() {
+        Terminal.outputMessage("===== TERMINAL COLOR =====", "#00FFFF");
+        Terminal.outputMessage("1. Default (#171717)", "#00FF00");
+        Terminal.outputMessage("2. Dark Blue (#001133)", "#00FF00");
+        Terminal.outputMessage("3. Forest Green (#0d400d)", "#00FF00");
+        Terminal.outputMessage("4. Deep Purple (#2d0040)", "#00FF00");
+        Terminal.outputMessage("5. Dark Red (#400d0d)", "#00FF00");
+        Terminal.outputMessage("0. Return to Appearance Menu", "#00FF00");
+        Terminal.outputMessage("Enter your choice (0-5):", "#FFFFFF");
+        
+        // Update input handler for color selection
+        currentMode = "terminalColor";
+        
+        // Add the color selection handler to processInput switch
+        if (!window.colorHandler) {
+            window.colorHandler = function(input) {
+                let color = "";
+                switch (input) {
+                    case "1":
+                        color = "#171717";
+                        break;
+                    case "2":
+                        color = "#001133";
+                        break;
+                    case "3":
+                        color = "#0d400d";
+                        break;
+                    case "4":
+                        color = "#2d0040";
+                        break;
+                    case "5":
+                        color = "#400d0d";
+                        break;
+                    case "0":
+                        currentMode = "appearance";
+                        displayAppearanceOptions();
+                        return;
+                    default:
+                        Terminal.outputMessage("Invalid choice! Enter 0-5.", "#FF8181");
+                        return;
+                }
+                
+                window.appSettings.terminalColor = color;
+                document.getElementById("output-terminal").style.backgroundColor = color;
+                Terminal.outputMessage(`Terminal color changed to ${color}`, "#00FF00");
+                saveSettings();
+                
+                setTimeout(() => {
+                    currentMode = "appearance";
+                    displayAppearanceOptions();
+                }, 1000);
+            };
+        }
+    }
+
+    function cycleCursorStyle() {
+        const cursorStyles = ['block', 'underline', 'bar'];
+        const currentIndex = cursorStyles.indexOf(window.appSettings.cursorStyle);
+        const nextIndex = (currentIndex + 1) % cursorStyles.length;
+        const newStyle = cursorStyles[nextIndex];
+        
+        window.appSettings.cursorStyle = newStyle;
+        
+        // Apply the new cursor style to the input element
+        const userInput = document.getElementById("user-input");
+        if (userInput) {
+            switch (newStyle) {
+                case 'block':
+                    userInput.style.caretShape = 'block';
+                    break;
+                case 'underline':
+                    userInput.style.caretShape = 'underscore';
+                    break;
+                case 'bar':
+                    userInput.style.caretShape = 'bar';
+                    break;
+            }
+        }
+
+        Terminal.outputMessage(`Cursor style changed to ${newStyle}`, "#00FF00");
+        saveSettings();
+        
+        // Return to appearance menu after a short delay
+        setTimeout(() => {
+            currentMode = "appearance";
+            displayAppearanceOptions();
+        }, 1000);
+    }
+
+    function cycleTextSpeed() {
+        const speeds = ['slow', 'normal', 'fast'];
+        const currentIndex = speeds.indexOf(window.appSettings.textSpeed);
+        const nextIndex = (currentIndex + 1) % speeds.length;
+        const newSpeed = speeds[nextIndex];
+        
+        window.appSettings.textSpeed = newSpeed;
+        Terminal.outputMessage(`Text speed changed to ${newSpeed}`, "#00FF00");
+        
+        // Apply the new text speed setting
+        switch (newSpeed) {
+            case 'slow':
+                Terminal.textDelay = 100; // 100ms between characters
+                break;
+            case 'normal':
+                Terminal.textDelay = 50;  // 50ms between characters
+                break;
+            case 'fast':
+                Terminal.textDelay = 25;  // 25ms between characters
+                break;
+        }
+        
+        saveSettings();
+        
+        // Return to accessibility menu after a short delay
+        setTimeout(() => {
+            currentMode = "accessibility";
+            displayAccessibilityOptions();
+        }, 1000);
+    }
+
+    function displayTextSpeedOptions() {
+        Terminal.outputMessage("===== TEXT SPEED SETTINGS =====", "#00FFFF");
+        Terminal.outputMessage("1. Slow (25ms - Readable)", "#00FF00");
+        Terminal.outputMessage("2. Normal (10ms - Quick)", "#00FF00");
+        Terminal.outputMessage("3. Fast (1ms - Instant)", "#00FF00");
+        Terminal.outputMessage("0. Return to Accessibility Menu", "#00FF00");
+        Terminal.outputMessage("\nCurrent Speed: " + window.appSettings.textSpeed, "#FFFF00");
+        Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
+    }
+
+    function processTextSpeedInput(input) {
+        let speed = "";
+        let delay = 10; // default
+        
+        switch (input) {
+            case "1":
+                speed = "slow";
+                delay = 25;
+                break;
+            case "2":
+                speed = "normal";
+                delay = 10;
+                break;
+            case "3":
+                speed = "fast";
+                delay = 1;
+                break;
+            case "0":
+                currentMode = "accessibility";
+                displayAccessibilityOptions();
+                return;
+            default:
+                Terminal.outputMessage("Invalid choice! Please enter 0-3.", "#FF8181");
+                return;
+        }
+        
+        // Update settings and apply immediately
+        window.appSettings.textSpeed = speed;
+        Terminal.textDelay = delay;
+        
+        // Save to both localStorage and database
+        localStorage.setItem('appSettings', JSON.stringify(window.appSettings));
+        saveSettings();
+        
+        // Demo text with new speed
+        Terminal.outputMessage(`Text speed changed to ${speed}! This is a demonstration of the new speed.`, "#00FF00");
+        
+        setTimeout(() => {
+            currentMode = "accessibility";
+            displayAccessibilityOptions();
+        }, 2000);
+    }
+
+    function processVolumeInput(input) {
+        const volume = parseInt(input, 10);
+        if (isNaN(volume) || volume < 0 || volume > 100) {
+            Terminal.outputMessage("Invalid volume! Enter a value between 0-100.", "#FF8181");
+            displayVolumeOptions();
+            return;
+        }
+
+        // Initialize audio context if not already done
+        initializeAudio();
+
+        // Update volume in settings
+        window.appSettings.volume = volume;
+        
+        // Actually apply the volume change
+        if (window.gainNode) {
+            window.gainNode.gain.value = volume / 100;
+        }
+
+        // Update any currently playing audio elements
+        const audioElements = document.querySelectorAll('audio');
+        audioElements.forEach(audio => {
+            audio.volume = volume / 100;
+        });
+
+        Terminal.outputMessage(`Volume set to ${volume}%`, "#00FF00");
+        saveSettings();
+
+        // Play a test sound to demonstrate new volume
+        playTestSound();
+
+        setTimeout(() => {
+            currentMode = "sound";
+            displaySoundOptions();
+        }, 1000);
+    }
+
+    function initializeAudio() {
+        if (!window.audioContext) {
+            window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            window.gainNode = window.audioContext.createGain();
+            window.gainNode.connect(window.audioContext.destination);
+            // Set initial volume
+            window.gainNode.gain.value = window.appSettings.volume / 100;
+        }
+    }
+
+    function playTestSound() {
+        // Create a brief test tone
+        const oscillator = window.audioContext.createOscillator();
+        oscillator.connect(window.gainNode);
+        oscillator.frequency.value = 440; // A4 note
+        oscillator.type = 'sine';
+        
+        // Play for 200ms
+        oscillator.start();
+        setTimeout(() => {
+            oscillator.stop();
+        }, 200);
     }
 });

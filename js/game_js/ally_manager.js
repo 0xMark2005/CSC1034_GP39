@@ -154,20 +154,11 @@ export class AllyManager{
         console.log('Character divs generated.');
     }
     
-    
-
-
-
-
-
-
-
     // function returns the array of allies that are alive
     static getAllAliveAllies(){
         let aliveAllies = GameTracker.allies.filter(ally => ally.alive);
         return aliveAllies;
     }
-
 
     //function to use an item on an ally
     static async useItem (ally, item){
@@ -194,7 +185,6 @@ export class AllyManager{
         await this.loadAllyVisuals();
         return true;
     }
-
 
     // function to equip a given item on a given ally
     static async equipItem(ally, item){
@@ -223,7 +213,6 @@ export class AllyManager{
             }
         }
 
-
         //
         // Add equipment to ally
         //
@@ -247,7 +236,6 @@ export class AllyManager{
         await this.loadAllyVisuals();
         return true;
     }
-
 
     // function to unequip an item from a given ally
     static async unequipItem(ally){
@@ -274,7 +262,6 @@ export class AllyManager{
             return false;
         }
 
-
         //
         // Remove equipment from ally
         //
@@ -295,7 +282,6 @@ export class AllyManager{
         await this.loadAllyVisuals();
         return true;
     }
-
 
     // Function to change the stats of an ally when given an item
     static #changeStatsForItemEffect(ally, item, givingItem){
@@ -358,6 +344,16 @@ export class AllyManager{
         return true;
     }
 
+    static checkGameOver() {
+        if (GameTracker.allies && GameTracker.allies.length > 0) {
+            const peasant = GameTracker.allies[0]; // Peasant is always first ally
+            if (peasant && peasant.hp <= 0) {
+                alert("Game Over - You have died!");
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 // Function to add ally by given name
