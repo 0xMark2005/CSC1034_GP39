@@ -160,8 +160,13 @@ const storyProgression = {
     },
     knight_rescue: {
         startDialogue: "knight_rescue_intro",
+        nextArea: "guard_quarters",      // Changed: Go to guard quarters first
+        transitionDialogue: "rescue_success"
+    },
+    guard_quarters: {                    // Added: New area for equipment
+        startDialogue: "guard_equipment",
         nextArea: "slums_clinic",
-        transitionDialogue: "find_medic"
+        transitionDialogue: "knight_freed"
     },
     slums_clinic: {
         startDialogue: "clinic_scene",

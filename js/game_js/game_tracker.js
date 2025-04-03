@@ -56,54 +56,24 @@ export class GameTracker {
             // Ensure we're working with clean numbers
             const currentScore = Number(this.score || 0);
             const pointsToAdd = Number(points || 0);
-            
-            // Get current display value
-            const scoreElement = document.getElementById('score-number');
-            const currentDisplay = scoreElement ? Number(scoreElement.textContent) : 0;
 
-            // Log initial state
-            console.log('Score Update Starting:', {
-                currentInternalScore: currentScore,
-                currentDisplayScore: currentDisplay,
-                pointsToAdd: pointsToAdd
-            });
-
-            // Update internal score
+            // Increment the score
             this.score = currentScore + pointsToAdd;
 
-            // Force display update and verify
+            // Update the display
+            const scoreElement = document.getElementById('score-number');
             if (scoreElement) {
-                // Force display refresh
-                scoreElement.textContent = '';
                 scoreElement.textContent = this.score.toString();
-                
-                // Verify display matches internal
-                const newDisplay = Number(scoreElement.textContent);
-                if (newDisplay !== this.score) {
-                    console.error('Display Mismatch:', {
-                        internalScore: this.score,
-                        displayScore: newDisplay
-                    });
-                    // Force correct display
-                    scoreElement.textContent = this.score.toString();
-                }
             }
 
             // Log final state for verification
             console.log('Score Update Complete:', {
                 previousScore: currentScore,
                 addedPoints: pointsToAdd,
-                newTotal: this.score,
-                finalDisplay: scoreElement?.textContent,
-                calculationCheck: `${currentScore} + ${pointsToAdd} = ${this.score}`
+                newTotal: this.score
             });
-
         } catch (error) {
             console.error('Score Update Failed:', error);
-            // Recover to known good state
-            if (document.getElementById('score-number')) {
-                document.getElementById('score-number').textContent = this.score.toString();
-            }
         }
     }
 

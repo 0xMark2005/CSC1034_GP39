@@ -1,6 +1,7 @@
 import { Terminal } from "../../terminal.js";
+import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
-import { AllyManager, recruitAlly } from "../ally_manager.js";
+import { AllyManager, recruitAlly } from "../ally_manager.js";  // Import both AllyManager and recruitAlly
 
 export function barmanTrustGame() {
     // Game state
@@ -96,22 +97,54 @@ export function barmanTrustGame() {
             userInput.currentHandler = null;
         }
 
-        // Calculate score
-        let score = 0;
+        // Add reputation based on performance
         if (success) {
-            score = Number(500);
-            score += Number(successfulAttempts * 100);
+            const perfectScore = successfulAttempts === puzzles.length;
+            if (perfectScore) {
+                ScoreSystem.updateReputation(15); // Perfect trust
+            } else {
+                ScoreSystem.updateReputation(8);  // Basic trust
+            }
+        } else {
+            ScoreSystem.updateReputation(-3); // Failed trust
         }
 
-        // Update score and show result
-        GameTracker.updateScore(score);
-        Terminal.outputMessage(`\nFinal Score: +${score}`, "#FFA500");
+        // Calculate base score
+        let baseScore = 0;
+        if (success) {
+            baseScore = Number(500);
+            baseScore += Number(successfulAttempts * 100);
+        }
 
-        // Dispatch completion event
+        // Apply reputation multiplier
+        const reputationMultiplier = ScoreSystem.reputationMultiplier || 1.0;
+        const finalScore = Math.round(baseScore * reputationMultiplier);
+
+        // Show score breakdown in terminal
+        Terminal.outputMessage("\nScore Breakdown:", "#FFA500");
+        Terminal.outputMessage(`Base Score: ${baseScore}`, "#FFA500");
+        Terminal.outputMessage(`Reputation Multiplier: ${reputationMultiplier.toFixed(1)}x`, "#FFA500");
+        Terminal.outputMessage(`Final Score: +${finalScore}`, "#00FF00");
+
+        // Update game tracker with final score
+        GameTracker.updateScore(finalScore);
+
+        if (success) {
+            // Recruit barman using proper database recruitment function
+            if (await recruitAlly('Bar Man')) {  // Use recruitAlly instead of AllyManager.recruitAlly
+                await AllyManager.loadAllyVisuals();
+            } else {
+                Terminal.outputMessage("\nError recruiting barman!", "#FF0000");
+            }
+        }
+
+        // Dispatch completion event with score details
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: success,
-                score: score,
+                baseScore: baseScore,
+                multiplier: reputationMultiplier,
+                finalScore: finalScore,
                 totalScore: GameTracker.score,
                 minigameId: 'barmanTrust',
                 message: success ? "The barman joins your cause!" : "The barman remains skeptical...",

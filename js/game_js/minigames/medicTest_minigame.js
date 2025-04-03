@@ -1,6 +1,7 @@
 import { Terminal } from "../../terminal.js";
+import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
-import { AllyManager, recruitAlly } from "../ally_manager.js";
+import { AllyManager, recruitAlly } from "../ally_manager.js";  // Add recruitAlly import
 
 export function medicTestGame() {
     let gameActive = true;
@@ -9,6 +10,7 @@ export function medicTestGame() {
     let successfulAttempts = 0;
     let totalAttempts = 5;
     let requiredSuccesses = 3;
+    let inputEnabled = true;  // Add this flag
 
     const questions = [
         { question: "A patient needs 4 healing potions per day for 3 days. How many potions needed?", answer: "12" },
@@ -47,46 +49,91 @@ export function medicTestGame() {
         const userInput = document.getElementById("user-input");
         
         const inputHandler = function(event) {
-            if (event.key === "Enter" && gameActive) {
-                const input = Terminal.getUserInput().trim();
-                
-                if (input === correctAnswer) {
-                    clearTimeout(timeoutId);
-                    successfulAttempts++;
-                    Terminal.outputMessage(`Correct! (${successfulAttempts}/${requiredSuccesses} needed)`, "#00FF00");
-                    currentRound++;
-                    setTimeout(() => startRound(), 1000);
-                } else {
-                    Terminal.outputMessage("Wrong! Try again!", "#FF0000");
-                }
+            if (!inputEnabled || event.key !== "Enter") return;  // Check inputEnabled
+            
+            const input = Terminal.getUserInput().trim();
+            inputEnabled = false;  // Disable input while processing
+            
+            if (input === correctAnswer) {
+                clearTimeout(timeoutId);
+                successfulAttempts++;
+                Terminal.outputMessage(`Correct! (${successfulAttempts}/${requiredSuccesses} needed)`, "#00FF00");
+                currentRound++;
+                setTimeout(() => {
+                    inputEnabled = true;  // Re-enable input for next question
+                    startRound();
+                }, 1000);
+            } else {
+                Terminal.outputMessage("Wrong! Try again!", "#FF0000");
+                inputEnabled = true;  // Re-enable input for retry
             }
         };
 
         userInput.removeEventListener("keypress", userInput.currentHandler);
         userInput.addEventListener("keypress", inputHandler);
         userInput.currentHandler = inputHandler;
+        inputEnabled = true;  // Enable input for new round
     }
 
     async function cleanup(success) {
-        let score = 0;
+        // Disable input first thing in cleanup
+        inputEnabled = false;
+        const userInput = document.getElementById("user-input");
+        if (userInput && userInput.currentHandler) {
+            userInput.removeEventListener("keypress", userInput.currentHandler);
+            userInput.currentHandler = null;
+        }
+
+        // Calculate stat changes based on performance
+        const statChanges = {
+            strength: Math.floor(successfulAttempts * 1.5),
+            defense: Math.floor(successfulAttempts * 1.2),
+            intelligence: Math.floor(successfulAttempts * 2)
+        };
+
+        // Apply stats to all existing allies first
+        if (GameTracker.allies && GameTracker.allies.length > 0) {
+            GameTracker.allies.forEach(ally => {
+                ally.attack += statChanges.strength;
+                ally.defence += statChanges.defense;
+                ally.intelligence += statChanges.intelligence;
+            });
+        }
+        
+        let baseScore = 500; // Base score
+        let reputationMultiplier = 1; // Placeholder for reputation multiplier
+        let finalScore = baseScore + (successfulAttempts * 100) * reputationMultiplier;
+
+        GameTracker.updateScore(finalScore);
+
         if (success) {
-            score = Number(500); // Base score
-            score += Number(successfulAttempts * 100); // Points per correct answer
-            if (successfulAttempts >= requiredSuccesses) {
-                score += Number(300); // Bonus
+            // Recruit medic using proper database recruitment
+            if (await recruitAlly('Medic')) {  // Changed to use recruitAlly function
+                Terminal.outputMessage("\nThe medic joins your cause!", "#00FF00");
+                await AllyManager.loadAllyVisuals();
+
+                // Heal all allies to full health after recruitment
+                if (GameTracker.allies && GameTracker.allies.length > 0) {
+                    GameTracker.allies.forEach(ally => {
+                        ally.hp = ally.maxHp;
+                    });
+                    Terminal.outputMessage("\nThe medic heals everyone back to full health!", "#00FF00");
+                }
+            } else {
+                Terminal.outputMessage("\nError recruiting medic!", "#FF0000");
             }
         }
 
-        GameTracker.updateScore(score);
-        Terminal.outputMessage(`\nFinal Score: +${score}`, "#FFA500");
-
+        // Dispatch completion event
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: success,
-                score: score,
+                baseScore: baseScore,
+                multiplier: reputationMultiplier,
+                finalScore: finalScore,
                 totalScore: GameTracker.score,
                 minigameId: 'medicTest',
-                message: success ? "The medic agrees to join your cause!" : "The medic remains unconvinced...",
+                message: success ? "The medic joins your cause!" : "The medic remains unconvinced...",
                 next: success ? 'resistance_hq_intro' : 'clinic_scene'
             }
         }));

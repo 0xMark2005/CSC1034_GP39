@@ -1,4 +1,5 @@
 import { Terminal } from "../../terminal.js";
+import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
 import { AllyManager, recruitAlly } from "../ally_manager.js";
 
@@ -124,57 +125,117 @@ export function generalRescueGame() {
         timeoutIds = [];
         gameActive = false;
 
-        let score = 0;
-        
-        // Calculate score with verification
-        if (success) {
-            score = Number(400); // Base score
-            console.log(`Base score: ${score}`);
+        // Calculate stats based on performance
+        let statChanges = {
+            strength: 0,
+            defense: 0,
+            intelligence: 0
+        };
 
-            let attemptsBonus = Number(successfulAttempts * 100);
-            console.log(`Attempts bonus (${successfulAttempts} × 100): +${attemptsBonus}`);
-            score += attemptsBonus;
-
-            if (successfulAttempts === totalAttempts) {
-                let perfectBonus = Number(300);
-                console.log(`Perfect bonus: +${perfectBonus}`);
-                score += perfectBonus;
-            }
+        // Adjust stats based on performance
+        if (successfulAttempts >= totalAttempts) {
+            // Perfect performance - highest stat boost
+            statChanges.strength = 8;
+            statChanges.defense = 7;
+            statChanges.intelligence = 6;
+        } else if (successfulAttempts >= requiredSuccesses) {
+            // Passed - moderate stat boost
+            statChanges.strength = 6;
+            statChanges.defense = 5;
+            statChanges.intelligence = 5;
         } else {
-            score = Number(successfulAttempts * 50);
-            console.log(`Consolation score (${successfulAttempts} × 50): ${score}`);
+            // Failed - stat reduction
+            statChanges.strength = -4;
+            statChanges.defense = -3;
+            statChanges.intelligence = -2;
         }
 
-        // Verify final score calculation
-        console.log('Score Verification:', {
-            calculatedScore: score,
-            isNumber: typeof score === 'number',
-            value: Number(score)
-        });
+        // Calculate base score
+        const baseAttemptScore = 200;  
+        const perCodeScore = 200;      
+        const perfectBonus = 300;      
 
-        // Update global score with verification
-        const oldScore = GameTracker.score;
-        GameTracker.updateScore(score);
-        console.log('Score Update Verification:', {
-            oldScore: oldScore,
-            addedScore: score,
-            newTotal: GameTracker.score,
-            expectedTotal: Number(oldScore) + Number(score)
-        });
+        let baseScore = Number(baseAttemptScore);
+        baseScore += Number(successfulAttempts * perCodeScore);
 
-        // Show score in game
-        Terminal.outputMessage(`\nFinal Score: +${score}`, "#FFA500");
+        // Apply stats to existing allies
+        if (GameTracker.allies && GameTracker.allies.length > 0) {
+            GameTracker.allies.forEach(ally => {
+                ally.attack = Math.max(0, ally.attack + statChanges.strength);
+                ally.defence = Math.max(0, ally.defence + statChanges.defense);
+                ally.intelligence = Math.max(0, ally.intelligence + statChanges.intelligence);
+            });
+        }
 
-        // Dispatch completion event with correct success state
+        // Always recruit knight, but condition affects their starting state
+        if (await recruitAlly('Knight')) {
+            Terminal.outputMessage("\nThe knight joins your cause!", "#00FF00");
+            
+            // Update knight's HP based on performance
+            const knight = GameTracker.allies.find(a => a.name === 'Knight');
+            if (knight) {
+                if (successfulAttempts >= requiredSuccesses) {
+                    knight.hp = successfulAttempts === totalAttempts ? knight.maxHp : Math.floor(knight.maxHp * 0.75);
+                    Terminal.outputMessage("\nThe knight is in good condition!", "#00FF00");
+                } else {
+                    knight.hp = Math.floor(knight.maxHp * 0.25); // Heavily wounded
+                    Terminal.outputMessage("\nThe knight is badly wounded!", "#FF0000");
+                }
+                Terminal.outputMessage(`Knight's HP: ${knight.hp}/${knight.maxHp}`, "#FF8181");
+            }
+            
+            await AllyManager.loadAllyVisuals();
+
+            // Show stat changes
+            Terminal.outputMessage("\nStat Changes for all allies:", "#00FF00");
+            Terminal.outputMessage(`Strength ${statChanges.strength >= 0 ? '+' : ''}${statChanges.strength}`, statChanges.strength >= 0 ? "#00FF00" : "#FF0000");
+            Terminal.outputMessage(`Defense ${statChanges.defense >= 0 ? '+' : ''}${statChanges.defense}`, statChanges.defense >= 0 ? "#00FF00" : "#FF0000");
+            Terminal.outputMessage(`Intelligence ${statChanges.intelligence >= 0 ? '+' : ''}${statChanges.intelligence}`, statChanges.intelligence >= 0 ? "#00FF00" : "#FF0000");
+        } else {
+            Terminal.outputMessage("\nError recruiting knight!", "#FF0000");
+        }
+
+        // Update reputation based on performance
+        if (successfulAttempts === totalAttempts) {
+            ScoreSystem.updateReputation(20);
+            baseScore += Number(perfectBonus);
+        } else if (successfulAttempts >= requiredSuccesses) {
+            ScoreSystem.updateReputation(10);
+        } else {
+            ScoreSystem.updateReputation(-10);
+        }
+
+        // Get and validate reputation multiplier
+        const reputationMultiplier = Number(ScoreSystem.reputationMultiplier || 1.0);
+
+        // Calculate final score with validation
+        const finalScore = Math.floor(Number(baseScore) * Number(reputationMultiplier));
+
+        // Update game tracker with final score
+        GameTracker.updateScore(finalScore);
+
+        // Show score breakdown with proper formatting
+        Terminal.outputMessage("\nScore Breakdown:", "#FFA500");
+        Terminal.outputMessage(`Base Score: ${baseScore} (${baseAttemptScore} base + ${successfulAttempts} × ${perCodeScore} per code)`, "#FFA500");
+        Terminal.outputMessage(`Reputation Multiplier: ${reputationMultiplier.toFixed(1)}x`, "#FFA500");
+        Terminal.outputMessage(`Final Score: +${finalScore}`, "#00FF00");
+
+        // Dispatch event with validated score values
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
-                success: successfulAttempts >= requiredSuccesses, 
-                score: score,
+                success: true,
+                score: finalScore,        // Pass finalScore as score
+                baseScore: baseScore,    // Keep baseScore for reference
+                multiplier: reputationMultiplier,
+                finalScore: finalScore,
                 totalScore: GameTracker.score,
                 minigameId: 'generalRescue',
+                timeBonus: 0,            // No time bonus for this minigame
+                perfect: successfulAttempts === totalAttempts,
+                statChanges: statChanges,
                 message: successfulAttempts >= requiredSuccesses ? 
                     "Successfully rescued the knight!" : 
-                    "The rescue attempt failed...",
+                    "Barely managed to rescue the knight...",
                 next: 'find_medic_intro'
             }
         }));

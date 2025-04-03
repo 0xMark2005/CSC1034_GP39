@@ -1,7 +1,7 @@
 import { Terminal } from "../../terminal.js";
 import { displayAnimation } from "../animation_handler.js";
+import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
-import { AllyManager } from "../ally_manager.js";
 
 export function prisonEscapeGame() {
     // Initialize state
@@ -91,6 +91,21 @@ export function prisonEscapeGame() {
             if (reactionTime > 0) {
                 score += Number(Math.max(0, Math.floor((5000 - reactionTime) / 25))); // Time bonus
             }
+            
+            // Add reputation based on performance
+            if (reactionTime < 1000) {
+                ScoreSystem.updateReputation(10); // Perfect escape
+                console.log('Perfect escape: +10 reputation');
+            } else if (reactionTime < 2000) {
+                ScoreSystem.updateReputation(5);  // Good escape
+                console.log('Good escape: +5 reputation');
+            } else {
+                ScoreSystem.updateReputation(2);  // Basic escape
+                console.log('Basic escape: +2 reputation');
+            }
+        } else {
+            ScoreSystem.updateReputation(-5); // Failed escape
+            console.log('Failed escape: -5 reputation');
         }
 
         GameTracker.updateScore(score);
