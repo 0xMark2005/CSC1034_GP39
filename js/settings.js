@@ -383,6 +383,26 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
+    function processAppearanceInput(input) {
+        switch (input) {
+            case "1":
+                displayColorPicker();
+                break;
+            case "2":
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
+                break;
+            case "3":
+                Terminal.outputMessage("This feature is coming soon!", "#FF8181");
+                break;
+            case "0":
+                currentMode = "main";
+                displayMainMenu();
+                break;
+            default:
+                Terminal.outputMessage("Invalid choice! Enter 0-3.", "#FF8181");
+        }
+    }
+
     function displayColorPicker() {
         Terminal.outputMessage("===== TERMINAL COLOR =====", "#00FFFF");
         Terminal.outputMessage("1. Default (#171717)", "#00FF00");
