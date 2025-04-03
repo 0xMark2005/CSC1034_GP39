@@ -1,6 +1,7 @@
 import { Terminal } from "../../terminal.js";
+import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
-import { AllyManager, recruitAlly } from "../ally_manager.js";
+import { AllyManager, recruitAlly } from "../ally_manager.js";  // Import both AllyManager and recruitAlly
 
 export function barmanTrustGame() {
     // Game state
@@ -85,38 +86,69 @@ export function barmanTrustGame() {
     }
 
     async function cleanup(success) {
+        // Disable input and clear handlers first
+        inputEnabled = false;
         gameActive = false;
         if (timeoutId) clearTimeout(timeoutId);
-
-        // Remove input handler
+        
         const userInput = document.getElementById("user-input");
-        if (userInput.currentHandler) {
+        if (userInput && userInput.currentHandler) {
             userInput.removeEventListener("keypress", userInput.currentHandler);
+            userInput.currentHandler = null;
         }
 
+        // Add reputation based on performance
         if (success) {
-            // Recruit barman using ally manager
-            if (await recruitAlly('Bar Man')) {  // Changed from 'Barman' to 'Bar Man' to match DB
-                Terminal.outputMessage("\nThe barman joins your cause!", "#00FF00");
-                AllyManager.loadAllyVisuals();
+            const perfectScore = successfulAttempts === puzzles.length;
+            if (perfectScore) {
+                ScoreSystem.updateReputation(15); // Perfect trust
+            } else {
+                ScoreSystem.updateReputation(8);  // Basic trust
+            }
+        } else {
+            ScoreSystem.updateReputation(-3); // Failed trust
+        }
+
+        // Calculate base score
+        let baseScore = 0;
+        if (success) {
+            baseScore = Number(500);
+            baseScore += Number(successfulAttempts * 100);
+        }
+
+        // Apply reputation multiplier
+        const reputationMultiplier = ScoreSystem.reputationMultiplier || 1.0;
+        const finalScore = Math.round(baseScore * reputationMultiplier);
+
+        // Show score breakdown in terminal
+        Terminal.outputMessage("\nScore Breakdown:", "#FFA500");
+        Terminal.outputMessage(`Base Score: ${baseScore}`, "#FFA500");
+        Terminal.outputMessage(`Reputation Multiplier: ${reputationMultiplier.toFixed(1)}x`, "#FFA500");
+        Terminal.outputMessage(`Final Score: +${finalScore}`, "#00FF00");
+
+        // Update game tracker with final score
+        GameTracker.updateScore(finalScore);
+
+        if (success) {
+            // Recruit barman using proper database recruitment function
+            if (await recruitAlly('Bar Man')) {  // Use recruitAlly instead of AllyManager.recruitAlly
+                await AllyManager.loadAllyVisuals();
             } else {
                 Terminal.outputMessage("\nError recruiting barman!", "#FF0000");
             }
         }
 
-        // Calculate score
-        let score = success ? 500 : 100;
-        score += (successfulAttempts * 100);
-        Terminal.outputMessage(`\nFinal Score: ${score}`, "#FFA500");
-
-        // Dispatch completion event
+        // Dispatch completion event with score details
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: success,
-                score: score,
+                baseScore: baseScore,
+                multiplier: reputationMultiplier,
+                finalScore: finalScore,
+                totalScore: GameTracker.score,
                 minigameId: 'barmanTrust',
-                message: success ? "You've earned the barman's trust!" : "The barman remains skeptical...",
-                next: 'barman_trust_complete'
+                message: success ? "The barman joins your cause!" : "The barman remains skeptical...",
+                next: success ? 'barman_joins' : 'tavern_scene'
             }
         }));
     }

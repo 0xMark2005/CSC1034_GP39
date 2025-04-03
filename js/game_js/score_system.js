@@ -1,8 +1,13 @@
+import { Terminal } from '../terminal.js';  // Adjust path based on your file structure
+import { GameTracker } from './game_tracker.js';
+
 export class ScoreSystem {
+    static reputation = 0;
+    static reputationMultiplier = 1.0;
+
     constructor() {
         this.baseScore = 0;
         this.displayedScore = 0;
-        this.reputationMultiplier = 1.0;
         this.metrics = {
             timeBonus: 0,
             decisionPoints: 0,
@@ -22,9 +27,16 @@ export class ScoreSystem {
     }
 
     initializeDisplay() {
+        // Initialize score display
         const scoreNumber = document.getElementById('score-number');
         if (scoreNumber) {
             scoreNumber.textContent = '0';
+        }
+
+        // Initialize reputation display
+        const reputationElement = document.getElementById('reputation-number');
+        if (reputationElement) {
+            reputationElement.textContent = `${ScoreSystem.reputation}/100 (${ScoreSystem.reputationMultiplier.toFixed(1)}x)`;
         }
     }
 
@@ -110,34 +122,54 @@ export class ScoreSystem {
         minigame.attempts++;
         if (perfect) minigame.perfectRuns++;
 
-        const totalScore = score + timeBonus;
-        if (totalScore > minigame.bestScore) {
-            minigame.bestScore = totalScore;
+        // Apply reputation multiplier to score
+        const baseScore = score + timeBonus;
+        const multipliedScore = Math.round(baseScore * ScoreSystem.reputationMultiplier);
+        
+        // Show score calculation in terminal
+        ScoreSystem.outputToTerminal(
+            `Score: ${baseScore} × ${ScoreSystem.reputationMultiplier.toFixed(1)} = ${multipliedScore}`,
+            "#FFA500"
+        );
+
+        // Log for debugging
+        console.log('Minigame Score Update:', {
+            minigameId,
+            baseScore,
+            multiplier: ScoreSystem.reputationMultiplier,
+            finalScore: multipliedScore
+        });
+
+        if (multipliedScore > minigame.bestScore) {
+            minigame.bestScore = multipliedScore;
         }
 
-        this.baseScore += totalScore;
-        await this.animateScoreChange(totalScore);
+        this.baseScore += multipliedScore;
+        await this.animateScoreChange(multipliedScore);
         
-        return totalScore;
+        return multipliedScore;
     }
 
     async handleMinigameCompletion(event) {
         const { success, score, minigameId, timeBonus, perfect } = event.detail;
-        
+
         if (success) {
-            await this.updateMinigameScore(
+            const totalScore = await this.updateMinigameScore(
                 minigameId,
                 score,
                 perfect,
                 timeBonus
             );
+
+            // Increment GameTracker's total score
+            GameTracker.updateScore(totalScore);
         }
     }
 
     calculateFinalScore() {
         const finalScore = Math.floor(
             (this.baseScore + this.metrics.timeBonus + this.metrics.decisionPoints) 
-            * this.reputationMultiplier
+            * ScoreSystem.reputationMultiplier
         );
 
         return {
@@ -146,7 +178,7 @@ export class ScoreSystem {
                 baseScore: this.baseScore,
                 timeBonus: this.metrics.timeBonus,
                 decisionPoints: this.metrics.decisionPoints,
-                reputationMultiplier: this.reputationMultiplier,
+                reputationMultiplier: ScoreSystem.reputationMultiplier,
                 minigameScores: this.metrics.minigameScores,
                 achievements: this.metrics.achievements
             }
@@ -182,9 +214,62 @@ export class ScoreSystem {
         return points;
     }
 
-    updateReputationMultiplier(reputation) {
-        // Convert reputation (0-100) to multiplier (0.5x - 2.0x)
-        this.reputationMultiplier = Math.max(0.5, Math.min(2.0, reputation / 50));
-        return this.reputationMultiplier;
+    static updateReputation(change) {
+        try {
+            // Update reputation value with validation
+            const oldReputation = Number(ScoreSystem.reputation || 0);
+            const newReputation = Math.max(0, Math.min(100, oldReputation + Number(change)));
+            
+            // Update static values
+            ScoreSystem.reputation = newReputation;
+            ScoreSystem.reputationMultiplier = Math.max(0.5, Math.min(2.0, newReputation / 50));
+
+            // Update display
+            const reputationElement = document.getElementById('reputation-number');
+            if (reputationElement) {
+                reputationElement.textContent = 
+                    `${ScoreSystem.reputation}/100 (${ScoreSystem.reputationMultiplier.toFixed(1)}x)`;
+                
+                // Update color based on value
+                const color = newReputation >= 75 ? "#00FF00" : 
+                            newReputation >= 50 ? "#FFA500" : 
+                            newReputation >= 25 ? "#FF7F50" : "#FF0000";
+                reputationElement.style.color = color;
+            }
+
+            // Show change in terminal
+            if (change !== 0) {
+                const color = change > 0 ? "#00FF00" : "#FF0000";
+                const symbol = change > 0 ? "+" : "";
+                ScoreSystem.outputToTerminal(
+                    `Reputation ${symbol}${change} (${newReputation}/100)`,
+                    color
+                );
+            }
+
+            console.log('Reputation Updated:', {
+                from: oldReputation,
+                change: change,
+                to: newReputation,
+                multiplier: ScoreSystem.reputationMultiplier,
+                display: reputationElement?.textContent
+            });
+
+        } catch (error) {
+            console.error('Reputation update failed:', error);
+        }
+    }
+
+    // Add error handling for Terminal usage
+    static outputToTerminal(message, color = "#FFA500") {
+        try {
+            if (typeof Terminal !== 'undefined' && Terminal.outputMessage) {
+                Terminal.outputMessage(message, color);
+            } else {
+                console.warn('Terminal not available:', message);
+            }
+        } catch (error) {
+            console.error('Terminal output failed:', error);
+        }
     }
 }

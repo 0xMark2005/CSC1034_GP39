@@ -1,4 +1,7 @@
 import { Terminal } from "../../terminal.js";
+import { ScoreSystem } from "../score_system.js";
+import { GameTracker } from "../game_tracker.js";
+import { AllyManager } from "../ally_manager.js";
 
 export function finalBattleGame() {
     let gameActive = true;
@@ -7,16 +10,33 @@ export function finalBattleGame() {
     let guardDefeated = false;
     let roundNumber = 1;
     
-    const allies = [
-        { name: 'Player', health: 100, maxHealth: 100, defense: false, intelligence: 75 },
-        { name: 'Rescued Knight', health: 100, maxHealth: 100, defense: false, intelligence: 85 },
-        { name: 'Resistance Fighter', health: 100, maxHealth: 100, defense: false, intelligence: 70 },
-        { name: 'Rebel Mage', health: 80, maxHealth: 80, defense: false, intelligence: 95 }
-    ];
+    // Use GameTracker allies instead of hardcoded ones
+    const allies = GameTracker.allies.map(ally => ({
+        name: ally.name,
+        health: ally.hp,
+        maxHealth: ally.maxHp,
+        defense: false,
+        intelligence: ally.intelligence,
+        attack: ally.attack,
+        baseDefence: ally.defence
+    }));
     
+    // Increased enemy health and stats
     const enemies = [
-        { name: 'Corrupt King', health: 150, maxHealth: 150, accuracy: 80 },
-        { name: 'Elite Royal Guards', health: 100, maxHealth: 100, accuracy: 70 }
+        { 
+            name: 'Corrupt King', 
+            health: 500, 
+            maxHealth: 500, 
+            accuracy: 85,
+            damage: { min: 30, max: 50 }
+        },
+        { 
+            name: 'Elite Royal Guards', 
+            health: 300, 
+            maxHealth: 300, 
+            accuracy: 75,
+            damage: { min: 20, max: 35 }
+        }
     ];
 
     // Tracking arrays for round results
@@ -27,13 +47,23 @@ export function finalBattleGame() {
         Terminal.outputMessage(`\n=== Battle Status - Round ${roundNumber} ===`, "#FFA500");
         Terminal.outputMessage("\nEnemy Forces:", "#FF0000");
         enemies.forEach(enemy => {
-            Terminal.outputMessage(`${enemy.name}: ${enemy.health}/${enemy.maxHealth} HP`, "#FF0000");
+            if (enemy.health > 0) {
+                Terminal.outputMessage(`${enemy.name}: ${enemy.health}/${enemy.maxHealth} HP`, "#FF0000");
+            }
         });
         
         Terminal.outputMessage("\nYour Forces:", "#00FF00");
+        const livingAllies = allies.filter(ally => ally.health > 0);
+        Terminal.outputMessage(`Allies Remaining: ${livingAllies.length}/${allies.length}`, "#FFA500");
         allies.forEach(ally => {
-            Terminal.outputMessage(`${ally.name}: ${ally.health}/${ally.maxHealth} HP${ally.defense ? " (Defending)" : ""}`, "#00FF00");
+            const status = ally.health <= 0 ? " (DEFEATED)" : (ally.defense ? " (Defending)" : "");
+            const color = ally.health <= 0 ? "#FF0000" : "#00FF00";
+            Terminal.outputMessage(`${ally.name}: ${ally.health}/${ally.maxHealth} HP${status}`, color);
         });
+
+        if (currentTurn >= 0 && currentTurn < allies.length) {
+            Terminal.outputMessage(`\nCurrent Turn: ${allies[currentTurn].name}`, "#FFA500");
+        }
     }
 
     function showCurrentTurn() {
@@ -48,8 +78,13 @@ export function finalBattleGame() {
 
     function handleAction(choice) {
         if (!inputEnabled || !gameActive) return;
-
+        
         const currentAlly = allies[currentTurn];
+        if (currentAlly.health <= 0) {
+            Terminal.outputMessage(`${currentAlly.name} has been defeated and cannot act!`, "#FF0000");
+            nextTurn();
+            return;
+        }
 
         switch(choice) {
             case '1': // Attack
@@ -115,12 +150,29 @@ export function finalBattleGame() {
         document.addEventListener('keydown', targetHandler);
     }
 
+    // Add function to update ally stats in GameTracker
+    async function updateAllyStats() {
+        allies.forEach((ally, index) => {
+            // Update corresponding GameTracker ally
+            if (GameTracker.allies[index]) {
+                GameTracker.allies[index].hp = ally.health;
+                GameTracker.allies[index].attack = ally.attack;
+                GameTracker.allies[index].defence = ally.baseDefence;
+                GameTracker.allies[index].intelligence = ally.intelligence;
+            }
+        });
+        // Update ally visuals
+        await AllyManager.loadAllyVisuals();
+    }
+
+    // Modify handleAttack to update visuals
     function handleAttack(targetIndex) {
         const currentAlly = allies[currentTurn];
+        const baseAttack = currentAlly.attack;
         
         if (!guardDefeated) {
             const guards = enemies[1];
-            const damage = Math.floor(Math.random() * 30) + 20;
+            const damage = Math.floor(Math.random() * 20) + baseAttack;
             guards.health = Math.max(0, guards.health - damage);
             Terminal.outputMessage(`${currentAlly.name} attacks ${guards.name} for ${damage} damage!`, "#00FF00");
             
@@ -130,14 +182,15 @@ export function finalBattleGame() {
             }
         } else {
             const king = enemies[0];
-            const damage = Math.floor(Math.random() * 30) + 20;
+            const damage = Math.floor(Math.random() * 25) + baseAttack;
             king.health = Math.max(0, king.health - damage);
             Terminal.outputMessage(`${currentAlly.name} attacks ${king.name} for ${damage} damage!`, "#00FF00");
         }
         
-        nextTurn();
+        updateAllyStats().then(() => nextTurn());
     }
 
+    // Modify handleHeal to update visuals
     function handleHeal(targetIndex) {
         const currentAlly = allies[currentTurn];
         const target = allies[targetIndex];
@@ -151,20 +204,41 @@ export function finalBattleGame() {
         const healing = Math.floor(Math.random() * 20) + 30;
         target.health = Math.min(target.maxHealth, target.health + healing);
         Terminal.outputMessage(`${currentAlly.name} heals ${target.name} for ${healing} HP!`, "#00FF00");
-        nextTurn();
+        
+        updateAllyStats().then(() => nextTurn());
     }
 
+    // Add nextTurn function
     function nextTurn() {
-        currentTurn = (currentTurn + 1) % allies.length;
+        // Reset defense for previous ally if round is ending
+        if (currentTurn === allies.length - 1) {
+            allies.forEach(ally => ally.defense = false);
+        }
+
+        // Find next living ally
+        do {
+            currentTurn = (currentTurn + 1) % allies.length;
+        } while (currentTurn < allies.length && allies[currentTurn].health <= 0);
+
+        // If we've completed a round, process enemy turn
         if (currentTurn === 0) {
-            // Round complete, process enemy turn
-            roundNumber++; // Increment round number
-            processEnemyTurn();
+            roundNumber++;
+            if (!isGameOver()) {
+                processEnemyTurn();
+            } else {
+                endBattle();
+            }
         } else {
-            showCurrentTurn();
+            // Otherwise, show the next ally's turn
+            if (!isGameOver()) {
+                showCurrentTurn();
+            } else {
+                endBattle();
+            }
         }
     }
 
+    // Modify processEnemyTurn to update visuals
     function processEnemyTurn() {
         inputEnabled = false;
         
@@ -184,7 +258,7 @@ export function finalBattleGame() {
                     Terminal.outputMessage(`${target.name} dodges ${enemy.name}'s attack!`, "#00FF00");
                     dodgedAllies.push(target.name);
                 } else {
-                    const damage = Math.floor(Math.random() * 20) + 10;
+                    const damage = Math.floor(Math.random() * (enemy.damage.max - enemy.damage.min + 1)) + enemy.damage.min;
                     const finalDamage = target.defense ? Math.floor(damage / 2) : damage;
                     target.health = Math.max(0, target.health - finalDamage);
                     Terminal.outputMessage(`${enemy.name} attacks ${target.name} for ${finalDamage} damage!`, "#FF0000");
@@ -218,48 +292,107 @@ export function finalBattleGame() {
 
         allies.forEach(ally => ally.defense = false);
 
-        if (isGameOver()) {
-            endBattle();
-        } else {
-            inputEnabled = true;
-            showCurrentTurn();
-        }
+        // Update ally stats and visuals before showing next turn
+        updateAllyStats().then(() => {
+            if (isGameOver()) {
+                endBattle();
+            } else {
+                inputEnabled = true;
+                showCurrentTurn();
+            }
+        });
     }
 
     function isGameOver() {
-        return allies.every(ally => ally.health <= 0) || enemies.every(enemy => enemy.health <= 0);
+        const allAlliesDead = allies.every(ally => ally.health <= 0);
+        const allEnemiesDead = enemies.every(enemy => enemy.health <= 0);
+        
+        if (allAlliesDead) {
+            Terminal.outputMessage("\nAll allies have been defeated!", "#FF0000");
+            return true;
+        }
+        
+        if (allEnemiesDead) {
+            Terminal.outputMessage("\nAll enemies have been defeated!", "#00FF00");
+            return true;
+        }
+        
+        return false;
     }
 
     function endBattle() {
         gameActive = false;
         const victory = enemies.every(enemy => enemy.health <= 0);
         
-        // Calculate score based on performance
-        let score = 0;
+        // Calculate detailed score
+        let scoreBreakdown = {
+            base: 0,
+            survivalBonus: 0,
+            speedBonus: 0,
+            perfectBonus: 0,
+            total: 0
+        };
+
         if (victory) {
-            // Base victory bonus
-            score += 1000;
+            // Base victory score
+            scoreBreakdown.base = 1000;
             
-            // Surviving allies bonus
+            // Surviving allies bonus (200 per survivor)
             const survivingAllies = allies.filter(ally => ally.health > 0).length;
-            score += survivingAllies * 200;
+            scoreBreakdown.survivalBonus = survivingAllies * 200;
             
-            // Quick victory bonus
-            if (roundNumber <= 5) score += 500;
-            else if (roundNumber <= 8) score += 300;
-            else if (roundNumber <= 10) score += 100;
+            // Speed bonus based on rounds taken
+            if (roundNumber <= 5) {
+                scoreBreakdown.speedBonus = 500;
+                ScoreSystem.updateReputation(15); // Quick victory reputation
+            } else if (roundNumber <= 8) {
+                scoreBreakdown.speedBonus = 300;
+                ScoreSystem.updateReputation(10); // Normal victory reputation
+            } else if (roundNumber <= 10) {
+                scoreBreakdown.speedBonus = 100;
+                ScoreSystem.updateReputation(5); // Slow victory reputation
+            }
             
-            // Perfect victory (all allies alive)
-            if (survivingAllies === allies.length) score += 500;
+            // Perfect victory bonus (all allies survived)
+            if (survivingAllies === allies.length) {
+                scoreBreakdown.perfectBonus = 500;
+                ScoreSystem.updateReputation(10); // Perfect victory extra reputation
+            }
+            
+            // Calculate total
+            scoreBreakdown.total = Object.values(scoreBreakdown).reduce((a, b) => a + b, 0);
+            
+            // Display score breakdown
+            Terminal.outputMessage("\n=== Victory Score Breakdown ===", "#FFA500");
+            Terminal.outputMessage(`Base Victory Reward: +${scoreBreakdown.base}`, "#00FF00");
+            Terminal.outputMessage(`Surviving Allies Bonus: +${scoreBreakdown.survivalBonus}`, "#00FF00");
+            Terminal.outputMessage(`Speed Bonus: +${scoreBreakdown.speedBonus}`, "#00FF00");
+            if (scoreBreakdown.perfectBonus > 0) {
+                Terminal.outputMessage(`Perfect Victory Bonus: +${scoreBreakdown.perfectBonus}`, "#00FF00");
+            }
+            Terminal.outputMessage(`\nTotal Score: ${scoreBreakdown.total}`, "#FFA500");
+            
+            // Update GameTracker score
+            GameTracker.updateScore(scoreBreakdown.total);
+        } else {
+            // Defeat penalties
+            ScoreSystem.updateReputation(-15);
+            Terminal.outputMessage("\n=== Defeat ===", "#FF0000");
+            Terminal.outputMessage("No score awarded", "#FF0000");
         }
         
+        // Dispatch completion event with detailed stats
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
                 success: victory,
-                score: score,
-                message: victory ? "Victory! The corrupt king has been defeated!" : "Defeat... The revolution has failed.",
+                scoreBreakdown: scoreBreakdown,
+                totalScore: scoreBreakdown.total,
+                message: victory ? 
+                    "Victory! The corrupt king has been defeated!" : 
+                    "Defeat... The revolution has failed.",
                 rounds: roundNumber,
-                survivingAllies: allies.filter(ally => ally.health > 0).length
+                survivingAllies: allies.filter(ally => ally.health > 0).length,
+                perfectVictory: scoreBreakdown.perfectBonus > 0
             }
         }));
     }

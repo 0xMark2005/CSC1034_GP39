@@ -1,7 +1,8 @@
 import { Terminal } from "../../terminal.js";
 import { displayAnimation } from "../animation_handler.js";
 import { GameTracker } from "../game_tracker.js";
-import { AllyManager } from "../ally_manager.js";  // Changed from ally_handler.js
+import { AllyManager } from "../ally_manager.js";
+import { ScoreSystem } from "../score_system.js";
 
 export function villageEscapeGame() {
     Terminal.outputMessage("VILLAGE ESCAPE: Knights have come to raid your village!", "#FF8181");
@@ -173,6 +174,25 @@ export function villageEscapeGame() {
                 }
             }
 
+            // Handle reputation changes based on choices
+            if (currentRound === 1) { // Baby scenario
+                if (input.startsWith('s')) {
+                    ScoreSystem.updateReputation(15); // Heroic choice
+                    Terminal.outputMessage("Your heroic action increases your reputation!", "#00FF00");
+                } else {
+                    ScoreSystem.updateReputation(-10); // Cowardly choice
+                    Terminal.outputMessage("Your cowardice damages your reputation.", "#FF0000");
+                }
+            } else if (currentRound === 2) { // Guard scenario
+                if (input.startsWith('t')) {
+                    ScoreSystem.updateReputation(10); // Diplomatic choice
+                    Terminal.outputMessage("Your honesty improves your reputation!", "#00FF00");
+                } else {
+                    ScoreSystem.updateReputation(5); // Less optimal but still brave
+                    Terminal.outputMessage("A daring escape affects your reputation.", "#FFA500");
+                }
+            }
+
             // Store the stat changes for final tally
             GameTracker.choices.push({input, stats: statChanges});
 
@@ -236,7 +256,7 @@ export function villageEscapeGame() {
         return 'stat-critical';
     }
 
-    function cleanup(success, timeLeft = 0) {
+    function cleanup(success) {
         gameActive = false;
         const userInput = document.getElementById("user-input");
         if (userInput.currentHandler) {
@@ -284,11 +304,37 @@ export function villageEscapeGame() {
             statValue.classList.add(classifyStatValue(value));
         });
 
-        let score = success ? 500 : 100;
-        score += (totalStats.strength + totalStats.defense + totalStats.intelligence) * 10;
+        // Calculate reputation change based on total stats and success
+        if (success) {
+            const totalStatValue = totalStats.strength + totalStats.defense + totalStats.intelligence;
+            let reputationChange = 0;
 
-        // Display final score
-        Terminal.outputMessage(`\nFinal Score: ${score}`, "#FFA500");
+            if (totalStatValue >= 50) {
+                reputationChange = 20; // Excellent escape
+            } else if (totalStatValue >= 30) {
+                reputationChange = 10; // Good escape
+            } else {
+                reputationChange = 5;  // Basic escape
+            }
+
+            // Extra bonus for saving the baby (check if 'save' was chosen in round 1)
+            const savedBaby = choices.some(choice => choice.input === 'save' || choice.input === 's');
+            if (savedBaby) {
+                reputationChange += 10;
+            }
+
+            ScoreSystem.updateReputation(reputationChange);
+            Terminal.outputMessage(`\nReputation ${reputationChange > 0 ? '+' : ''}${reputationChange}`, "#00FF00");
+        } else {
+            ScoreSystem.updateReputation(-15); // Failed escape
+            Terminal.outputMessage("\nReputation -15", "#FF0000");
+        }
+
+        let score = Number(success ? 500 : 100);
+        score += Number((totalStats.strength + totalStats.defense + totalStats.intelligence) * 10);
+
+        GameTracker.updateScore(score);
+        Terminal.outputMessage(`\nFinal Score: +${score}`, "#FFA500");
 
         // Dispatch minigame completion event
         document.dispatchEvent(new CustomEvent('minigameComplete', {

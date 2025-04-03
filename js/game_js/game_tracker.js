@@ -7,9 +7,11 @@ export class GameTracker {
 
     static reputation = 0;
     static score = 0;
+    static scoreUpdateInProgress = false;
     static inventory = [];
     static allies = [];
     static allyEquipment = [];
+    static completedMinigames = new Set();
 
     static gameOver = false;
     static gameCompleted = false;
@@ -47,6 +49,36 @@ export class GameTracker {
         this.bossHpLogs.push(bossHpLeft);
         this.battleRounds.push(roundsTaken);
         this.battlesFought++;
+    }
+
+    static updateScore(points) {
+        try {
+            // Ensure we're working with clean numbers
+            const currentScore = Number(this.score || 0);
+            const pointsToAdd = Number(points || 0);
+
+            // Increment the score
+            this.score = currentScore + pointsToAdd;
+
+            // Update the display
+            const scoreElement = document.getElementById('score-number');
+            if (scoreElement) {
+                scoreElement.textContent = this.score.toString();
+            }
+
+            // Log final state for verification
+            console.log('Score Update Complete:', {
+                previousScore: currentScore,
+                addedPoints: pointsToAdd,
+                newTotal: this.score
+            });
+        } catch (error) {
+            console.error('Score Update Failed:', error);
+        }
+    }
+
+    static getScore() {
+        return this.score;
     }
 
     static get bossHpAverage() {

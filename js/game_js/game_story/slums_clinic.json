@@ -8,13 +8,26 @@
                 "choice": "1. Take the medic's test",
                 "message": "The medic prepares a series of medical questions.",
                 "startMinigame": true,
+                "next": "medic_reward"
+            }
+        ]
+    },
+    {
+        "dialogue": "medic_reward",
+        "message": "Impressed by your knowledge, the medic offers you a healing potion before treating the knight.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Accept healing potion",
+                "message": "You gratefully accept the powerful healing potion.",
+                "item": "Full Health Potion",
                 "next": "medic_joins"
             }
         ]
     },
     {
         "dialogue": "medic_joins",
-        "message": "Impressed by your knowledge, the medic treats the knight's wounds and agrees to join your cause.",
+        "message": "The medic treats the knight's wounds and agrees to join your cause.",
         "optionType": "number",
         "options": [
             {

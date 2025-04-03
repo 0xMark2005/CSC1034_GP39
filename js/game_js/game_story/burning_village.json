@@ -18,24 +18,60 @@
     },
     {
         "dialogue": "search_home",
-        "message": "Through the smoke, you spot: [1] Royal Sword [2] Full Potion [3] Leave Now",
+        "message": "Through the smoke, you spot: [1] Wooden Sword [2] Half Health Potion [3] Leave Now",
         "optionType": "number",
         "options": [
             {
                 "choice": "1. Take Wooden Sword",
                 "message": "You grab the ancestral blade.",
                 "item": "Wooden Sword",
-                "next": "escape_start"
+                "next": "search_home_sword_taken"
             },
             {
                 "choice": "2. Take healing potion",
                 "message": "You pocket the medicinal brew.",
                 "item": "Half Health Potion",
-                "next": "escape_start"
+                "next": "search_home_potion_taken"
             },
             {
                 "choice": "3. Leave immediately",
                 "message": "Better safe than sorry.",
+                "next": "escape_start"
+            }
+        ]
+    },
+    {
+        "dialogue": "search_home_sword_taken",
+        "message": "Would you like to take the healing potion as well?",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Take healing potion",
+                "message": "You grab the potion before leaving.",
+                "item": "Half Health Potion",
+                "next": "escape_start"
+            },
+            {
+                "choice": "2. Leave now",
+                "message": "You decide not to risk staying longer.",
+                "next": "escape_start"
+            }
+        ]
+    },
+    {
+        "dialogue": "search_home_potion_taken",
+        "message": "Would you like to take the wooden sword as well?",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Take wooden sword",
+                "message": "You grab the sword before leaving.",
+                "item": "Wooden Sword",
+                "next": "escape_start"
+            },
+            {
+                "choice": "2. Leave now",
+                "message": "You decide not to risk staying longer.",
                 "next": "escape_start"
             }
         ]

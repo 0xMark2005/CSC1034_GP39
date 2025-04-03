@@ -85,7 +85,26 @@
     height: 100%;
     min-height: -webkit-fill-available;
   }
+  .popup-container {
+    align-items: flex-start; 
+    justify-content: flex-start;  
+    padding: 0; 
+  }
   
+  .popup {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100vw; 
+    height: 100vh;
+    max-width: none;  /* Override any max-width */
+    max-height: none;  /* Override any max-height */
+    border-radius: 0;
+    padding: 15px; 
+    margin: 0;
+    box-shadow: none;
+    overflow-y: auto; 
+  }
   /* Fix for mobile Safari viewport issues */
   #main-menu {
     height: 100%;
@@ -183,6 +202,7 @@
   .picmargin {
     margin-top: 5px;
   }
+
 }
 
 
@@ -247,13 +267,11 @@
 /* Popup style similar to leaderboard container */
 .popup {
   background: rgba(23, 23, 23, 0.85);
-  width: 50%;
-  max-width: 600px;
   padding: 20px;
   border-radius: 8px;
   text-align: center;
+  color: white;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
-  max-height: 90vh;
   overflow-y: auto;
   font-family: 'Consolas', 'Lucida Console', monospace;
   display: flex;

@@ -31,8 +31,39 @@
         "optionType": "number",
         "options": [
             {
-                "choice": "1. Continue onwards",
-                "message": "The knight is struggling from his injuries...",
+                "choice": "1. Search guard's quarters",
+                "message": "You find some useful equipment in the guard's quarters.",
+                "next": "guard_equipment"
+            }
+        ]
+    },
+    {
+        "dialogue": "guard_equipment",
+        "message": "In the guard's quarters, you spot some valuable equipment.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Take Knight's Sword",
+                "message": "You claim the well-crafted sword.",
+                "item": "Knight Sword",
+                "next": "guard_shield"
+            }
+        ]
+    },
+    {
+        "dialogue": "guard_shield",
+        "message": "There's also a sturdy shield mounted on the wall.",
+        "optionType": "number",
+        "options": [
+            {
+                "choice": "1. Take Knight's Shield",
+                "message": "You take the shield for protection.",
+                "item": "Knight Shield",
+                "next": "knight_freed"
+            },
+            {
+                "choice": "2. Leave it",
+                "message": "The shield would slow you down.",
                 "next": "knight_freed"
             }
         ]
