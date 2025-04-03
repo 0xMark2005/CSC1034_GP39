@@ -2,6 +2,7 @@ import { Terminal } from "../../terminal.js";
 import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
 import { AllyManager, recruitAlly } from "../ally_manager.js";
+import * as MainGame from "../temp_game.js";
 
 export function generalRescueGame() {
     let successfulAttempts = 0;
@@ -132,18 +133,30 @@ export function generalRescueGame() {
             intelligence: 0
         };
 
+        //Add log
+        MainGame.addLog("played_minigame");
+
         // Adjust stats based on performance
         if (successfulAttempts >= totalAttempts) {
+            //Add log
+            MainGame.addLog("minigame_won");
+
             // Perfect performance - highest stat boost
             statChanges.strength = 8;
             statChanges.defense = 7;
             statChanges.intelligence = 6;
         } else if (successfulAttempts >= requiredSuccesses) {
+            //Add log
+            MainGame.addLog("minigame_won");
+
             // Passed - moderate stat boost
             statChanges.strength = 6;
             statChanges.defense = 5;
             statChanges.intelligence = 5;
         } else {
+            //Add log
+            MainGame.addLog("minigame_failed");
+
             // Failed - stat reduction
             statChanges.strength = -4;
             statChanges.defense = -3;

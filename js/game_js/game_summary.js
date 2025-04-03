@@ -209,7 +209,7 @@ async function setPlayerMinigames(){
     }
 
     //set the minigames played
-    let minigamesWonQuery = `SELECT quantity AS minigamesWon FROM game_session_logs_full_details WHERE game_session_id=${gameSessionId} AND log_name="minigame_complete"`;
+    let minigamesWonQuery = `SELECT quantity AS minigamesWon FROM game_session_logs_full_details WHERE game_session_id=${gameSessionId} AND log_name="minigame_won"`;
     try{
         let result = DBQuery.getQueryResult(minigamesWonQuery);
 
@@ -230,7 +230,7 @@ async function setPlayerMinigames(){
     }
 
     //set the minigames played
-    let minigamesFailedQuery = `SELECT quantity AS minigamesFailed FROM game_session_logs_full_details WHERE game_session_id=${gameSessionId} AND log_name="played_minigame"`;
+    let minigamesFailedQuery = `SELECT quantity AS minigamesFailed FROM game_session_logs_full_details WHERE game_session_id=${gameSessionId} AND log_name="minigame_failed"`;
     try{
         let result = DBQuery.getQueryResult(minigamesFailedQuery);
 
@@ -397,7 +397,7 @@ async function setGlobalMinigames(){
     FROM game_session_logs_full_details AS l
     INNER JOIN game_sessions AS gs
     ON l.game_session_id = gs.game_session_id
-    WHERE log_name="minigame_completed" AND
+    WHERE log_name="minigame_won" AND
     (game_over=1 OR game_completed=1);`;
     try{
         let result = DBQuery.getQueryResult(avgMinigamesWonQuery);

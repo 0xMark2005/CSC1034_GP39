@@ -2,6 +2,7 @@ import { Terminal } from "../../terminal.js";
 import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
 import { AllyManager, recruitAlly } from "../ally_manager.js";  // Add recruitAlly import
+import * as MainGame from "../temp_game.js";
 
 export function medicTestGame() {
     let gameActive = true;
@@ -106,7 +107,13 @@ export function medicTestGame() {
 
         GameTracker.updateScore(finalScore);
 
+        //Add log
+        MainGame.addLog("played_minigame");
+
         if (success) {
+            //Add log
+            MainGame.addLog("minigame_won");
+
             // Recruit medic using proper database recruitment
             if (await recruitAlly('Medic')) {  // Changed to use recruitAlly function
                 Terminal.outputMessage("\nThe medic joins your cause!", "#00FF00");
@@ -122,6 +129,10 @@ export function medicTestGame() {
             } else {
                 Terminal.outputMessage("\nError recruiting medic!", "#FF0000");
             }
+        }
+        else{
+            //Add log
+            MainGame.addLog("minigame_failed");
         }
 
         // Dispatch completion event

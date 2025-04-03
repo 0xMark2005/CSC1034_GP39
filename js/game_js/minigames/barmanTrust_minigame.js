@@ -2,6 +2,7 @@ import { Terminal } from "../../terminal.js";
 import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
 import { AllyManager, recruitAlly } from "../ally_manager.js";  // Import both AllyManager and recruitAlly
+import * as MainGame from "../temp_game.js";
 
 export function barmanTrustGame() {
     // Game state
@@ -97,8 +98,14 @@ export function barmanTrustGame() {
             userInput.currentHandler = null;
         }
 
+        //Add log
+        MainGame.addLog("played_minigame");
+
         // Add reputation based on performance
         if (success) {
+            //Add log
+            MainGame.addLog("minigame_won");
+
             const perfectScore = successfulAttempts === puzzles.length;
             if (perfectScore) {
                 ScoreSystem.updateReputation(15); // Perfect trust
@@ -106,6 +113,8 @@ export function barmanTrustGame() {
                 ScoreSystem.updateReputation(8);  // Basic trust
             }
         } else {
+            //Add log
+            MainGame.addLog("minigame_failed");
             ScoreSystem.updateReputation(-3); // Failed trust
         }
 

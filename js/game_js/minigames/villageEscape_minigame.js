@@ -3,6 +3,7 @@ import { displayAnimation } from "../animation_handler.js";
 import { GameTracker } from "../game_tracker.js";
 import { AllyManager } from "../ally_manager.js";
 import { ScoreSystem } from "../score_system.js";
+import * as MainGame from "../temp_game.js";
 
 export function villageEscapeGame() {
     Terminal.outputMessage("VILLAGE ESCAPE: Knights have come to raid your village!", "#FF8181");
@@ -304,8 +305,14 @@ export function villageEscapeGame() {
             statValue.classList.add(classifyStatValue(value));
         });
 
+        //Add log
+        MainGame.addLog("played_minigame");
+
         // Calculate reputation change based on total stats and success
         if (success) {
+            //Add log
+            MainGame.addLog("minigame_won");
+
             const totalStatValue = totalStats.strength + totalStats.defense + totalStats.intelligence;
             let reputationChange = 0;
 
@@ -326,6 +333,8 @@ export function villageEscapeGame() {
             ScoreSystem.updateReputation(reputationChange);
             Terminal.outputMessage(`\nReputation ${reputationChange > 0 ? '+' : ''}${reputationChange}`, "#00FF00");
         } else {
+            //Add log
+            MainGame.addLog("minigame_failed");
             ScoreSystem.updateReputation(-15); // Failed escape
             Terminal.outputMessage("\nReputation -15", "#FF0000");
         }

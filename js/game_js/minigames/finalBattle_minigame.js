@@ -2,6 +2,7 @@ import { Terminal } from "../../terminal.js";
 import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
 import { AllyManager } from "../ally_manager.js";
+import * as MainGame from "../temp_game.js";
 
 export function finalBattleGame() {
     let gameActive = true;
@@ -333,7 +334,13 @@ export function finalBattleGame() {
             total: 0
         };
 
+        //Add log
+        MainGame.addLog("played_minigame");
+
         if (victory) {
+            //Add log
+            MainGame.addLog("minigame_won");
+
             // Base victory score
             scoreBreakdown.base = 1000;
             
@@ -375,6 +382,9 @@ export function finalBattleGame() {
             // Update GameTracker score
             GameTracker.updateScore(scoreBreakdown.total);
         } else {
+            //Add log
+            MainGame.addLog("minigame_failed");
+
             // Defeat penalties
             ScoreSystem.updateReputation(-15);
             Terminal.outputMessage("\n=== Defeat ===", "#FF0000");

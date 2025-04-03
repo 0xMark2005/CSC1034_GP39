@@ -2,6 +2,7 @@ import { Terminal } from "../../terminal.js";
 import { displayAnimation } from "../animation_handler.js";
 import { ScoreSystem } from "../score_system.js";
 import { GameTracker } from "../game_tracker.js";
+import * as MainGame from "../temp_game.js";
 
 export function prisonEscapeGame() {
     // Initialize state
@@ -84,9 +85,15 @@ export function prisonEscapeGame() {
     function cleanup(success, reactionTime = 0) {
         if (timeoutId) clearTimeout(timeoutId);
         cleanupInputHandlers();
+
+        //Add log
+        MainGame.addLog("played_minigame");
         
         let score = 0;
         if (success) {
+            //Add log
+            MainGame.addLog("minigame_won");
+
             score = Number(300); // Base score
             if (reactionTime > 0) {
                 score += Number(Math.max(0, Math.floor((5000 - reactionTime) / 25))); // Time bonus
@@ -106,6 +113,8 @@ export function prisonEscapeGame() {
         } else {
             ScoreSystem.updateReputation(-5); // Failed escape
             console.log('Failed escape: -5 reputation');
+            //Add log
+            MainGame.addLog("minigame_failed");
         }
 
         GameTracker.updateScore(score);

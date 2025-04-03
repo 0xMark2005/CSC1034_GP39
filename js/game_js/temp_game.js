@@ -639,7 +639,7 @@ async function awardItem(option){
 }
 
 //method to add any given log by the log's name (DONT PASS OPTION, PASS option.log)
-async function addLog(logName){
+export async function addLog(logName){
     //get the log from the database
     let newLog = {}; //holds data of new log
     let getLogQuery = `SELECT * FROM game_logs WHERE log_name = '${logName.trim()}'`;
