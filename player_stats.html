@@ -1,34 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>ReignFall | Player Statistics</title>
-    <link rel="icon" type="image/x-icon" href="css/assets/images/logo_favicon.png">
-    <link rel="stylesheet" href="css/theme.css">
-    <link rel="stylesheet" href="css/player_stats.css">
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/player_stats.css" />
 </head>
 <body>
     <div id="stats-container">
         <h1>Player Statistics</h1>
-        
+
         <div class="stat-group">
-            <div class="stat-label">Average score:</div>
-            <div class="stat-value" id="stat-score">0</div>
+            <div class="stat-label">Total Score:</div>
+            <div class="stat-value" id="stat-totalScore">0</div>
         </div>
-        
+
         <div class="stat-group">
-            <div class="stat-label">Battles Fought:</div>
-            <div class="stat-value" id="stat-battles">0</div>
+            <div class="stat-label">Highest Score:</div>
+            <div class="stat-value" id="stat-highestScore">0</div>
         </div>
-        
+
         <div class="stat-group">
-            <div class="stat-label">Avg Boss HP Left:</div>
-            <div class="stat-value" id="stat-bossHP">—</div>
+            <div class="stat-label">Total Reputation:</div>
+            <div class="stat-value" id="stat-totalReputation">0</div>
         </div>
-        
+
         <div class="stat-group">
-            <div class="stat-label">Avg Rounds per Battle:</div>
-            <div class="stat-value" id="stat-rounds">—</div>
+            <div class="stat-label">Highest Reputation:</div>
+            <div class="stat-value" id="stat-highestReputation">0</div>
+        </div>
+
+        <div class="stat-group">
+            <div class="stat-label">Minigames Played:</div>
+            <div class="stat-value" id="stat-minigamesPlayed">0</div>
+        </div>
+
+        <div class="stat-group">
+            <div class="stat-label">Minigames Won:</div>
+            <div class="stat-value" id="stat-minigamesWon">0</div>
+        </div>
+
+        <div class="stat-group">
+            <div class="stat-label">Minigames Lost:</div>
+            <div class="stat-value" id="stat-minigamesLost">0</div>
+        </div>
+
+        <div class="stat-group">
+            <div class="stat-label">Total Items Collected:</div>
+            <div class="stat-value" id="stat-totalItems">0</div>
+        </div>
+
+        <div class="stat-group">
+            <div class="stat-label">Most Items in One Playthrough:</div>
+            <div class="stat-value" id="stat-mostItems">0</div>
         </div>
     </div>
 
@@ -38,19 +62,37 @@
         </a>
     </div>
 
-    <!-- JS Script to pull stats -->
+    <!-- Animated Stat Load -->
     <script type="module">
-        import { GameTracker } from './js/modules/game_tracker.js';
-    
-        document.addEventListener("DOMContentLoaded", () => {
-            const stats = GameTracker.getStats();
-    
-            document.getElementById("stat-score").textContent = stats.score;
-            document.getElementById("stat-gold").textContent = stats.gold;
-            document.getElementById("stat-allies").textContent = stats.allies;
-            document.getElementById("stat-battles").textContent = stats.battles;
-            document.getElementById("stat-bossHP").textContent = isNaN(stats.avgBossHP) ? "—" : `${stats.avgBossHP}%`;
-            document.getElementById("stat-rounds").textContent = isNaN(stats.avgRounds) ? "—" : stats.avgRounds;
+        import { getPlayerStats } from './js/player_stats_data.js';
+
+        function animateValue(id, end, duration = 800) {
+            const el = document.getElementById(id);
+            let start = 0;
+            const increment = end / (duration / 16);
+            const step = () => {
+                start += increment;
+                if (start >= end) {
+                    el.textContent = Math.floor(end);
+                } else {
+                    el.textContent = Math.floor(start);
+                    requestAnimationFrame(step);
+                }
+            };
+            requestAnimationFrame(step);
+        }
+        document.addEventListener("DOMContentLoaded", async () => {
+            const stats = await getPlayerStats();
+
+            animateValue("stat-totalScore", stats.total_score || 0);
+            animateValue("stat-highestScore", stats.highest_score || 0);
+            animateValue("stat-totalReputation", stats.total_reputation || 0);
+            animateValue("stat-highestReputation", stats.highest_reputation || 0);
+            animateValue("stat-minigamesPlayed", stats.minigames_played || 0);
+            animateValue("stat-minigamesWon", stats.minigames_won || 0);
+            animateValue("stat-minigamesLost", stats.minigames_lost || 0);
+            animateValue("stat-totalItems", stats.total_items_collected || 0);
+            animateValue("stat-mostItems", stats.most_items_collected || 0);
         });
     </script>
 </body>
