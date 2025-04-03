@@ -130,9 +130,11 @@ async function handleRegister() {
     let password = passwordField.value.trim();
     let password2 = confirmPasswordField.value.trim();
 
-    if(updateRequirements(username,password,password2).length >1)
+    let registerErrors = updateRequirements(username,password,password2);
+
+    if(registerErrors.length > 0)
     {
-        document.getElementById("register-error").textContent = "Registration failed: " + errors;
+        document.getElementById("register-error").textContent = "Registration failed: " + registerErrors;
         document.getElementById('register-error').style.display = "block";
         return;
     }
