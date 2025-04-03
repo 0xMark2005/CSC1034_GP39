@@ -243,16 +243,15 @@ export async function loadGame(){
 // Set up a new game save
 //
 async function setupNewGame() {
-    //set the new game's data (NOTE: game_session_id is not set yet as the DB creates that)
     let newGameData = {
         user_id: localStorage.getItem("userID"),
         game_session_id: 0,
         current_location: "burning_village",
         current_dialogue: "burning_village_intro",
-        reputation: generateRandomReputation(),
+        reputation: 0,  // Set to 0 directly
         game_over: false,
         game_completed: false,
-        score: 0  // Initialize score at 0
+        score: 0
     }
 
     // Ensure the values are properly typed when creating new game
@@ -349,8 +348,8 @@ async function setupNewGame() {
 
 //function to generate a random reputation (for a new game save)
 function generateRandomReputation(){
-    let randomReputation = Math.floor(40+(Math.random()*20)); //random number between 40 and 60
-    return randomReputation;
+    // Start with 0 reputation instead of random 40-60
+    return 0;
 }
 
 

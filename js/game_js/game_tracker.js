@@ -5,7 +5,7 @@ export class GameTracker {
     static currentDialogue;
     static gameLogs = [];
 
-    static reputation = 0;
+    static reputation = 0;  // Initialize at 0
     static score = 0;
     static scoreUpdateInProgress = false;
     static inventory = [];
@@ -40,7 +40,7 @@ export class GameTracker {
         const reputationElement = document.getElementById('reputation-number');
         if (reputationElement) {
             const multiplier = 1 + Math.floor(this.reputation / 50);
-            reputationElement.textContent = `${this.reputation} (${multiplier}x)`;
+            reputationElement.textContent = `${this.reputation}/100 (${multiplier}x)`;
         }
     }
 
