@@ -7,8 +7,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/edit_account.css">
+  <link rel="stylesheet" href="css/global_menu.css">
+
 </head>
 <body>
+
+
+   <!-- Top Bar Navigation -->
+   <nav class="topbar">
+    <div class="topbar-left">
+      <a href="index.html">    
+        <img src="css/assets/images/icons/homeIcon.png" alt="Home Icon" class="link-icon">
+        Menu
+      </a>
+   
+      <a href="settings.html">    
+        <img src="css/assets/images/icons/settingsIcon.png" alt="Settings Icon" class="link-icon">
+        Settings
+      </a>
+
+
+    </div>
+  
+    <div class="topbar-right">
+      <div class="user-dropdown">
+        <a id="user-button">User ▾</a>
+        <div class="dropdown-content" id="user-dropdown">
+          <span id="username-label"></span>
+          <a href="edit_account.html">Edit Account</a>
+          <a href="logout.html">Log Out</a>
+        </div>
+      </div>
+      <button class="hamburger" id="hamburger-btn">☰</button>
+    </div>
+  </nav>
+
+   <!-- Top Bar Navigation Ends-->
+
+
   <div class="edit-shell">
     <h1>Edit Account</h1>
 
@@ -43,6 +79,7 @@
 
     <a href="main_menu.html" class="back-button">← Back to Menu</a>
   </div>
+  <script type="module" src="js/global_menu.js"></script>
 
   <script type="module" src="js/edit_account.js"></script>
 </body>
