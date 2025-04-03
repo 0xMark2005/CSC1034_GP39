@@ -101,6 +101,20 @@ const scoreSystem = new ScoreSystem();
 
 document.addEventListener("DOMContentLoaded", async function() {
     // Initialize terminal
+    const areaName = document.getElementById("area-name");
+    // Always marquee on screens narrower than 768px
+    if(window.innerWidth < 768) {
+      areaName.classList.add("marquee");
+      areaName.innerHTML = `<span class="marquee-content">${areaName.textContent}</span>`;
+    } else {
+      // On larger screens, add marquee only if text overflows
+      if(areaName.scrollWidth > areaName.clientWidth){
+        areaName.classList.add("marquee");
+        areaName.innerHTML = `<span class="marquee-content">${areaName.textContent}</span>`;
+      }
+    }
+
+    
     await SettingsManager.applySettings(); 
     let outputTerminal = document.getElementById("output-terminal");
     let userInput = document.getElementById("user-input");
