@@ -143,28 +143,6 @@
     font-weight: bold;
 }
 
-/* Medal Styling for Gold, Silver, Bronze */
-.medal {
-    width: 30px; /* Set the size of the medal without affecting list item size */
-    height: 30px;
-    margin-right: 10px; /* Space between medal and username */
-    vertical-align: middle;
-    display: none; /* Hide all medals by default */
-}
-
-/* Show the appropriate medal based on the rank */
-.leaderboard li.gold .medal.gold {
-    display: inline-block;
-}
-
-.leaderboard li.silver .medal.silver {
-    display: inline-block;
-}
-
-.leaderboard li.bronze .medal.bronze {
-    display: inline-block;
-}
-
 /* Scrollbar Styling (Matching Terminal) */
 .leaderboard::-webkit-scrollbar {
     width: 12px;
