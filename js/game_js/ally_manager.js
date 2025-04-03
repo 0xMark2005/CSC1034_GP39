@@ -401,6 +401,7 @@ export async function recruitAlly(allyName, success = true) {  // Add success pa
 
         GameTracker.allies.push(newAlly);
         console.log(`Successfully recruited ${allyName}`, newAlly);
+        AllyManager.loadAllyVisuals();
         return true;
 
     } catch (error) {

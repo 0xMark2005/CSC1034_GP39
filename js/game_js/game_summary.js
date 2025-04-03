@@ -301,7 +301,7 @@ async function setGlobalStats(){
         //if score value not null
         if(result.data[0].averageItemsCollected){
             //set value
-            globalAvgItemsCollectedElement.innerHTML = `${Math.round(result.data[0].averageItemsCollected)}`;
+            globalAvgItemsCollectedElement.innerHTML = `${result.data[0].averageItemsCollected}`;
         }
 
     }
@@ -322,7 +322,7 @@ async function setGlobalStats(){
         //if score value not null
         if(result.data[0].averageAreasVisited){
             //set value
-            globalAvgAreasVisitedElement.innerHTML = `${Math.round(result.data[0].averageAreasVisited)}`;
+            globalAvgAreasVisitedElement.innerHTML = `${result.data[0].averageAreasVisited}`;
         }
 
     }
@@ -352,7 +352,7 @@ async function setGlobalMinigames(){
         //if score value not null
         if(result.data[0].averageMinigamesPlayed){
             //set value
-            globalAvgMinigamesPlayedElement.innerHTML = `${Math.round(result.data[0].averageMinigamesPlayed)}`;
+            globalAvgMinigamesPlayedElement.innerHTML = `${result.data[0].averageMinigamesPlayed}`;
         }
 
     }
@@ -373,7 +373,7 @@ async function setGlobalMinigames(){
         //if score value not null
         if(result.data[0].averageMinigamesWon){
             //set value
-            globalAvgMinigamesWonElement.innerHTML = `${Math.round(result.data[0].averageMinigamesWon)}`;
+            globalAvgMinigamesWonElement.innerHTML = `${result.data[0].averageMinigamesWon}`;
         }
 
     }
@@ -394,7 +394,7 @@ async function setGlobalMinigames(){
         //if score value not null
         if(result.data[0].averageMinigamesFailed){
             //set value
-            globalAvgMinigamesFailedElement.innerHTML = `${Math.round(result.data[0].averageMinigamesFailed)}`;
+            globalAvgMinigamesFailedElement.innerHTML = `${result.data[0].averageMinigamesFailed}`;
         }
 
     }
