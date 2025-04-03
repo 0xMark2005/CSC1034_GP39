@@ -241,15 +241,14 @@ async function handleLogin() {
 }
 
 // Toggle password visibility for both fields
-function togglePasswordVisibility(id1, id2) {
-    const passwordField = document.getElementById(id1);
-    const checkPasswordField = document.getElementById(id2);
-    
-    const type = passwordField.type === "password" ? "text" : "password";
-    passwordField.type = type;
-    checkPasswordField.type = type;
+function togglePasswordVisibility(passwordFieldId) {
+    var passwordField = document.getElementById(passwordFieldId);
+    if (passwordField.type === "password") {
+        passwordField.type = "text"; // Show the password
+    } else {
+        passwordField.type = "password"; // Hide the password
+    }
 }
-
 //button sound effect
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('button').forEach(btn => {
