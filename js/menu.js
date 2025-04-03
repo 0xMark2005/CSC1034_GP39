@@ -24,11 +24,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   document.getElementById("player-stats").addEventListener("click", () => {
-    window.location.href = "profile.html";
+    window.location.href = "player_stats.html";
   });
 
   document.getElementById("leaderboard-menu").addEventListener("click", () => {
-    window.location.href = "Leaderboard.html";
+    window.location.href = "leaderboard.html";
   });
 
   document.getElementById("popup-close").addEventListener("click", closePopup);

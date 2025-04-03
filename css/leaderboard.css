@@ -4,7 +4,6 @@
 #main-container {
     background: rgba(23, 23, 23, 0.85);
     width: 50%;
-    max-width: 600px;
     padding: 20px;
     border-radius: 8px;
     text-align: center;
@@ -247,5 +246,10 @@
 }
 
 
-
-
+@media screen and (max-width: 768px) {
+    #main-container {
+        background: rgba(23, 23, 23, 0.85);
+        width: 100%;
+     
+    }
+}

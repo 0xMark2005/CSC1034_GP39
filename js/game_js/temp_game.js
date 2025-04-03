@@ -11,7 +11,7 @@ import { generalRescueGame } from "./minigames/generalRescue_minigame.js";
 import { finalBattleGame } from "./minigames/finalBattle_minigame.js";
 import { barmanTrustGame } from "./minigames/barmanTrust_minigame.js";
 import { medicTestGame } from "./minigames/medicTest_minigame.js";
-
+import SettingsManager from "../settingsManager.js";
 import { ScoreSystem } from './score_system.js';
 import { DBQuery } from "../dbQuery.js";
 
@@ -101,6 +101,7 @@ const scoreSystem = new ScoreSystem();
 
 document.addEventListener("DOMContentLoaded", async function() {
     // Initialize terminal
+    await SettingsManager.applySettings(); 
     let outputTerminal = document.getElementById("output-terminal");
     let userInput = document.getElementById("user-input");
     Terminal.initialize(outputTerminal, userInput);
