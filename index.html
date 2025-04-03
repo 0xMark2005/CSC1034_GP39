@@ -68,6 +68,7 @@
                 </div>
                 <input type="text" id="register-username" placeholder="Username">
                 <input type="password" id="register-password" placeholder="Password">
+                <input type="password" id = "confirm-password" placeholder="Confirm Password">
             
                 <!-- Password Visibility Toggle -->
                 <div class="checkbox-wrapper-3">
@@ -75,8 +76,24 @@
                     <label for="cbx-register" class="toggle">
                         <span></span>
                     </label>
+                    
                     <div style="white-space: nowrap; display: inline-block;" class="toggle-text">Show Password</div>
                 </div>
+
+                <!-- Requirements -->
+                <ul id = "username-requirements"><span class ="title">Username</span>
+                    <li id = 0>Username cannot be empty.</li>
+                    <li id = 1>Username must be between 3 and 15 characters.</li>
+                    <li id = 2>Username must only contain letters and numbers.</li>
+                </ul>
+                <ul id = "password-requirements"><span class="title">Password</span>
+                    <li id = 3>Must include at least one uppercase letter.</li>
+                    <li id = 4>Must include at least one lowercase letter.</li>
+                    <li id = 5>Must include at least one digit.</li>
+                    <li id = 6>Must include at least one special character.</li>
+                    <li id =7>Passwords must match.</li>
+                </ul>
+
             
                 <button class="login-button" id="register-account-button">CREATE</button>
                 <p id="register-error" style="color: red; display: none;"></p>
@@ -97,6 +114,7 @@
 
     <script type="module" src="js/dbQuery.js"></script>
     <script type="module" src="js/index.js"></script>
+    <script type = "module" src ="js/validation.js"></script>
 
 </body>
 </html>
