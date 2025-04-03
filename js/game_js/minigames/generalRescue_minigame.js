@@ -125,6 +125,36 @@ export function generalRescueGame() {
         timeoutIds = [];
         gameActive = false;
 
+        // Add health changes for peasant based on performance
+        if (GameTracker.allies && GameTracker.allies.length > 0) {
+            const peasant = GameTracker.allies[0];
+            let healthChange = 0;
+            let healthMessage = "";
+            
+            // Determine health change based on performance
+            if (successfulAttempts >= totalAttempts) {
+                healthChange = 30;
+                healthMessage = "Your perfect memory impresses the guard so much, he shares his secret healing herbs!";
+            } else if (successfulAttempts >= requiredSuccesses) {
+                healthChange = 15;
+                healthMessage = "The adrenaline rush from successfully breaking out gives you a second wind!";
+            } else {
+                healthChange = -25;
+                healthMessage = "The stress of failing the codes gives you a splitting headache...";
+            }
+
+            // Apply health change with bounds checking
+            const oldHp = peasant.hp;
+            peasant.hp = Math.max(1, Math.min(peasant.maxHp, peasant.hp + healthChange));
+            await AllyManager.loadAllyVisuals();
+            if (AllyManager.checkGameOver()) return;
+
+            // Show health feedback
+            Terminal.outputMessage(`\n${healthMessage}`, healthChange > 0 ? "#00FF00" : "#FF8181");
+            Terminal.outputMessage(`Health Change: (${healthChange > 0 ? '+' : ''}${healthChange} HP)`, "#FFA500");
+            Terminal.outputMessage(`Your HP: ${oldHp} → ${peasant.hp}/${peasant.maxHp}`, "#FFA500");
+        }
+
         // Calculate stats based on performance
         let statChanges = {
             strength: 0,

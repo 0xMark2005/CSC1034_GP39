@@ -20,7 +20,7 @@
             {
                 "choice": "1. Accept healing potion",
                 "message": "You gratefully accept the powerful healing potion.",
-                "item": "Full Health Potion",
+                "item": "Half Health Potion",
                 "next": "medic_joins"
             }
         ]

@@ -238,7 +238,7 @@ export function finalBattleGame() {
         }
     }
 
-    // Modify processEnemyTurn to update visuals
+    // Modify processEnemyTurn function to check for game over after damage
     function processEnemyTurn() {
         inputEnabled = false;
         
@@ -261,46 +261,37 @@ export function finalBattleGame() {
                     const damage = Math.floor(Math.random() * (enemy.damage.max - enemy.damage.min + 1)) + enemy.damage.min;
                     const finalDamage = target.defense ? Math.floor(damage / 2) : damage;
                     target.health = Math.max(0, target.health - finalDamage);
+                    
+                    // Update GameTracker ally HP
+                    const trackerAlly = GameTracker.allies.find(a => a.name === target.name);
+                    if (trackerAlly) {
+                        trackerAlly.hp = target.health;
+                    }
+
                     Terminal.outputMessage(`${enemy.name} attacks ${target.name} for ${finalDamage} damage!`, "#FF0000");
                     hitAllies.push({name: target.name, damage: finalDamage});
+
+                    // Check for game over after each hit
+                    if (AllyManager.checkGameOver()) {
+                        gameActive = false;
+                        return;
+                    }
                 }
             }
         });
 
-        // Output round summary
-        Terminal.outputMessage(`\n=== Round ${roundNumber} Summary ===`, "#FFA500");
-        
-        // Dodged attacks
-        if (dodgedAllies.length > 0) {
-            Terminal.outputMessage("Dodged Attacks:", "#00FF00");
-            dodgedAllies.forEach(ally => {
-                Terminal.outputMessage(`- ${ally} successfully dodged an attack!`, "#00FF00");
+        // Only continue if game is still active
+        if (gameActive) {
+            // Update ally stats and visuals before showing next turn
+            updateAllyStats().then(() => {
+                if (isGameOver()) {
+                    endBattle();
+                } else {
+                    inputEnabled = true;
+                    showCurrentTurn();
+                }
             });
-        } else {
-            Terminal.outputMessage("No allies dodged attacks this round.", "#FFFF00");
         }
-
-        // Hit allies
-        if (hitAllies.length > 0) {
-            Terminal.outputMessage("Allies Hit:", "#FF0000");
-            hitAllies.forEach(ally => {
-                Terminal.outputMessage(`- ${ally.name} took ${ally.damage} damage!`, "#FF0000");
-            });
-        } else {
-            Terminal.outputMessage("No allies were hit this round.", "#FFFF00");
-        }
-
-        allies.forEach(ally => ally.defense = false);
-
-        // Update ally stats and visuals before showing next turn
-        updateAllyStats().then(() => {
-            if (isGameOver()) {
-                endBattle();
-            } else {
-                inputEnabled = true;
-                showCurrentTurn();
-            }
-        });
     }
 
     function isGameOver() {

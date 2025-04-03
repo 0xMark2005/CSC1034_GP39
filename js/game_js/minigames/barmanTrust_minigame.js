@@ -97,26 +97,18 @@ export function barmanTrustGame() {
             userInput.currentHandler = null;
         }
 
-        // Add reputation based on performance
-        if (success) {
-            const perfectScore = successfulAttempts === puzzles.length;
-            if (perfectScore) {
-                ScoreSystem.updateReputation(15); // Perfect trust
-            } else {
-                ScoreSystem.updateReputation(8);  // Basic trust
-            }
-        } else {
-            ScoreSystem.updateReputation(-3); // Failed trust
-        }
-
-        // Calculate base score
+        // Calculate base score and reputation changes
         let baseScore = 0;
         if (success) {
             baseScore = Number(500);
             baseScore += Number(successfulAttempts * 100);
+            ScoreSystem.updateReputation(successfulAttempts >= puzzles.length ? 15 : 8);
+        } else {
+            baseScore = Number(200); // Minimum score for attempting
+            ScoreSystem.updateReputation(-3);
         }
 
-        // Apply reputation multiplier
+        // Apply reputation multiplier and update score
         const reputationMultiplier = ScoreSystem.reputationMultiplier || 1.0;
         const finalScore = Math.round(baseScore * reputationMultiplier);
 
@@ -129,26 +121,64 @@ export function barmanTrustGame() {
         // Update game tracker with final score
         GameTracker.updateScore(finalScore);
 
-        if (success) {
-            // Recruit barman using proper database recruitment function
-            if (await recruitAlly('Bar Man')) {  // Use recruitAlly instead of AllyManager.recruitAlly
-                await AllyManager.loadAllyVisuals();
+        // Handle health changes
+        if (GameTracker.allies && GameTracker.allies.length > 0) {
+            const peasant = GameTracker.allies[0];
+            let healthChange = 0;
+            let healthMessage = "";
+
+            if (success) {
+                if (successfulAttempts === puzzles.length) {
+                    healthChange = 25;
+                    healthMessage = "The barman's special 'medicinal' ale works wonders! Your spelling bee victory earns you the good stuff!";
+                } else {
+                    healthChange = 15;
+                    healthMessage = "The barman's cheap ale is... surprisingly refreshing!";
+                }
             } else {
-                Terminal.outputMessage("\nError recruiting barman!", "#FF0000");
+                healthChange = -10;
+                healthMessage = "The barman serves you the cheapest ale... it tastes terrible.";
             }
+
+            // Apply health changes and show messages
+            const oldHp = peasant.hp;
+            peasant.hp = Math.max(1, Math.min(peasant.maxHp, peasant.hp + healthChange));
+            
+            Terminal.outputMessage(`\n${healthMessage}`, healthChange > 0 ? "#00FF00" : "#FF8181");
+            Terminal.outputMessage(`${healthChange > 0 ? "Bottoms up!" : "Ouch!"} (${healthChange > 0 ? '+' : ''}${healthChange} HP)`, "#FFA500");
+            Terminal.outputMessage(`HP: ${oldHp} → ${peasant.hp}/${peasant.maxHp}`, "#FFA500");
+            
+            await AllyManager.loadAllyVisuals();
         }
 
-        // Dispatch completion event with score details
+        // Recruit barman with different stats based on performance
+        let allyStats = {
+            attack: success ? 15 : 10,
+            defense: success ? 12 : 8,
+            intelligence: success ? 10 : 5
+        };
+
+        if (await recruitAlly('Bar Man', success, allyStats)) {
+            await AllyManager.loadAllyVisuals();
+            Terminal.outputMessage("\nThe barman " + (success ? 
+                "enthusiastically joins your cause!" : 
+                "reluctantly agrees to help, but remains skeptical."), 
+                success ? "#00FF00" : "#FFA500");
+        }
+
+        // Always progress, but with different messages
         document.dispatchEvent(new CustomEvent('minigameComplete', {
             detail: { 
-                success: success,
+                success: true, // Always true to allow progression
                 baseScore: baseScore,
                 multiplier: reputationMultiplier,
                 finalScore: finalScore,
                 totalScore: GameTracker.score,
                 minigameId: 'barmanTrust',
-                message: success ? "The barman joins your cause!" : "The barman remains skeptical...",
-                next: success ? 'barman_joins' : 'tavern_scene'
+                message: success ? 
+                    "The barman joins your cause with confidence!" : 
+                    "The barman joins hesitantly...",
+                next: 'barman_joins' // Always progress to next scene
             }
         }));
     }
