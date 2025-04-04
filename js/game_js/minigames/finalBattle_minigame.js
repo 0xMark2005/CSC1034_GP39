@@ -298,6 +298,7 @@ export function finalBattleGame() {
     function isGameOver() {
         const allAlliesDead = allies.every(ally => ally.health <= 0);
         const allEnemiesDead = enemies.every(enemy => enemy.health <= 0);
+        AllyManager.checkGameOver()
         
         if (allAlliesDead) {
             Terminal.outputMessage("\nAll allies have been defeated!", "#FF0000");
