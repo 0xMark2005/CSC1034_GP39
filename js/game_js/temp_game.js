@@ -3,7 +3,6 @@ import { Terminal } from "../terminal.js";
 import { GameTracker } from "./game_tracker.js";
 import * as SaveLoadGame from "./save_load_game.js";
 import * as Inventory from "./inventory.js";
-import {AllyManager} from "./ally_manager.js";
 
 import { prisonEscapeGame } from "./minigames/prisonEscape_minigame.js";
 import { villageEscapeGame } from "./minigames/villageEscape_minigame.js";
@@ -214,10 +213,10 @@ const storyProgression = {
     },
     knight_rescue: {
         startDialogue: "knight_rescue_intro",
-        nextArea: "guard_quarters",      // Changed: Go to guard quarters first
+        nextArea: "guard_quarters",      
         transitionDialogue: "rescue_success"
     },
-    guard_quarters: {                    // Added: New area for equipment
+    guard_quarters: {                   
         startDialogue: "guard_equipment",
         nextArea: "slums_clinic",
         transitionDialogue: "knight_freed"
