@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         // Force a redraw
         document.body.style.display = 'none';
-        document.body.offsetHeight; // trigger a reflow
+        document.body.offsetHeight;
         document.body.style.display = '';
     }
 
@@ -350,8 +350,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     function displaySoundOptions() {
         Terminal.outputMessage("===== SOUND SETTINGS =====", "#00FFFF");
         Terminal.outputMessage("1. Volume Level", "#00FF00");
-        Terminal.outputMessage("2. Toggle Sound Effects (Coming Soon)", "#808080");  // Changed to gray
-        Terminal.outputMessage("3. Toggle Keyboard Sounds (Coming Soon)", "#808080");  // Changed to gray
+        Terminal.outputMessage("2. Toggle Sound Effects (Coming Soon)", "#808080");  
+        Terminal.outputMessage("3. Toggle Keyboard Sounds (Coming Soon)", "#808080");  
         Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
         Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
     }
@@ -359,8 +359,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     function displayAppearanceOptions() {
         Terminal.outputMessage("===== TERMINAL APPEARANCE =====", "#00FFFF");
         Terminal.outputMessage("1. Change Terminal Color", "#00FF00");
-        Terminal.outputMessage("2. Change Cursor Style (Coming Soon)", "#808080");  // Changed to gray
-        Terminal.outputMessage("3. Toggle Animations (Coming Soon)", "#808080");    // Changed to gray
+        Terminal.outputMessage("2. Change Cursor Style (Coming Soon)", "#808080");  
+        Terminal.outputMessage("3. Toggle Animations (Coming Soon)", "#808080");    
         Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
         Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
     }
@@ -368,8 +368,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     function displayAccessibilityOptions() {
         Terminal.outputMessage("===== ACCESSIBILITY OPTIONS =====", "#00FFFF");
         Terminal.outputMessage("1. Text Speed", "#00FF00");
-        Terminal.outputMessage("2. Screen Reader Mode (Coming Soon)", "#808080");  // Changed to gray
-        Terminal.outputMessage("3. Input Timing (Coming Soon)", "#808080");        // Changed to gray
+        Terminal.outputMessage("2. Screen Reader Mode (Coming Soon)", "#808080");  
+        Terminal.outputMessage("3. Input Timing (Coming Soon)", "#808080");        
         Terminal.outputMessage("0. Return to Main Menu", "#00FF00");
         Terminal.outputMessage("Enter your choice (0-3):", "#FFFFFF");
     }

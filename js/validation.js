@@ -1,3 +1,4 @@
+// Check if usename is same as an exisiting username 
 
 
 // Ensure NO SPECIAL CHARACTERS or anything to do with SQL injection
@@ -54,18 +55,15 @@ function validatePasswordSpecialChar(password){
 window.validatePasswordSpecialChar = validatePasswordSpecialChar;
 
 //Ensure passwords entered into signup match
-function validatePasswordRepeat(password1,password2)
-{
-    //Check if passwords are the same
-    if(password1 == password2 && password1, password2 != "")
-    {
-        return false;
-    }
-    else
-    {
-        return true;
+function validatePasswordRepeat(password1, password2) {
+    // Check if passwords are the same and not empty
+    if (password1 === password2 && password1 !== "" && password2 !== "") {
+        return false; // Passwords match and are not empty
+    } else {
+        return true; // Passwords don't match or one is empty
     }
 }
+
 
 window.validatePasswordRepeat = validatePasswordRepeat;
 

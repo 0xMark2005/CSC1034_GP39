@@ -1,4 +1,4 @@
-import { Terminal } from '../terminal.js';  // Adjust path based on your file structure
+import { Terminal } from '../terminal.js';  
 import { GameTracker } from './game_tracker.js';
 
 export class ScoreSystem {

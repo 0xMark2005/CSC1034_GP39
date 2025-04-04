@@ -131,15 +131,15 @@ async function handleRegister() {
     let password = passwordField.value.trim();
     let password2 = confirmPasswordField.value.trim();
 
-    let registerErrors = updateRequirements(username,password,password2);
+    let registerErrors = updateRequirements(username, password, password2);
 
-    if(registerErrors.length > 0)
-    {
+    if(registerErrors.length > 0) {
         alert("Errors: " + registerErrors.join("\n"));
         return;
     }
 
-    if(password)
+    // You had an incomplete if statement here
+    // if(password) - removing this
 
     if (username === '' || password === '') {
         document.getElementById('register-error').textContent = "Please fill in all fields.";
@@ -148,6 +148,16 @@ async function handleRegister() {
     }
 
     try {
+        // First check if username already exists
+        const usernameExists = await checkUsernameExists(username);
+        
+        if (usernameExists) {
+            document.getElementById('register-error').textContent = "Username already exists. Please choose another.";
+            document.getElementById('register-error').style.display = "block";
+            return;
+        }
+
+        // Continue with registration if username is available
         // Hash the password and get the salt
         let passwordData = await hashPassword(password);
         
@@ -322,6 +332,25 @@ function updateRequirements(username, password, password2) {
     }
 
     return errors; // This can be used to display errors elsewhere if needed
+}
+
+async function checkUsernameExists(username) {
+    try {
+        // Escape the username to prevent SQL injection
+        const escapedUsername = username.replace(/'/g, "''");
+        
+        let query = `SELECT COUNT(*) as count FROM users WHERE username = '${escapedUsername}'`;
+        let result = await DBQuery.getQueryResult(query);
+        
+        if (result.error) {
+            throw new Error("Database error: " + result.error);
+        }
+        
+        return result.data && result.data[0].count > 0;
+    } catch (error) {
+        console.error("Error checking username:", error);
+        throw error;
+    }
 }
 
 window.showMenuScreen = showMenuScreen;
