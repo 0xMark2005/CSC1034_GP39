@@ -92,6 +92,7 @@ const errorColor = "#FF0000";
 const optionResultColor = "#0000FF";
 
 // Game state variables
+let autoSave = false;
 let allowInput = false;
 const options = [];
 let optionType = "number";
@@ -406,15 +407,10 @@ async function loadAreaFromJSON() {
         Terminal.outputMessage("Error loading area data. Please check console.", errorColor);
     }
 
-    if(await SaveLoadGame.saveGame()){
-        Terminal.outputMessage("Autosaved!", optionResultColor);
-    }
-    else{
-        Terminal.outputMessage("Autosave Failed!", errorColor);
-    }
+    autoSave = true;
 }
 
-function loadDialogue() {
+async function loadDialogue() {
     let currentAreaDialogue;
     allowInput = false;
 
@@ -438,6 +434,17 @@ function loadDialogue() {
         Terminal.outputMessage(currentAreaDialogue.message, dialogueColor);
     } else {
         console.warn("Dialogue message is undefined or null.");
+    }
+
+    //Auto save
+    if(autoSave){
+        if(await SaveLoadGame.saveGame()){
+            Terminal.outputMessage("Autosaved!", optionResultColor);
+        }
+        else{
+            Terminal.outputMessage("Autosave Failed!", errorColor);
+        }
+        autoSave = false;
     }
 
     //
