@@ -223,6 +223,7 @@ export class ScoreSystem {
             // Update static values
             ScoreSystem.reputation = newReputation;
             ScoreSystem.reputationMultiplier = Math.max(0.5, Math.min(2.0, newReputation / 50));
+            GameTracker.reputation = ScoreSystem.reputation;
 
             // Update display
             const reputationElement = document.getElementById('reputation-number');
